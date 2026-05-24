@@ -1,0 +1,63 @@
+{
+  "navbar": {
+    "Home": "/home",
+    "Quiz": "/quiz",
+    "Explore": "/explore",
+    "Skills": "/skills"
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "content": "Three simple steps to discover your career"
+  },
+  "steps": [
+    {
+      "id": 1,
+      "icon": "question",
+      "title": "Take the Assessment",
+      "content": "Answer 15 carefully designed questions about your interests, skills, and work preferences"
+    },
+    {
+      "id": 2,
+      "icon": "path",
+      "title": "Get Career Matches",
+      "content": "Receive personalized career recommendations with detailed information about each path"
+    },
+    {
+      "id": 3,
+      "icon": "job",
+      "title": "Build Your Skills",
+      "content": "Access curated learning resources and track your skill development journey"
+    }
+  ],
+  "whyChooseUs": {
+    "title": "Why Choose Career Compass",
+    "content": "A comprehensive platform built for your success"
+  },
+  "steps_2": [
+    {
+      "id": 1,
+      "icon": "question",
+      "title": "Personalized",
+      "content": "Recommendations tailored to your unique profile"
+    },
+    {
+      "id": 2,
+      "icon": "path",
+      "title": "Global",
+      "content": "Country-specific requirements and pathways"
+    },
+    {
+      "id": 3,
+      "icon": "job",
+      "title": "Comprehensive",
+      "content": "Detailed career information and requirements"
+    },
+    {
+      "id": 4,
+      "icon": "discover",
+      "title": "Free",
+      "content": "Always free, no hidden costs"
+    }
+  ]
+  
+}

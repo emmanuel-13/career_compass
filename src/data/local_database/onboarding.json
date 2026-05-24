@@ -1,0 +1,38 @@
+{   
+    "intro": {
+        "title": "Welcome to Career Compass",
+        "description": "Your personalized guide to discovering the perfect career path. ",
+        "animation": "discover"
+    },
+    "next": {
+        "title": "Tell us about yourself",
+        "description": "Help us personalize your career exploration experience",
+        "animation": "discover"
+    },
+    "steps": [
+        {
+        "id": 1,
+        "title": "Take the Quiz",
+        "description": "Answer 15 questions to discover careers that match your interests.",
+        "background": "bg-gradient-to-br from-blue-50 to-indigo-50",
+        "color": "bg-blue-600",
+        "animation": "question"
+        },
+        {
+        "id": 2,
+        "title": "Explore Careers",
+        "description": "Browse diverse careers from tech to trades to hospitality",
+        "background": "bg-gradient-to-br from-purple-50 to-blue-50",
+        "color": "bg-purple-600",
+        "animation": "job"
+        },
+        {
+        "id": 3,
+        "title": "Plan Your Path",
+        "description": "Get country-specific requirements and salary insights",
+        "background": "bg-gradient-to-br from-indigo-50 to-purple-50",
+        "color": "bg-indigo-600",
+        "animation": "path"
+        }
+    ]
+}

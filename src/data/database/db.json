@@ -1,0 +1,2233 @@
+{
+  "careers": [
+    {
+      "id": "td1yCJ4tnnA",
+      "slug": "journalist",
+      "title": "Journalist",
+      "icon": "journalist",
+      "shortDescription": "Report news and create content for media outlets.",
+      "description": "Journalists research, write, and report news stories for newspapers, magazines, television, and online platforms. They often specialize in areas such as politics, sports, or entertainment.",
+      "skills": [
+        "writing",
+        "research",
+        "communication",
+        "critical thinking"
+      ],
+      "traits": [
+        "creative",
+        "communication"
+      ],
+      "interests": [
+        "writing",
+        "media",
+        "communication"
+      ],
+      "personalityType": "Creative Communicator",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Columbia University",
+          "ranking": "Top Ranked",
+          "programName": "Journalism"
+        }
+      ],
+      "salary": {
+        "min": 45000,
+        "max": 85000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Editor",
+        "Public Relations Specialist",
+        "Broadcast News Analyst"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "High School Diploma",
+          "duration": "4 years",
+          "description": "Complete high school with a focus on English, Literature, and Government."
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree in Journalism",
+          "duration": "4 years",
+          "description": "Earn a bachelor's degree in journalism or a related field."
+        },
+        {
+          "step": 3,
+          "title": "Internship",
+          "duration": "6 months - 1 year",
+          "description": "Gain practical experience through internships at media outlets."
+        },
+        {
+          "step": 4,
+          "title": "Entry-Level Position",
+          "duration": "1-2 years",
+          "description": "Start as a reporter or correspondent at a local news outlet."
+        },
+        {
+          "step": 5,
+          "title": "Advancement",
+          "duration": "Ongoing",
+          "description": "Progress to roles such as editor, senior reporter, or news anchor."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "uQ_s8o5iSfg",
+      "slug": "lawyer",
+      "title": "Lawyer",
+      "icon": "lawyer",
+      "shortDescription": "Represent clients in legal matters and provide legal advice.",
+      "description": "Lawyers advise and represent individuals, businesses, and government agencies on legal issues and disputes. They specialize in areas such as criminal law, corporate law, or family law.",
+      "skills": [
+        "analytical thinking",
+        "communication",
+        "research",
+        "problem-solving"
+      ],
+      "traits": [
+        "communication",
+        "leadership"
+      ],
+      "interests": [
+        "law",
+        "public-speaking"
+      ],
+      "personalityType": "Creative Communicator",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Government",
+          "Economics",
+          "Literature"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Harvard University",
+          "ranking": "Top Ranked",
+          "programName": "Law"
+        }
+      ],
+      "salary": {
+        "min": 60000,
+        "max": 120000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Paralegal",
+        "Judge",
+        "Legal Consultant"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "High School Diploma",
+          "duration": "4 years",
+          "description": "Complete high school with a focus on English, Government, and Economics."
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Earn a bachelor's degree in any field, preferably pre-law or related."
+        },
+        {
+          "step": 3,
+          "title": "Law School",
+          "duration": "3 years",
+          "description": "Attend law school and earn a Juris Doctor (JD) degree."
+        },
+        {
+          "step": 4,
+          "title": "Bar Exam",
+          "duration": "1 year",
+          "description": "Pass the bar exam in the state where you wish to practice."
+        },
+        {
+          "step": 5,
+          "title": "Entry-Level Position",
+          "duration": "1-2 years",
+          "description": "Start as an associate at a law firm or in a legal department."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "8HWtPg7s6CA",
+      "slug": "public-relations-specialist",
+      "title": "Public Relations Specialist",
+      "icon": "public-relations-specialist",
+      "shortDescription": "Manage the public image of organizations and individuals.",
+      "description": "Public Relations Specialists create and maintain a positive public image for their clients. They handle media relations, press releases, and social media strategies.",
+      "skills": [
+        "communication",
+        "writing",
+        "media relations",
+        "strategic planning"
+      ],
+      "traits": [
+        "creative",
+        "communication"
+      ],
+      "interests": [
+        "media",
+        "writing",
+        "communication"
+      ],
+      "personalityType": "Creative Communicator",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Southern California",
+          "ranking": "Top Ranked",
+          "programName": "Public Relations"
+        }
+      ],
+      "salary": {
+        "min": 40000,
+        "max": 80000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Marketing Manager",
+        "Media Planner",
+        "Corporate Communications Manager"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "High School Diploma",
+          "duration": "4 years",
+          "description": "Complete high school with a focus on English, Literature, and Government."
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree in Public Relations",
+          "duration": "4 years",
+          "description": "Earn a bachelor's degree in public relations, communications, or a related field."
+        },
+        {
+          "step": 3,
+          "title": "Internship",
+          "duration": "6 months - 1 year",
+          "description": "Gain practical experience through internships in PR firms or corporate communications departments."
+        },
+        {
+          "step": 4,
+          "title": "Entry-Level Position",
+          "duration": "1-2 years",
+          "description": "Start as a PR assistant or coordinator."
+        },
+        {
+          "step": 5,
+          "title": "Advancement",
+          "duration": "Ongoing",
+          "description": "Progress to roles such as PR manager or director."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "2uKb8jzmu4o",
+      "slug": "writer",
+      "title": "Writer",
+      "icon": "✍️",
+      "shortDescription": "Writers create content for books, articles, scripts, and other forms of media.",
+      "description": "Writers develop written content for various platforms, including books, magazines, websites, and films. They use their creativity and language skills to engage and inform audiences.",
+      "skills": [
+        "writing",
+        "creativity",
+        "research",
+        "editing"
+      ],
+      "traits": [
+        "creative",
+        "communication"
+      ],
+      "interests": [
+        "writing",
+        "media"
+      ],
+      "personalityType": "Creative Communicator",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Cambridge",
+          "ranking": "Top Ranked",
+          "programName": "English Literature"
+        }
+      ],
+      "salary": {
+        "min": 20000,
+        "max": 50000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Editor",
+        "Copywriter",
+        "Screenwriter"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete A-Levels",
+          "duration": "2 years",
+          "description": "Focus on subjects like English, Literature, and Government."
+        },
+        {
+          "step": 2,
+          "title": "Earn a Bachelor's Degree",
+          "duration": "3 years",
+          "description": "Pursue a degree in English Literature, Creative Writing, or a related field."
+        },
+        {
+          "step": 3,
+          "title": "Build a Portfolio",
+          "duration": "1-2 years",
+          "description": "Write and publish your work to showcase your skills."
+        },
+        {
+          "step": 4,
+          "title": "Network",
+          "duration": "Ongoing",
+          "description": "Connect with publishers, editors, and other writers."
+        },
+        {
+          "step": 5,
+          "title": "Publish and Promote",
+          "duration": "Ongoing",
+          "description": "Publish your work and engage with your audience."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "FIkK0TxQvCA",
+      "slug": "business-consultant",
+      "title": "Business Consultant",
+      "icon": "🏢",
+      "shortDescription": "Advise businesses on how to improve their operations and profitability.",
+      "description": "Business consultants analyze organizational practices, identify weaknesses, and recommend solutions to improve efficiency and profitability.",
+      "skills": [
+        "leadership",
+        "problem-solving",
+        "communication"
+      ],
+      "traits": [
+        "leadership",
+        "business"
+      ],
+      "interests": [
+        "entrepreneurship",
+        "management"
+      ],
+      "personalityType": "Business Leader",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Economics",
+          "Accounting"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "London School of Economics",
+          "ranking": "Top Ranked",
+          "programName": "Business Management"
+        }
+      ],
+      "salary": {
+        "min": 30000,
+        "max": 70000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Financial Analyst",
+        "Management Analyst",
+        "Entrepreneur"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete A-Levels",
+          "duration": "2 years",
+          "description": "Focus on subjects like Mathematics and Economics."
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree",
+          "duration": "3 years",
+          "description": "Pursue a degree in Business Management or a related field."
+        },
+        {
+          "step": 3,
+          "title": "Internship",
+          "duration": "6 months",
+          "description": "Gain practical experience through internships."
+        },
+        {
+          "step": 4,
+          "title": "Entry-Level Job",
+          "duration": "1-2 years",
+          "description": "Start working as a junior consultant."
+        },
+        {
+          "step": 5,
+          "title": "Certification",
+          "duration": "Ongoing",
+          "description": "Obtain relevant certifications like CMC (Certified Management Consultant)."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "F6_rHbVjeS4",
+      "slug": "biomedical-scientist",
+      "title": "Biomedical Scientist",
+      "icon": "🔬",
+      "shortDescription": "Conduct research and tests to help diagnose and treat diseases.",
+      "description": "Biomedical scientists conduct laboratory tests and research to help diagnose, treat, and prevent diseases. They work in hospitals, laboratories, and research institutions.",
+      "skills": [
+        "research",
+        "observation",
+        "analytical"
+      ],
+      "traits": [
+        "healthcare",
+        "scientific"
+      ],
+      "interests": [
+        "science",
+        "medicine"
+      ],
+      "personalityType": "Healthcare Helper",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Biology",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Cambridge",
+          "ranking": "Top Ranked",
+          "programName": "Biomedical Science"
+        }
+      ],
+      "salary": {
+        "min": 25000,
+        "max": 55000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Medical Researcher",
+        "Clinical Scientist",
+        "Pathologist"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete A-Levels",
+          "duration": "2 years",
+          "description": "Focus on subjects like Biology and Chemistry."
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree",
+          "duration": "3 years",
+          "description": "Pursue a degree in Biomedical Science or a related field."
+        },
+        {
+          "step": 3,
+          "title": "Internship",
+          "duration": "6 months",
+          "description": "Gain practical experience through internships."
+        },
+        {
+          "step": 4,
+          "title": "Entry-Level Job",
+          "duration": "1-2 years",
+          "description": "Start working as a junior biomedical scientist."
+        },
+        {
+          "step": 5,
+          "title": "Specialization",
+          "duration": "Ongoing",
+          "description": "Specialize in a particular area of biomedical science."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "YOQQzCEQKtk",
+      "slug": "physician",
+      "title": "Physician",
+      "icon": "👨‍⚕️",
+      "shortDescription": "Diagnose and treat illnesses to improve patient health.",
+      "description": "Physicians are medical doctors who diagnose and treat illnesses, injuries, and other health conditions. They work in hospitals, clinics, or private practices and often specialize in areas like pediatrics, cardiology, or surgery. This career requires extensive education and training but offers a rewarding opportunity to help others.",
+      "skills": [
+        "diagnosis",
+        "patient care",
+        "medical knowledge"
+      ],
+      "traits": [
+        "empathetic",
+        "scientific"
+      ],
+      "interests": [
+        "medicine",
+        "helping people"
+      ],
+      "personalityType": "Healthcare Helper",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Harvard University",
+          "ranking": "Top Ranked",
+          "programName": "MD Program"
+        }
+      ],
+      "salary": {
+        "min": 180000,
+        "max": 300000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Surgeon",
+        "Pediatrician",
+        "Psychiatrist"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete Undergraduate Degree",
+          "duration": "4 years",
+          "description": "Earn a bachelor's degree with a focus on pre-medical studies."
+        },
+        {
+          "step": 2,
+          "title": "Pass the MCAT",
+          "duration": "1 year",
+          "description": "Prepare for and pass the Medical College Admission Test."
+        },
+        {
+          "step": 3,
+          "title": "Attend Medical School",
+          "duration": "4 years",
+          "description": "Complete medical school to earn an MD or DO degree."
+        },
+        {
+          "step": 4,
+          "title": "Complete Residency",
+          "duration": "3-7 years",
+          "description": "Gain hands-on training in a specialized field during residency."
+        },
+        {
+          "step": 5,
+          "title": "Obtain Licensure",
+          "duration": "1 year",
+          "description": "Pass licensing exams to practice medicine in your state."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "7KsBfGp1yIA",
+      "slug": "marketing-manager",
+      "title": "Marketing Manager",
+      "icon": "📋",
+      "shortDescription": "Develop strategies to promote products and services.",
+      "description": "Marketing managers oversee campaigns to promote products or services. They analyze market trends, develop strategies, and manage teams to achieve business goals. This career combines creativity with analytical skills and is ideal for those interested in leadership and communication.",
+      "skills": [
+        "strategic planning",
+        "team leadership",
+        "market analysis"
+      ],
+      "traits": [
+        "leadership",
+        "creative"
+      ],
+      "interests": [
+        "management",
+        "entrepreneurship"
+      ],
+      "personalityType": "Business Leader",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Pennsylvania",
+          "ranking": "Top Ranked",
+          "programName": "MBA in Marketing"
+        }
+      ],
+      "salary": {
+        "min": 65000,
+        "max": 140000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Brand Manager",
+        "Sales Manager",
+        "Product Manager"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete Undergraduate Degree",
+          "duration": "4 years",
+          "description": "Earn a bachelor's degree in marketing, business, or a related field."
+        },
+        {
+          "step": 2,
+          "title": "Gain Work Experience",
+          "duration": "2-3 years",
+          "description": "Work in marketing roles to build skills and experience."
+        },
+        {
+          "step": 3,
+          "title": "Pursue an MBA (Optional)",
+          "duration": "2 years",
+          "description": "Enroll in a Master of Business Administration program for advanced knowledge."
+        },
+        {
+          "step": 4,
+          "title": "Apply for Managerial Roles",
+          "duration": "1 year",
+          "description": "Seek opportunities to lead marketing teams and campaigns."
+        },
+        {
+          "step": 5,
+          "title": "Continue Professional Development",
+          "duration": "Ongoing",
+          "description": "Stay updated on industry trends and certifications."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "77ENqagsOkA",
+      "slug": "civil-engineer",
+      "title": "Civil Engineer",
+      "icon": "🔧",
+      "shortDescription": "Design and oversee construction of infrastructure projects.",
+      "description": "Civil engineers plan, design, and supervise the construction of infrastructure projects like roads, bridges, and buildings. They ensure projects meet safety standards and are completed efficiently. This career is ideal for those who enjoy problem-solving and working on large-scale projects.",
+      "skills": [
+        "project management",
+        "structural analysis",
+        "design"
+      ],
+      "traits": [
+        "analytical",
+        "detail-oriented"
+      ],
+      "interests": [
+        "construction",
+        "engineering"
+      ],
+      "personalityType": "Problem Solver",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Physics",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Massachusetts Institute of Technology",
+          "ranking": "Top Ranked",
+          "programName": "Bachelor of Science in Civil Engineering"
+        }
+      ],
+      "salary": {
+        "min": 60000,
+        "max": 100000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Structural Engineer",
+        "Environmental Engineer",
+        "Architect"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete Undergraduate Degree",
+          "duration": "4 years",
+          "description": "Earn a bachelor's degree in civil engineering."
+        },
+        {
+          "step": 2,
+          "title": "Pass the FE Exam",
+          "duration": "1 year",
+          "description": "Pass the Fundamentals of Engineering exam to become an Engineer-in-Training."
+        },
+        {
+          "step": 3,
+          "title": "Gain Work Experience",
+          "duration": "4 years",
+          "description": "Work under a licensed engineer to gain practical experience."
+        },
+        {
+          "step": 4,
+          "title": "Pass the PE Exam",
+          "duration": "1 year",
+          "description": "Pass the Principles and Practice of Engineering exam to become a licensed Professional Engineer."
+        },
+        {
+          "step": 5,
+          "title": "Advance Your Career",
+          "duration": "Ongoing",
+          "description": "Pursue advanced roles or specialize in areas like structural or environmental engineering."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "3DTwIFouwqc",
+      "slug": "biomedical-engineer",
+      "title": "Biomedical Engineer",
+      "icon": "🔧",
+      "shortDescription": "Combine engineering principles with medical sciences to design healthcare equipment and devices.",
+      "description": "Biomedical engineers develop medical technologies like prosthetics, imaging systems, and artificial organs. They work in hospitals, research labs, or medical device companies.",
+      "skills": [
+        "Problem-solving",
+        "Technical design",
+        "Biology/Chemistry knowledge"
+      ],
+      "traits": [
+        "scientific",
+        "innovative"
+      ],
+      "interests": [
+        "medicine",
+        "technology"
+      ],
+      "personalityType": "Healthcare Helper",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Physics",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Johns Hopkins University",
+          "ranking": "Top Ranked",
+          "programName": "Biomedical Engineering"
+        }
+      ],
+      "salary": {
+        "min": 60000,
+        "max": 110000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Medical Scientist",
+        "Clinical Engineer"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Study Biomedical Engineering or related field."
+        },
+        {
+          "step": 2,
+          "title": "Internship",
+          "duration": "1-2 years",
+          "description": "Gain hands-on experience in medical technology."
+        },
+        {
+          "step": 3,
+          "title": "Certification (Optional)",
+          "duration": "Varies",
+          "description": "Obtain professional engineering license."
+        },
+        {
+          "step": 4,
+          "title": "Master's Degree (Optional)",
+          "duration": "2 years",
+          "description": "Specialize in a subfield like biomechanics or medical imaging."
+        },
+        {
+          "step": 5,
+          "title": "Career Advancement",
+          "duration": "Ongoing",
+          "description": "Move into research, management, or entrepreneurship."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "ZrL27y0hV0Q",
+      "slug": "healthcare-administrator",
+      "title": "Healthcare Administrator",
+      "icon": "🎯",
+      "shortDescription": "Manage healthcare facilities, ensuring efficient operations and quality patient care.",
+      "description": "Healthcare administrators oversee hospitals, clinics, or nursing homes, handling budgets, policies, and staff management.",
+      "skills": [
+        "Leadership",
+        "Organization",
+        "Healthcare regulations"
+      ],
+      "traits": [
+        "organized",
+        "empathetic"
+      ],
+      "interests": [
+        "management",
+        "helping people"
+      ],
+      "personalityType": "Business Leader",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Michigan",
+          "ranking": "Top Ranked",
+          "programName": "Health Administration"
+        }
+      ],
+      "salary": {
+        "min": 65000,
+        "max": 150000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Hospital CEO",
+        "Health Policy Analyst"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Study Health Administration or Business."
+        },
+        {
+          "step": 2,
+          "title": "Entry-Level Position",
+          "duration": "2-3 years",
+          "description": "Work in healthcare management roles."
+        },
+        {
+          "step": 3,
+          "title": "Master's Degree",
+          "duration": "2 years",
+          "description": "Earn MHA (Master of Health Administration)."
+        },
+        {
+          "step": 4,
+          "title": "Mid-Level Management",
+          "duration": "5+ years",
+          "description": "Lead departments or facilities."
+        },
+        {
+          "step": 5,
+          "title": "Executive Role",
+          "duration": "Ongoing",
+          "description": "Become hospital administrator or healthcare executive."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "hdLzMi7YWjU",
+      "slug": "medical-writer",
+      "title": "Medical Writer",
+      "icon": "✍️",
+      "shortDescription": "Create clear, accurate content about medical topics for professionals or the public.",
+      "description": "Medical writers produce research papers, patient education materials, or pharmaceutical documents, bridging science and communication.",
+      "skills": [
+        "Writing",
+        "Research",
+        "Medical terminology"
+      ],
+      "traits": [
+        "detail-oriented",
+        "curious"
+      ],
+      "interests": [
+        "writing",
+        "medicine"
+      ],
+      "personalityType": "Creative Communicator",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Biology",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Boston University",
+          "ranking": "Top Ranked",
+          "programName": "Science Journalism"
+        }
+      ],
+      "salary": {
+        "min": 55000,
+        "max": 95000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Health Journalist",
+        "Pharmaceutical Copywriter"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Study Life Sciences or Journalism."
+        },
+        {
+          "step": 2,
+          "title": "Writing Experience",
+          "duration": "1-2 years",
+          "description": "Build portfolio with science writing."
+        },
+        {
+          "step": 3,
+          "title": "Certification (Optional)",
+          "duration": "Varies",
+          "description": "Obtain medical writing certification."
+        },
+        {
+          "step": 4,
+          "title": "Specialization",
+          "duration": "2+ years",
+          "description": "Focus on regulatory, marketing, or educational writing."
+        },
+        {
+          "step": 5,
+          "title": "Senior Roles",
+          "duration": "Ongoing",
+          "description": "Lead writing teams or freelance."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "2QUOQ8uvSbE",
+      "slug": "medical-doctor",
+      "title": "Medical Doctor",
+      "icon": "👨‍⚕️",
+      "shortDescription": "Diagnose and treat illnesses, injuries, and other health conditions.",
+      "description": "Medical Doctors are healthcare professionals who diagnose and treat illnesses, injuries, and other health conditions. They work in hospitals, clinics, and private practices, providing care to patients and often collaborating with other healthcare professionals.",
+      "skills": [
+        "diagnosis",
+        "patient care",
+        "medical knowledge"
+      ],
+      "traits": [
+        "empathetic",
+        "observant"
+      ],
+      "interests": [
+        "medicine",
+        "helping people"
+      ],
+      "personalityType": "Healthcare Helper",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Biology",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Harvard University",
+          "ranking": "Top Ranked",
+          "programName": "MD"
+        }
+      ],
+      "salary": {
+        "min": 150000,
+        "max": 300000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Nurse Practitioner",
+        "Physician Assistant"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Undergraduate Degree",
+          "duration": "4 years",
+          "description": "Complete a bachelor's degree with a focus on pre-medical courses."
+        },
+        {
+          "step": 2,
+          "title": "Medical School",
+          "duration": "4 years",
+          "description": "Attend medical school to earn an MD or DO degree."
+        },
+        {
+          "step": 3,
+          "title": "Residency",
+          "duration": "3-7 years",
+          "description": "Complete a residency program in a chosen specialty."
+        },
+        {
+          "step": 4,
+          "title": "Licensing",
+          "duration": "1 year",
+          "description": "Pass the licensing exams to practice medicine."
+        },
+        {
+          "step": 5,
+          "title": "Fellowship (Optional)",
+          "duration": "1-3 years",
+          "description": "Specialize further with a fellowship in a sub-specialty."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "Iy9szOIsE-w",
+      "slug": "business-development-manager",
+      "title": "Business Development Manager",
+      "icon": "📋",
+      "shortDescription": "Drive business growth by identifying new opportunities and building relationships.",
+      "description": "Business Development Managers analyze market trends, develop strategies to expand business operations, and negotiate deals with clients and partners.",
+      "skills": [
+        "Negotiation",
+        "Strategic Planning",
+        "Sales",
+        "Leadership"
+      ],
+      "traits": [
+        "leadership",
+        "persuasive",
+        "analytical"
+      ],
+      "interests": [
+        "entrepreneurship",
+        "management",
+        "public-speaking"
+      ],
+      "personalityType": "Business Leader",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Economics",
+          "Accounting"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Pennsylvania (Wharton)",
+          "ranking": "Top Ranked",
+          "programName": "Business Administration"
+        },
+        {
+          "name": "Stanford University",
+          "ranking": "Top Ranked",
+          "programName": "MBA Program"
+        }
+      ],
+      "salary": {
+        "min": 70000,
+        "max": 150000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Marketing Manager",
+        "Sales Director",
+        "Entrepreneur"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Earn a degree in Business Administration, Marketing, or related field."
+        },
+        {
+          "step": 2,
+          "title": "Entry-Level Position",
+          "duration": "2-3 years",
+          "description": "Gain experience in sales, marketing, or consulting."
+        },
+        {
+          "step": 3,
+          "title": "MBA (Optional)",
+          "duration": "2 years",
+          "description": "Pursue a Master's in Business Administration for advanced roles."
+        },
+        {
+          "step": 4,
+          "title": "Mid-Level Management",
+          "duration": "3-5 years",
+          "description": "Progress to roles like Business Development Associate."
+        },
+        {
+          "step": 5,
+          "title": "Senior Leadership",
+          "duration": "5+ years",
+          "description": "Advance to Director or VP of Business Development."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "BA8eJQomWOs",
+      "slug": "clinical-psychologist",
+      "title": "Clinical Psychologist",
+      "icon": "🧠",
+      "shortDescription": "Assess and treat mental, emotional, and behavioral disorders.",
+      "description": "Clinical Psychologists diagnose psychological issues, provide therapy, and develop treatment plans. They work in hospitals, private practices, or research settings.",
+      "skills": [
+        "Empathy",
+        "Active Listening",
+        "Research",
+        "Problem-Solving"
+      ],
+      "traits": [
+        "empathetic",
+        "observant",
+        "analytical"
+      ],
+      "interests": [
+        "psychology",
+        "helping people",
+        "research"
+      ],
+      "personalityType": "Healthcare Helper",
+      "country": "us",
+      "requirements": {
+        "examSystem": "SAT/ACT",
+        "examSubjects": [
+          "English Language",
+          "Government",
+          "Economics",
+          "Literature"
+        ],
+        "jambSubjects": [],
+        "examDescription": "Scholastic Assessment Test (SAT) or American College Testing (ACT)",
+        "additionalTests": [
+          "TOEFL/IELTS (for international students)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of California, Berkeley",
+          "ranking": "Top Ranked",
+          "programName": "Clinical Psychology PhD"
+        },
+        {
+          "name": "Yale University",
+          "ranking": "Top Ranked",
+          "programName": "Psychology Program"
+        }
+      ],
+      "salary": {
+        "min": 60000,
+        "max": 120000,
+        "currency": "USD",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Counselor",
+        "Psychiatrist",
+        "Social Worker"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Study Psychology or a related field."
+        },
+        {
+          "step": 2,
+          "title": "Master's Degree",
+          "duration": "2-3 years",
+          "description": "Earn a Master's in Clinical Psychology or related discipline."
+        },
+        {
+          "step": 3,
+          "title": "Doctorate (PhD/PsyD)",
+          "duration": "4-6 years",
+          "description": "Complete a doctoral program in Clinical Psychology."
+        },
+        {
+          "step": 4,
+          "title": "Internship",
+          "duration": "1-2 years",
+          "description": "Gain supervised clinical experience."
+        },
+        {
+          "step": 5,
+          "title": "Licensing",
+          "duration": "Varies",
+          "description": "Pass the state licensing exam to practice independently."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "DpBR5adSc-c",
+      "slug": "financial-analyst",
+      "title": "Financial Analyst",
+      "icon": "📊",
+      "shortDescription": "Analyse financial data to guide business investment decisions.",
+      "description": "Financial analysts assess market trends, company performance, and economic conditions to provide investment recommendations. They work in banks, corporations, or investment firms, helping clients or employers make informed financial decisions.",
+      "skills": [
+        "Numerical analysis",
+        "Market research",
+        "Financial modelling",
+        "Report writing"
+      ],
+      "traits": [
+        "analytical",
+        "detail-oriented",
+        "strategic"
+      ],
+      "interests": [
+        "finance",
+        "economics",
+        "data analysis"
+      ],
+      "personalityType": "Business Leader",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "London School of Economics",
+          "ranking": "Top Ranked",
+          "programName": "BSc Economics"
+        },
+        {
+          "name": "University of Warwick",
+          "ranking": "Top Ranked",
+          "programName": "Finance"
+        }
+      ],
+      "salary": {
+        "min": 30000,
+        "max": 70000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Investment Banker",
+        "Accountant",
+        "Risk Manager"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "A-Levels",
+          "duration": "2 years",
+          "description": "Complete A-Levels in Mathematics, Economics, and Business Studies."
+        },
+        {
+          "step": 2,
+          "title": "Undergraduate Degree",
+          "duration": "3 years",
+          "description": "Earn a degree in finance, economics, or business."
+        },
+        {
+          "step": 3,
+          "title": "Internship",
+          "duration": "1 year",
+          "description": "Gain experience through internships in financial firms."
+        },
+        {
+          "step": 4,
+          "title": "Professional Certification",
+          "duration": "1-2 years",
+          "description": "Obtain certifications like CFA or ACCA."
+        },
+        {
+          "step": 5,
+          "title": "Specialisation",
+          "duration": "",
+          "description": "Focus on areas like equity research or portfolio management."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "rc4P527KVBU",
+      "slug": "management-consultant",
+      "title": "Management Consultant",
+      "icon": "💡",
+      "shortDescription": "Advise businesses on strategies to improve efficiency and profitability.",
+      "description": "Management Consultants work with organisations to solve complex problems, improve performance, and maximise growth. They analyse business practices and recommend changes to enhance efficiency and profitability.",
+      "skills": [
+        "Problem Solving",
+        "Leadership",
+        "Communication"
+      ],
+      "traits": [
+        "business",
+        "analytical"
+      ],
+      "interests": [
+        "finance",
+        "management"
+      ],
+      "personalityType": "Business Leader",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "London School of Economics",
+          "ranking": "Top Ranked",
+          "programName": "Business Management"
+        }
+      ],
+      "salary": {
+        "min": 35000,
+        "max": 80000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Financial Analyst",
+        "Business Analyst"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete A-Levels",
+          "duration": "2 years",
+          "description": "Focus on Mathematics, Economics, and English."
+        },
+        {
+          "step": 2,
+          "title": "Earn a Bachelor's Degree",
+          "duration": "3 years",
+          "description": "Obtain a degree in Business Management, Economics, or a related field."
+        },
+        {
+          "step": 3,
+          "title": "Gain Work Experience",
+          "duration": "1-2 years",
+          "description": "Work in a business or finance-related role to gain experience."
+        },
+        {
+          "step": 4,
+          "title": "Pursue a Master's Degree",
+          "duration": "1-2 years",
+          "description": "Consider a Master's in Business Administration (MBA) for advanced knowledge."
+        },
+        {
+          "step": 5,
+          "title": "Join a Consultancy Firm",
+          "duration": "1 year",
+          "description": "Start your career as a Management Consultant at a consultancy firm."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "QNAPQbbXKsk",
+      "slug": "graphic-designer",
+      "title": "Graphic Designer",
+      "icon": "🎨",
+      "shortDescription": "Create visual concepts to communicate ideas through art and design.",
+      "description": "Graphic Designers use creativity and technology to produce designs for print, digital media, and advertising. They work with clients to develop visual solutions that convey messages effectively. This career is ideal for those who enjoy combining art with technology.",
+      "skills": [
+        "Creativity",
+        "Technical skills",
+        "Communication",
+        "Attention to detail"
+      ],
+      "traits": [
+        "creative",
+        "artistic",
+        "detail-oriented"
+      ],
+      "interests": [
+        "design",
+        "art",
+        "creativity"
+      ],
+      "personalityType": "Creative Communicator",
+      "country": "ng",
+      "requirements": {
+        "examSystem": "WAEC/NECO",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [
+          "English",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "examDescription": "West African Senior School Certificate Examination (WASSCE) or NECO",
+        "additionalTests": [
+          "Post-UTME (varies by university)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Benin",
+          "ranking": "Top Ranked",
+          "programName": "B.A Fine and Applied Arts"
+        }
+      ],
+      "salary": {
+        "min": 1800000,
+        "max": 4200000,
+        "currency": "NGN",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Web Designer",
+        "Illustrator",
+        "Art Director"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete Secondary Education",
+          "duration": "6 years",
+          "description": "Focus on English, Literature, and Fine Arts."
+        },
+        {
+          "step": 2,
+          "title": "Pass WAEC/NECO and JAMB",
+          "duration": "1 year",
+          "description": "Achieve required scores in relevant subjects."
+        },
+        {
+          "step": 3,
+          "title": "Earn a Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Study Fine and Applied Arts or Graphic Design at a recognized university."
+        },
+        {
+          "step": 4,
+          "title": "Build a Portfolio",
+          "duration": "Varies",
+          "description": "Showcase your design work to potential employers."
+        },
+        {
+          "step": 5,
+          "title": "Gain Work Experience",
+          "duration": "Varies",
+          "description": "Work as an intern or freelancer to build your career."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "ZyJeb5brYIo",
+      "slug": "human-resources-manager",
+      "title": "Human Resources Manager",
+      "icon": "📋",
+      "shortDescription": "Oversee recruitment, employee relations, and workplace policies in organizations.",
+      "description": "HR managers handle hiring, training, employee benefits, and conflict resolution. They ensure compliance with labor laws and foster a positive work environment.",
+      "skills": [
+        "leadership",
+        "communication",
+        "problem-solving",
+        "organization",
+        "negotiation"
+      ],
+      "traits": [
+        "leadership",
+        "confident",
+        "organizational"
+      ],
+      "interests": [
+        "management",
+        "leadership",
+        "entrepreneurship"
+      ],
+      "personalityType": "Business Leader",
+      "country": "ng",
+      "requirements": {
+        "examSystem": "WAEC/NECO",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "jambSubjects": [
+          "English",
+          "Mathematics",
+          "Government",
+          "Economics"
+        ],
+        "examDescription": "West African Senior School Certificate Examination (WASSCE) or NECO",
+        "additionalTests": [
+          "Post-UTME (varies by university)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "Lagos Business School",
+          "ranking": "Top Ranked",
+          "programName": "Human Resource Management"
+        }
+      ],
+      "salary": {
+        "min": 2500000,
+        "max": 6000000,
+        "currency": "NGN",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Recruiter",
+        "Training & Development Manager",
+        "Organizational Psychologist"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete Secondary Education",
+          "duration": "6 years",
+          "description": "Obtain WAEC/NECO with credits in relevant subjects."
+        },
+        {
+          "step": 2,
+          "title": "Pass JAMB/Post-UTME",
+          "duration": "1 year",
+          "description": "Take JAMB and university-specific entrance exams."
+        },
+        {
+          "step": 3,
+          "title": "Earn a Bachelor's Degree",
+          "duration": "4 years",
+          "description": "Study Business Administration or Human Resources."
+        },
+        {
+          "step": 4,
+          "title": "Entry-Level HR Role",
+          "duration": "2-3 years",
+          "description": "Gain experience in recruitment or employee relations."
+        },
+        {
+          "step": 5,
+          "title": "Advance to Management",
+          "duration": "Ongoing",
+          "description": "Pursue certifications (e.g., CIPM) and lead HR departments."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "zmNk1E1AAzg",
+      "slug": "corporate-lawyer",
+      "title": "Corporate Lawyer",
+      "icon": "⚖️",
+      "shortDescription": "Specialize in legal matters related to businesses, including contracts, mergers, and compliance.",
+      "description": "Corporate lawyers provide legal advice to businesses on issues such as contracts, mergers, acquisitions, regulatory compliance, and corporate governance. They ensure companies operate within the law and help resolve disputes.",
+      "skills": [
+        "Legal research",
+        "Negotiation",
+        "Critical thinking",
+        "Communication",
+        "Attention to detail"
+      ],
+      "traits": [
+        "leadership",
+        "analytical",
+        "detail-oriented"
+      ],
+      "interests": [
+        "law",
+        "management",
+        "finance"
+      ],
+      "personalityType": "Business Leader",
+      "country": "ng",
+      "requirements": {
+        "examSystem": "WAEC/NECO",
+        "examSubjects": [
+          "English Language",
+          "Government",
+          "Literature",
+          "Economics"
+        ],
+        "jambSubjects": [
+          "English",
+          "Government",
+          "Literature",
+          "Economics"
+        ],
+        "examDescription": "West African Senior School Certificate Examination (WASSCE) or NECO",
+        "additionalTests": [
+          "Post-UTME (varies by university)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Ibadan",
+          "ranking": "Top Ranked",
+          "programName": "Law (LL.B)"
+        }
+      ],
+      "salary": {
+        "min": 5000000,
+        "max": 15000000,
+        "currency": "NGN",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Legal Consultant",
+        "Compliance Officer",
+        "Judge"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete secondary education",
+          "duration": "6 years",
+          "description": "Obtain WAEC/NECO with credits in relevant subjects."
+        },
+        {
+          "step": 2,
+          "title": "Study Law (LL.B)",
+          "duration": "5 years",
+          "description": "Earn a bachelor's degree in law from an accredited university."
+        },
+        {
+          "step": 3,
+          "title": "Attend Law School",
+          "duration": "1 year",
+          "description": "Complete the Nigerian Law School program and pass the bar exam."
+        },
+        {
+          "step": 4,
+          "title": "Gain experience in corporate law",
+          "duration": "2-3 years",
+          "description": "Work in a law firm or corporate legal department specializing in business law."
+        },
+        {
+          "step": 5,
+          "title": "Advance to senior roles",
+          "duration": "5+ years",
+          "description": "Become a partner in a law firm or lead a corporate legal team."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "gJKg40sXMgQ",
+      "slug": "public-health-specialist",
+      "title": "Public Health Specialist",
+      "icon": "🎯",
+      "shortDescription": "Work to improve community health through education, policy, and research.",
+      "description": "Public health specialists focus on preventing diseases and promoting health in communities. They work in government agencies, NGOs, or research institutions.",
+      "skills": [
+        "Research",
+        "Policy development",
+        "Health education",
+        "Communication",
+        "Leadership"
+      ],
+      "traits": [
+        "scientific",
+        "dedicated",
+        "empathetic"
+      ],
+      "interests": [
+        "healthcare",
+        "research",
+        "helping people"
+      ],
+      "personalityType": "Healthcare Helper",
+      "country": "ng",
+      "requirements": {
+        "examSystem": "WAEC/NECO",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Biology",
+          "Chemistry"
+        ],
+        "jambSubjects": [
+          "English",
+          "Biology",
+          "Chemistry",
+          "Physics"
+        ],
+        "examDescription": "West African Senior School Certificate Examination (WASSCE) or NECO",
+        "additionalTests": [
+          "Post-UTME (varies by university)"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Nigeria, Nsukka",
+          "ranking": "Top Ranked",
+          "programName": "Bachelor of Science in Public Health"
+        }
+      ],
+      "salary": {
+        "min": 2000000,
+        "max": 6000000,
+        "currency": "NGN",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Epidemiologist",
+        "Health Educator",
+        "Community Health Worker"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "Complete WAEC/NECO",
+          "duration": "3 years",
+          "description": "Pass with credits in Biology, Chemistry, Mathematics, English, and Social Sciences."
+        },
+        {
+          "step": 2,
+          "title": "Pass JAMB",
+          "duration": "1 year",
+          "description": "Score high in JAMB with Biology, Chemistry, Mathematics, and English."
+        },
+        {
+          "step": 3,
+          "title": "Gain admission to university",
+          "duration": "4 years",
+          "description": "Complete a 4-year B.Sc. in Public Health."
+        },
+        {
+          "step": 4,
+          "title": "Complete internship",
+          "duration": "1 year",
+          "description": "Gain practical experience in a public health setting."
+        },
+        {
+          "step": 5,
+          "title": "Obtain certification",
+          "duration": "1 year",
+          "description": "Register with the Public Health Association of Nigeria (PHAN)."
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "f49AKginbQg",
+      "slug": "data-scientist",
+      "title": "Data Scientist",
+      "icon": "📊",
+      "shortDescription": "Analyse complex data to extract insights and drive decision-making",
+      "description": "Data Scientists use statistical analysis, machine learning, and programming to interpret large datasets. They solve complex problems across industries like finance, healthcare, and technology.",
+      "skills": [
+        "Python/R",
+        "Machine Learning",
+        "Statistical Analysis",
+        "Data Visualisation"
+      ],
+      "traits": [
+        "analytical",
+        "logical",
+        "detail-oriented"
+      ],
+      "interests": [
+        "data",
+        "problem-solving",
+        "technology"
+      ],
+      "personalityType": "Technical Innovator",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Physics",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Oxford",
+          "ranking": "Top Ranked",
+          "programName": "Mathematics and Computer Science"
+        },
+        {
+          "name": "Imperial College London",
+          "ranking": "Top Ranked",
+          "programName": "Data Science"
+        }
+      ],
+      "salary": {
+        "min": 35000,
+        "max": 80000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Data Analyst",
+        "Machine Learning Engineer",
+        "Quantitative Analyst"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "A-Levels",
+          "duration": "2 years",
+          "description": "Study Mathematics, Further Mathematics, and relevant science subjects"
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree",
+          "duration": "3-4 years",
+          "description": "Pursue a degree in Data Science, Computer Science, Mathematics, or related field"
+        },
+        {
+          "step": 3,
+          "title": "Internships",
+          "duration": "1-2 years",
+          "description": "Gain practical experience through internships or research projects"
+        },
+        {
+          "step": 4,
+          "title": "Master's Degree (Optional)",
+          "duration": "1-2 years",
+          "description": "Specialise further with a postgraduate degree in Data Science or AI"
+        },
+        {
+          "step": 5,
+          "title": "Professional Certification",
+          "duration": "Varies",
+          "description": "Obtain certifications like Microsoft Certified: Azure Data Scientist or Google Data Analytics"
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "G5BRSo__H14",
+      "slug": "robotics-engineer",
+      "title": "Robotics Engineer",
+      "icon": "🔧",
+      "shortDescription": "Design and build robotic systems for industrial, medical, or consumer applications",
+      "description": "Robotics Engineers combine mechanical, electrical, and computer engineering to create automated systems. They work in manufacturing, healthcare, aerospace, and emerging tech fields.",
+      "skills": [
+        "CAD Design",
+        "Programming (C++/Python)",
+        "Control Systems",
+        "Electronics"
+      ],
+      "traits": [
+        "hands-on",
+        "technical",
+        "problem-solving"
+      ],
+      "interests": [
+        "engineering",
+        "technology",
+        "innovation"
+      ],
+      "personalityType": "Technical Innovator",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Physics",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Bristol",
+          "ranking": "Top Ranked",
+          "programName": "Engineering Design with Robotics"
+        },
+        {
+          "name": "University of Edinburgh",
+          "ranking": "Top Ranked",
+          "programName": "Robotics and Autonomous Systems"
+        }
+      ],
+      "salary": {
+        "min": 30000,
+        "max": 70000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Mechatronics Engineer",
+        "Automation Engineer",
+        "Control Systems Engineer"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "A-Levels",
+          "duration": "2 years",
+          "description": "Study Mathematics, Physics, and preferably Design Technology or Electronics"
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree",
+          "duration": "3-4 years",
+          "description": "Complete an accredited engineering degree with robotics specialisation"
+        },
+        {
+          "step": 3,
+          "title": "Industrial Placement",
+          "duration": "1 year",
+          "description": "Gain practical experience through a sandwich year or summer internships"
+        },
+        {
+          "step": 4,
+          "title": "Chartered Engineer (CEng)",
+          "duration": "4+ years",
+          "description": "Work towards professional accreditation with the IET or IMechE"
+        },
+        {
+          "step": 5,
+          "title": "Specialisation",
+          "duration": "Ongoing",
+          "description": "Focus on areas like medical robotics, autonomous vehicles, or industrial automation"
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    },
+    {
+      "id": "DF2K_XbIJNA",
+      "slug": "patent-examiner",
+      "title": "Patent Examiner",
+      "icon": "🎯",
+      "shortDescription": "Assess patent applications to determine if inventions are new and innovative",
+      "description": "Patent Examiners combine technical expertise with legal knowledge to evaluate patent applications. They work for intellectual property offices, ensuring inventions meet criteria for novelty and industrial applicability.",
+      "skills": [
+        "Technical Analysis",
+        "Legal Interpretation",
+        "Research",
+        "Attention to Detail"
+      ],
+      "traits": [
+        "analytical",
+        "methodical",
+        "detail-oriented"
+      ],
+      "interests": [
+        "law",
+        "innovation",
+        "research"
+      ],
+      "personalityType": "Technical Innovator",
+      "country": "uk",
+      "requirements": {
+        "examSystem": "A-Levels",
+        "examSubjects": [
+          "English Language",
+          "Mathematics",
+          "Physics",
+          "Chemistry"
+        ],
+        "jambSubjects": [],
+        "examDescription": "General Certificate of Education Advanced Level (A-Levels)",
+        "additionalTests": [
+          "IELTS/TOEFL for international students"
+        ]
+      },
+      "universities": [
+        {
+          "name": "University of Cambridge",
+          "ranking": "Top Ranked",
+          "programName": "Natural Sciences"
+        },
+        {
+          "name": "University of Manchester",
+          "ranking": "Top Ranked",
+          "programName": "Physics with Innovation"
+        }
+      ],
+      "salary": {
+        "min": 28000,
+        "max": 65000,
+        "currency": "GBP",
+        "period": "year"
+      },
+      "relatedCareers": [
+        "Intellectual Property Lawyer",
+        "Technology Transfer Officer",
+        "R&D Manager"
+      ],
+      "pathway": [
+        {
+          "step": 1,
+          "title": "A-Levels",
+          "duration": "2 years",
+          "description": "Study STEM subjects plus English for communication skills"
+        },
+        {
+          "step": 2,
+          "title": "Bachelor's Degree",
+          "duration": "3-4 years",
+          "description": "Complete a technical degree in engineering, physics, or life sciences"
+        },
+        {
+          "step": 3,
+          "title": "Postgraduate Qualification",
+          "duration": "1 year",
+          "description": "Consider a law conversion course or IP postgraduate certificate"
+        },
+        {
+          "step": 4,
+          "title": "UKIPO Training",
+          "duration": "2 years",
+          "description": "Complete the patent examiner training programme"
+        },
+        {
+          "step": 5,
+          "title": "Professional Development",
+          "duration": "Ongoing",
+          "description": "Maintain technical expertise in your specialist field"
+        }
+      ],
+      "match": 85,
+      "aiGenerated": true
+    }
+  ],
+  "users": [
+    {
+      "name": "Emmanuel",
+      "age": 24,
+      "country": "us",
+      "id": "bzmNtExRWsQ"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

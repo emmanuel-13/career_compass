@@ -1,0 +1,608 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "text": "Which subject do you enjoy the most in school?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Mathematics",
+          "traits": ["technical", "logical", "analytical"],
+          "interests": ["technology", "engineering", "problem-solving", "data"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "English Language / Literature",
+          "traits": ["creative", "communication", "social"],
+          "interests": ["writing", "media", "communication", "storytelling"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Biology / Chemistry",
+          "traits": ["healthcare", "observation", "empathetic"],
+          "interests": ["medicine", "science", "helping people", "research"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Physics / Chemistry",
+          "traits": ["technical", "analytical", "scientific"],
+          "interests": ["engineering", "research", "science", "innovation"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Government / Economics",
+          "traits": ["leadership", "social", "business", "analytical"],
+          "interests": ["politics", "management", "finance", "economics"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Art / Fine Arts / Music",
+          "traits": ["creative", "artistic", "imaginative"],
+          "interests": ["design", "performing arts", "visual arts", "creativity"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 7,
+          "label": "G",
+          "text": "Computer Science / ICT",
+          "traits": ["technical", "logical", "innovative"],
+          "interests": ["coding", "technology", "software", "gaming"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 8,
+          "label": "H",
+          "text": "History / Social Studies",
+          "traits": ["analytical", "research", "communication"],
+          "interests": ["history", "law", "education", "social issues"],
+          "personalityType": "Creative Communicator"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "text": "What type of activities do you enjoy during your free time?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Building things, repairing gadgets, or coding",
+          "traits": ["technical", "hands-on", "problem-solving"],
+          "interests": ["technology", "engineering", "making"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Reading books, writing stories, or blogging",
+          "traits": ["creative", "imaginative", "communication"],
+          "interests": ["writing", "reading", "storytelling"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Playing sports or outdoor activities",
+          "traits": ["active", "teamwork", "leadership"],
+          "interests": ["sports", "health", "physical activity"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Volunteering or helping others",
+          "traits": ["empathetic", "caring", "social"],
+          "interests": ["helping people", "community", "social work"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Playing video games or online gaming",
+          "traits": ["strategic", "problem-solving", "technical"],
+          "interests": ["gaming", "technology", "strategy"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Drawing, painting, or designing",
+          "traits": ["creative", "artistic", "detail-oriented"],
+          "interests": ["design", "art", "creativity"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 7,
+          "label": "G",
+          "text": "Watching documentaries or educational videos",
+          "traits": ["curious", "analytical", "research-oriented"],
+          "interests": ["learning", "science", "history"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 8,
+          "label": "H",
+          "text": "Organizing events or leading group activities",
+          "traits": ["leadership", "organizational", "social"],
+          "interests": ["management", "leadership", "event planning"],
+          "personalityType": "Business Leader"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "text": "What is your preferred learning style?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Hands-on experiments and practical work",
+          "traits": ["practical", "hands-on", "technical"],
+          "interests": ["engineering", "science", "making"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Reading, writing, and research",
+          "traits": ["academic", "research", "analytical"],
+          "interests": ["writing", "research", "education"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Group discussions and debates",
+          "traits": ["social", "communication", "leadership"],
+          "interests": ["law", "politics", "public-speaking"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Visual learning with diagrams and videos",
+          "traits": ["creative", "visual", "artistic"],
+          "interests": ["design", "media", "technology"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Problem-solving and puzzles",
+          "traits": ["logical", "analytical", "problem-solving"],
+          "interests": ["mathematics", "technology", "engineering"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Listening to lectures and taking notes",
+          "traits": ["academic", "disciplined", "focused"],
+          "interests": ["education", "law", "medicine"],
+          "personalityType": "Healthcare Helper"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "text": "What kind of problems do you enjoy solving?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Technical and engineering challenges",
+          "traits": ["technical", "problem-solving", "logical"],
+          "interests": ["engineering", "technology", "innovation"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Creative and artistic challenges",
+          "traits": ["creative", "artistic", "imaginative"],
+          "interests": ["design", "art", "creativity"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Health and medical challenges",
+          "traits": ["caring", "analytical", "scientific"],
+          "interests": ["medicine", "healthcare", "research"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Business and organizational challenges",
+          "traits": ["leadership", "strategic", "analytical"],
+          "interests": ["business", "management", "finance"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Social and community challenges",
+          "traits": ["empathetic", "social", "communicative"],
+          "interests": ["social work", "law", "community"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Scientific research and discoveries",
+          "traits": ["curious", "analytical", "methodical"],
+          "interests": ["science", "research", "innovation"],
+          "personalityType": "Technical Innovator"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "text": "Which career field appeals to you most?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Technology and Engineering",
+          "traits": ["technical", "innovative", "logical"],
+          "interests": ["technology", "engineering", "coding"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Arts, Media, and Communication",
+          "traits": ["creative", "artistic", "communicative"],
+          "interests": ["media", "arts", "writing"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Healthcare and Medicine",
+          "traits": ["caring", "scientific", "empathetic"],
+          "interests": ["medicine", "healthcare", "helping people"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Business and Finance",
+          "traits": ["analytical", "leadership", "strategic"],
+          "interests": ["business", "finance", "management"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Law and Public Service",
+          "traits": ["communicative", "analytical", "ethical"],
+          "interests": ["law", "politics", "public service"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Education and Academia",
+          "traits": ["patient", "communicative", "knowledgeable"],
+          "interests": ["teaching", "education", "mentoring"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 7,
+          "label": "G",
+          "text": "Science and Research",
+          "traits": ["analytical", "curious", "methodical"],
+          "interests": ["science", "research", "discovery"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 8,
+          "label": "H",
+          "text": "Skilled Trades and Crafts",
+          "traits": ["practical", "hands-on", "detail-oriented"],
+          "interests": ["construction", "craftsmanship", "making"],
+          "personalityType": "Technical Innovator"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "text": "What is your greatest strength?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Analytical thinking and logic",
+          "traits": ["analytical", "logical", "technical"],
+          "interests": ["problem-solving", "technology", "mathematics"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Creativity and imagination",
+          "traits": ["creative", "artistic", "innovative"],
+          "interests": ["design", "arts", "writing"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Empathy and understanding others",
+          "traits": ["empathetic", "caring", "patient"],
+          "interests": ["helping people", "counseling", "healthcare"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Leadership and organization",
+          "traits": ["leadership", "organized", "decisive"],
+          "interests": ["management", "leadership", "entrepreneurship"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Communication and persuasion",
+          "traits": ["communicative", "persuasive", "social"],
+          "interests": ["law", "sales", "public-speaking"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Attention to detail and precision",
+          "traits": ["detail-oriented", "methodical", "precise"],
+          "interests": ["research", "accounting", "quality-control"],
+          "personalityType": "Technical Innovator"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "text": "What work environment do you prefer?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Office environment with technology",
+          "traits": ["technical", "professional", "focused"],
+          "interests": ["technology", "business", "data"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Creative studio or media house",
+          "traits": ["creative", "collaborative", "artistic"],
+          "interests": ["design", "media", "arts"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Hospital, clinic, or laboratory",
+          "traits": ["caring", "professional", "scientific"],
+          "interests": ["medicine", "healthcare", "research"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Corporate or business setting",
+          "traits": ["professional", "leadership", "strategic"],
+          "interests": ["business", "management", "finance"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Outdoor or field work",
+          "traits": ["active", "practical", "observant"],
+          "interests": ["environment", "agriculture", "construction"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "School, university, or educational setting",
+          "traits": ["patient", "communicative", "knowledgeable"],
+          "interests": ["education", "teaching", "mentoring"],
+          "personalityType": "Creative Communicator"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "text": "What motivates you to work hard?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Solving complex problems",
+          "traits": ["curious", "analytical", "determined"],
+          "interests": ["problem-solving", "technology", "research"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Creating something beautiful or meaningful",
+          "traits": ["creative", "artistic", "passionate"],
+          "interests": ["design", "arts", "writing"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Helping others and making a difference",
+          "traits": ["caring", "empathetic", "selfless"],
+          "interests": ["healthcare", "social work", "education"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Achieving success and recognition",
+          "traits": ["ambitious", "confident", "driven"],
+          "interests": ["business", "leadership", "entrepreneurship"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Financial security and stability",
+          "traits": ["practical", "responsible", "strategic"],
+          "interests": ["finance", "business", "accounting"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Discovering new knowledge",
+          "traits": ["curious", "scientific", "research-oriented"],
+          "interests": ["science", "research", "innovation"],
+          "personalityType": "Technical Innovator"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "text": "How do you prefer to work with others?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Leading a team and delegating tasks",
+          "traits": ["leadership", "confident", "organizational"],
+          "interests": ["management", "leadership", "entrepreneurship"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Collaborating in a team environment",
+          "traits": ["collaborative", "social", "communicative"],
+          "interests": ["teamwork", "projects", "group-work"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Working independently on focused tasks",
+          "traits": ["focused", "independent", "methodical"],
+          "interests": ["research", "coding", "writing"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Teaching, training, or mentoring others",
+          "traits": ["patient", "communicative", "knowledgeable"],
+          "interests": ["education", "training", "mentoring"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Supporting and caring for others",
+          "traits": ["caring", "empathetic", "supportive"],
+          "interests": ["healthcare", "counseling", "social-work"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Competing and achieving goals",
+          "traits": ["competitive", "ambitious", "driven"],
+          "interests": ["sales", "sports", "business"],
+          "personalityType": "Business Leader"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "text": "Which of these future goals resonates with you?",
+      "options": [
+        {
+          "id": 1,
+          "label": "A",
+          "text": "Inventing new technology or products",
+          "traits": ["innovative", "creative", "technical"],
+          "interests": ["engineering", "technology", "innovation"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 2,
+          "label": "B",
+          "text": "Becoming a published author or artist",
+          "traits": ["creative", "artistic", "expressive"],
+          "interests": ["writing", "arts", "media"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 3,
+          "label": "C",
+          "text": "Saving lives and improving health",
+          "traits": ["caring", "dedicated", "scientific"],
+          "interests": ["medicine", "healthcare", "research"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 4,
+          "label": "D",
+          "text": "Building a successful business",
+          "traits": ["ambitious", "strategic", "entrepreneurial"],
+          "interests": ["business", "entrepreneurship", "finance"],
+          "personalityType": "Business Leader"
+        },
+        {
+          "id": 5,
+          "label": "E",
+          "text": "Making a positive impact on society",
+          "traits": ["social", "empathetic", "responsible"],
+          "interests": ["social-work", "law", "public-service"],
+          "personalityType": "Healthcare Helper"
+        },
+        {
+          "id": 6,
+          "label": "F",
+          "text": "Advancing scientific knowledge",
+          "traits": ["curious", "analytical", "research-oriented"],
+          "interests": ["science", "research", "education"],
+          "personalityType": "Technical Innovator"
+        },
+        {
+          "id": 7,
+          "label": "G",
+          "text": "Teaching and inspiring the next generation",
+          "traits": ["patient", "communicative", "passionate"],
+          "interests": ["education", "teaching", "mentoring"],
+          "personalityType": "Creative Communicator"
+        },
+        {
+          "id": 8,
+          "label": "H",
+          "text": "Having financial freedom and stability",
+          "traits": ["practical", "ambitious", "strategic"],
+          "interests": ["finance", "business", "investing"],
+          "personalityType": "Business Leader"
+        }
+      ]
+    }
+  ]
+}
