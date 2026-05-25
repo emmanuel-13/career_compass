@@ -49,23 +49,62 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach((to) => {
+// router.beforeEach((to) => {
+//   const userStore = useUserStore();
+
+//   const publicPages = ["onboarding"];
+
+//   // 🔥 WAIT until store is ready
+//   if (!userStore.isReady) return true;
+
+//   const loggedIn = !!userStore.currentUser;
+
+//   const authRequired = !publicPages.includes(to.name);
+
+//   if (authRequired && !loggedIn) {
+//     return { name: "onboarding" };
+//   }
+
+//   return true;
+// });
+
+router.beforeEach(async (to) => {
+
   const userStore = useUserStore();
 
+  // public pages
   const publicPages = ["onboarding"];
 
-  // 🔥 WAIT until store is ready
-  if (!userStore.isReady) return true;
+  // 🔥 initialize user once
+  if (!userStore.isReady) {
+    await userStore.fetchCurrentUser();
+  }
 
   const loggedIn = !!userStore.currentUser;
 
-  const authRequired = !publicPages.includes(to.name);
+  const authRequired =
+    !publicPages.includes(to.name);
 
+  // redirect unauthenticated users
   if (authRequired && !loggedIn) {
-    return { name: "onboarding" };
+    return {
+      name: "onboarding"
+    };
+  }
+
+  // prevent logged in users
+  // from going back to onboarding
+  if (
+    to.name === "onboarding" &&
+    loggedIn
+  ) {
+    return {
+      name: "home"
+    };
   }
 
   return true;
+
 });
 
 export default router
