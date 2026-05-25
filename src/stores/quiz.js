@@ -15,6 +15,9 @@ export const useQuizStore = defineStore("quiz", () => {
     const error = ref(null);
     const quizCompleted = ref(false);
 
+    // const api = "http://localhost:3000/careers";
+    const api = import.meta.env.VITE_API_URL
+
     // =========================
     // SAVE ANSWER
     // =========================
@@ -213,7 +216,7 @@ export const useQuizStore = defineStore("quiz", () => {
         }
         
         try {
-            const response = await fetch('http://localhost:3000/careers');
+            const response = await fetch(`${api}/careers`);
             if (response.ok) {
                 const allCareers = await response.json();
                 const countryCareers = allCareers.filter(c => 
@@ -561,11 +564,11 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
     const saveCareersToJsonServer = async (newCareers) => {
         try {
             for (const career of newCareers) {
-                const checkResponse = await fetch(`http://localhost:3000/careers?slug=${career.slug}`);
+                const checkResponse = await fetch(`${api}/careers?slug=${career.slug}`);
                 if (checkResponse.ok) {
                     const existing = await checkResponse.json();
                     if (existing.length === 0) {
-                        await fetch('http://localhost:3000/careers', {
+                        await fetch(`${api}/careers`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ ...career, id: Date.now() + Math.random() })

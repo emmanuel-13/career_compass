@@ -209,6 +209,7 @@ const searchQuery = ref('');
 const selectedCategory = ref('all');
 const currentPage = ref(1);
 const itemsPerPage = 9;
+const api = import.meta.env.VITE_API_URL;
 
 // Categories with icons
 const categories = ref([
@@ -358,7 +359,7 @@ const fetchCareers = async () => {
         
         // Try to get from json-server
         try {
-            const response = await fetch('http://localhost:3000/careers');
+            const response = await fetch(`${api}/careers`);
             if (response.ok) {
                 const careers = await response.json();
                 if (careers.length > 0) {

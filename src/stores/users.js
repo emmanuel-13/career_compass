@@ -9,7 +9,8 @@ export const useUserStore = defineStore("user", () => {
   const loading = ref(false);
   const isReady = ref(false);
 
-  const api = "http://localhost:3000/users";
+  // const api = "http://localhost:3000/users";
+  const api = import.meta.env.VITE_API_URL
 
   // Fetch all users
   const fetchUsers = async () => {
