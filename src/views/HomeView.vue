@@ -1,18 +1,6 @@
 <template>
     <div>
-        <div v-if="loading" class="min-h-screen flex items-center justify-center bg-white">
-            <div class="flex flex-col items-center gap-4">
-
-                <div class="w-14 h-14 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"
-                ></div>
-
-                <p class="text-gray-600 font-medium">
-                    Loading your dashboard...
-                </p>
-
-            </div>
-        </div>
-        <section v-else class="pt-24 pb-20 px-6 lg:px-8 bg-gradient-to-b from-gray-90 to-white">
+        <section class="pt-24 pb-20 px-6 lg:px-8 bg-gradient-to-b from-gray-90 to-white">
             <div class="max-w-6xl mx-auto">
                 <div class="grid lg:grid-cols-2 gap-2 items-center">
                     <div class="max-w-l">
@@ -226,17 +214,9 @@ const animate = {
 }
 
 const user = useUserStore();
-const loading = ref(true);
 
 onMounted(async () => {
-    try {
-        loading.value = true;
-        await user.fetchCurrentUser();
-    } catch (error) {
-        console.log(error);
-    } finally {
-        loading.value = false;
-    }
+    await user.fetchCurrentUser();
 });
 
 </script>
