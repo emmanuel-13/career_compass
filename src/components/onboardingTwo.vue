@@ -61,7 +61,8 @@
 
                 <button type="submit" class="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 
                 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-primary/90 h-9 px-4 has-[>svg]:px-3 w-full bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-all duration-200">
-                    Start Exploring Career
+                    <v-if :loading="isLoading">Loading...</v-if>
+                    <v-else> Start Exploring Career</v-else>
                 </button>
             </form>
         </div>
@@ -89,6 +90,8 @@ const errors = ref({
   name: '',
   age: ''
 });
+
+const isLoading = ref(false);
 
 const props = defineProps({
     animation: {
@@ -126,9 +129,13 @@ const submitForm = () => {
     //     hasError = true;
     // }
 
+    isLoading.value = true;
     console.log(formData.value);
 
-    if (hasError) return;
+    if (hasError) {
+        isLoading.value = false;
+        return;
+    }
 
     // If no error → submit
     emits('formSubmitted', formData.value);
