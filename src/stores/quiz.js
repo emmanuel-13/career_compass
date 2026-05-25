@@ -16,7 +16,8 @@ export const useQuizStore = defineStore("quiz", () => {
     const quizCompleted = ref(false);
 
     // const api = "http://localhost:3000/careers";
-    const api = import.meta.env.VITE_API_URL
+    const baseUrl = import.meta.env.VITE_API_URL;
+    const api = `${baseUrl}/careers`;
 
     // =========================
     // SAVE ANSWER
