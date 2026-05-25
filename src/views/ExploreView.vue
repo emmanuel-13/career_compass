@@ -209,7 +209,10 @@ const searchQuery = ref('');
 const selectedCategory = ref('all');
 const currentPage = ref(1);
 const itemsPerPage = 9;
-const api = import.meta.env.VITE_API_URL;
+
+
+const baseUrl = import.meta.env.VITE_API_URL;
+const api = `${baseUrl}/careers`;
 
 // Categories with icons
 const categories = ref([
