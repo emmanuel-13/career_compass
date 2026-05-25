@@ -2,12 +2,72 @@
     
     <div class="pt-24 pb-20 px-6 lg:px-8">
 
-        <div v-if="quizStore.isLoading" class="text-center py-20">
+        <!-- <div v-if="quizStore.isLoading" class="text-center py-20">
             <div class="inline-block">
                 <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">🤖 OpenRouter AI is analyzing your answers...</h2>
             <p class="text-gray-600">Finding your perfect career match</p>
+        </div> -->
+
+        <!-- Intelligent Recommendation Loading -->
+        <div v-if="quizStore.isLoading" class="text-center py-20">
+
+            <div class="inline-block relative mb-6">
+
+                <div class="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+
+                <div class="absolute inset-0 flex items-center justify-center text-2xl">
+                    🧠
+                </div>
+
+            </div>
+
+            <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                Building Your Career Intelligence Profile
+            </h2>
+
+            <p class="text-gray-600 text-lg max-w-2xl mx-auto leading-relaxed mb-8">
+                Our intelligent recommendation engine is analyzing your personality,
+                interests, strengths, career preferences, regional opportunities,
+                salary trends, education pathways, and future career growth potential.
+            </p>
+
+            <!-- Live Analysis Steps -->
+            <div class="max-w-xl mx-auto space-y-3">
+
+                <div
+                    v-for="(step, index) in loadingSteps"
+                    :key="index"
+                    class="flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-5 py-4 shadow-sm"
+                >
+
+                    <div
+                        class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold"
+                        :class="
+                            currentLoadingStep >= index
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-gray-100 text-gray-400'
+                        "
+                    >
+                        {{ currentLoadingStep > index ? '✓' : index + 1 }}
+                    </div>
+
+                    <p
+                        class="text-sm font-medium"
+                        :class="
+                            currentLoadingStep >= index
+                                ? 'text-gray-800'
+                                : 'text-gray-400'
+                        "
+                    >
+                        {{ step }}
+                    </p>
+
+                </div>
+
+            </div>
+
         </div>
 
         <!-- Add error display after loading section -->
@@ -204,9 +264,70 @@
                                         <div class="flex items-center gap-3 mb-2 flex-wrap">
                                             <h3 class="text-3xl font-bold">{{ career.title }}</h3>
                                             <span v-if="career.match >= 90" class="px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700 font-semibold">Top Match</span>
-                                            <span v-if="career.aiGenerated" class="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-700 font-semibold">🤖 AI Recommended</span>
+                                            <!-- <span v-if="career.aiGenerated" class="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-700 font-semibold">🤖 AI Recommended</span> -->
+
+                                            <div class="flex flex-wrap gap-2">
+
+                                                <span
+                                                    v-if="career.aiGenerated"
+                                                    class="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-700 font-semibold"
+                                                >
+                                                    🧠 Intelligent Match
+                                                </span>
+
+                                                <span
+                                                    class="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-700 font-semibold"
+                                                >
+                                                    🎯 Personality Aligned
+                                                </span>
+
+                                                <span
+                                                    class="px-3 py-1 rounded-full text-sm bg-green-100 text-green-700 font-semibold"
+                                                >
+                                                    📈 Growth Potential
+                                                </span>
+
+                                                <span
+                                                    class="px-3 py-1 rounded-full text-sm bg-orange-100 text-orange-700 font-semibold"
+                                                >
+                                                    🌍 Region Optimized
+                                                </span>
+
+                                            </div>
                                         </div>
+
                                         <p class="text-gray-700 text-lg">{{ career.shortDescription || career.description?.substring(0, 150) + '...' }}</p>
+                                        <!-- Recommendation Reasons -->
+                                        <div
+                                            class="p-8 border-b border-gray-200"
+                                            v-if="career.reasons && career.reasons.length"
+                                        >
+
+                                            <h4 class="text-xl font-bold mb-4">
+                                                🧠 Why This Career Matches You
+                                            </h4>
+
+                                            <div class="grid md:grid-cols-2 gap-4">
+
+                                                <div
+                                                    v-for="reason in career.reasons"
+                                                    :key="reason"
+                                                    class="flex items-start gap-3 p-4 rounded-xl bg-green-50 border border-green-100"
+                                                >
+
+                                                    <div class="text-green-600 text-lg">
+                                                        ✅
+                                                    </div>
+
+                                                    <p class="text-gray-700 font-medium">
+                                                        {{ reason }}
+                                                    </p>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="text-right">
@@ -420,14 +541,90 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useQuizStore } from "@/stores/quiz";
 import { useUserStore } from "@/stores/users";
+import { computed, onMounted, ref, onUnmounted } from "vue";
 
 const router = useRouter();
 const quizStore = useQuizStore();
 const userStore = useUserStore();
+
+
+// ==============================
+// INTELLIGENT LOADING SYSTEM
+// ==============================
+
+const loadingSteps = ref([
+    "Analyzing personality traits...",
+    "Matching careers to your strengths...",
+    "Checking country-specific requirements...",
+    "Comparing salary opportunities...",
+    "Finding related career pathways...",
+    "Calculating future career growth...",
+    "Generating personalized recommendations..."
+]);
+
+const currentLoadingStep = ref(0);
+
+let loadingInterval = null;
+
+onMounted(async () => {
+
+    // animate loading steps
+    loadingInterval = setInterval(() => {
+
+        if (
+            currentLoadingStep.value <
+            loadingSteps.value.length - 1
+        ) {
+            currentLoadingStep.value++;
+        }
+
+    }, 1200);
+
+    await userStore.fetchCurrentUser();
+
+    const country = userStore.currentUser?.country;
+
+    if (!country) {
+        console.error("User country missing");
+        return;
+    }
+
+    const hasAnswers = quizStore.answers.length > 0;
+
+    if (hasAnswers) {
+
+        console.log("🎯 Quiz just taken - generating recommendations");
+
+        await quizStore.generateCareer(
+            country,
+            false
+        );
+
+    } else {
+
+        console.log("📦 Loading cached recommendations");
+
+        await quizStore.generateCareer(
+            country,
+            true
+        );
+
+    }
+
+    clearInterval(loadingInterval);
+
+});
+
+onUnmounted(() => {
+
+    if (loadingInterval) {
+        clearInterval(loadingInterval);
+    }
+
+});
 
 const careers = computed(() => quizStore.careers || []);
 const personalityScores = computed(() => quizStore.personalityScores || []);
@@ -450,9 +647,9 @@ const getExamSystem = (country) => {
         'ng': 'WAEC/NECO',
         'us': 'SAT/ACT',
         'uk': 'A-Levels',
-        'canada': 'High School Diploma',
-        'australia': 'ATAR',
-        'germany': 'Abitur'
+        // 'canada': 'High School Diploma',
+        // 'australia': 'ATAR',
+        // 'germany': 'Abitur'
     };
     return systems[country?.toLowerCase()] || 'High School Diploma';
 };
