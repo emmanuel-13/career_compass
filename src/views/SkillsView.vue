@@ -543,7 +543,7 @@ const getCountrySpecificSkill = (skillName, careerTitle) => {
     const title = careerTitle?.toLowerCase() || '';
     
     // Country-specific skill nuances
-    if (country === 'nigeria') {
+    if (country === 'ng') {
         if (skillName === 'medical knowledge' && title.includes('doctor')) {
             return 'Nigerian Medical Protocols & Tropical Diseases';
         }
