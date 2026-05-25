@@ -53,8 +53,6 @@
                         <option value="us">United States</option>
                         <option value="ng">Nigeria</option>
                         <option value="uk">United Kingdom</option>
-                        <option value="ca">Canada</option>
-                        <!-- Add more options as needed -->
                     </select>
                     <span class="text-gray-900">
                         We'll show career requirements and salaries specific to your country
