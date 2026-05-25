@@ -414,7 +414,8 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "http://localhost:5173",
+                    "HTTP-Referer": "https://career-compass-v906.onrender.com/",
+                    // "HTTP-Referer": "http://localhost:5173",
                     "X-Title": "Career AI Platform"
                 },
                 body: JSON.stringify({
@@ -427,7 +428,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                         { role: "user", content: prompt }
                     ],
                     temperature: 0.8,
-                    max_tokens: 2000
+                    max_tokens: 1500
                 })
             });
 
