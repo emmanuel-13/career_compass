@@ -414,7 +414,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "https://career-compass-v906.onrender.com/",
+                    "HTTP-Referer": "https://career-compass-v906.onrender.com",
                     // "HTTP-Referer": "http://localhost:5173",
                     "X-Title": "Career AI Platform"
                 },
