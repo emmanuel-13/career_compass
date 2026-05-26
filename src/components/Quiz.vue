@@ -1,6 +1,27 @@
 <template>
     <section>
 
+        <!-- Loading Overlay - Shows when submitting -->
+        <div v-if="quizStore.isLoading" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-8 text-center max-w-md mx-4">
+                <div class="inline-block relative mb-6">
+                    <div class="w-20 h-20 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-2xl">
+                        🧠
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-3">
+                    Analyzing Your Answers
+                </h2>
+                <p class="text-gray-600">
+                    Our AI is matching your personality with the best career paths...
+                </p>
+                <div class="mt-6 h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-indigo-600 rounded-full animate-pulse w-1/2"></div>
+                </div>
+            </div>
+        </div>
+
         <!-- Progress -->
         <div class="mb-8">
             <div class="flex items-center justify-between mb-3">
@@ -24,7 +45,7 @@
 
         <!-- Question Card -->
         <div
-            v-if="question"
+            v-if="question && !quizStore.isLoading"
             class="text-card-foreground flex flex-col gap-6 p-8 md:p-10 border border-gray-200 bg-white rounded-2xl mb-8 shadow-sm"
         >
 
@@ -91,7 +112,7 @@
         </div>
 
         <!-- Buttons -->
-        <div class="flex justify-between gap-4">
+        <div class="flex justify-between gap-4" v-if="!quizStore.isLoading">
 
             <!-- Previous -->
             <button
@@ -128,25 +149,20 @@
             <button
                 v-else
                 @click="submitQuiz"
-                :disabled="!selectedOption"
+                :disabled="!selectedOption || quizStore.isLoading"
                 :class="[
                     'inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all px-6 h-12 text-base rounded-xl',
 
-                    !selectedOption
+                    !selectedOption || quizStore.isLoading
                     ? 'bg-indigo-300 text-white cursor-not-allowed'
                     : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                 ]"
             >
-                Submit Now
+                <span v-if="quizStore.isLoading" class="inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                {{ quizStore.isLoading ? 'Analyzing...' : 'Submit Now' }}
             </button>
 
         </div>
-
-        <!-- <CareerModal
-            :show="showModal"
-            :careers="quizStore.careers"
-            @close="showModal = false"
-        /> -->
 
     </section>
 </template>
@@ -162,7 +178,6 @@ import { useQuizStore } from "@/stores/quiz";
 import { useUserStore } from "@/stores/users";
 import { useRouter } from "vue-router";
 
-// import CareerModal from "@/components/CareerModal.vue";
 const quizStore = useQuizStore();
 const userStore = useUserStore();
 
@@ -172,7 +187,6 @@ const currentQuestionIndex = ref(0);
 const selectedOption = ref(null);
 
 const error = ref("");
-// const showModal = ref(false);
 
 const props = defineProps({
     question: {
@@ -332,30 +346,9 @@ const previousQuestion = () => {
 // SUBMIT QUIZ
 // =========================
 
-// const submitQuiz = async () => {
-
-//     await userStore.fetchCurrentUser(); // 🔥 ensure ready
-
-//     const country = userStore.currentUser?.country;
-
-//     if (!country) {
-//         console.error("User country missing");
-//         return;
-//     }
-
-//     quizStore.generateCareer(country);
-
-//     router.push({ name: "results" });
-// };
-
-
-// =========================
-// SUBMIT QUIZ
-// =========================
-
 const submitQuiz = async () => {
 
-    await userStore.fetchCurrentUser(); // 🔥 ensure ready
+    await userStore.fetchCurrentUser();
 
     const country = userStore.currentUser?.country;
 
@@ -364,10 +357,10 @@ const submitQuiz = async () => {
         return;
     }
 
-    // 🔥 ADD THIS LINE - Mark that quiz was just completed
+    // Mark that quiz was just completed
     localStorage.setItem('quiz_just_completed', 'true');
     
-
+    // This will trigger the loading state in the store
     await quizStore.generateCareer(country);
 
     router.push({ name: "results" });
