@@ -217,7 +217,7 @@ export const useQuizStore = defineStore("quiz", () => {
         }
         
         try {
-            const response = await fetch(`${api}/careers`);
+            const response = await fetch(api);
             if (response.ok) {
                 const allCareers = await response.json();
                 const countryCareers = allCareers.filter(c => 
@@ -304,6 +304,7 @@ export const useQuizStore = defineStore("quiz", () => {
     const generateCareer = async (country, forceRefresh = false) => {
         isLoading.value = true;
         error.value = null;
+        careers.value = [];
     
         try {
     
@@ -602,7 +603,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
     const saveCareersToJsonServer = async (newCareers) => {
         try {
             for (const career of newCareers) {
-                const checkResponse = await fetch(`${api}/careers?slug=${career.slug}`);
+                const checkResponse = await fetch(`${api}?slug=${career.slug}`);
                 if (checkResponse.ok) {
                     const existing = await checkResponse.json();
                     if (existing.length === 0) {
