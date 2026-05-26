@@ -80,7 +80,7 @@
                 >
                     <div class="p-6 flex-1">
                         <div class="flex items-start justify-between mb-3">
-                            <div class="text-5xl">{{ getCareerIcon(career.title) }}</div>
+                            <div class="text-5xl">{{ career.icon || getCareerIcon(career.title) }}</div>
                             <span 
                                 :class="[
                                     'inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-medium',
@@ -92,23 +92,6 @@
                         </div>
                         <h3 class="text-xl font-semibold mb-2 group-hover:text-indigo-600 transition-colors">{{ career.title }}</h3>
                         <p class="text-sm text-gray-600 mb-4 line-clamp-3">{{ career.shortDescription || career.description?.substring(0, 120) + '...' }}</p>
-                        
-                        <!-- Salary Info -->
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm text-gray-500">💰 Salary:</span>
-                                <span class="font-semibold text-indigo-600">{{ formatSalary(career.salary) }}</span>
-                            </div>
-                            <span 
-                                :class="[
-                                    'inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-medium',
-                                    getSalaryLevel(career.salary) === 'High' ? 'bg-green-100 text-green-700' :
-                                    getSalaryLevel(career.salary) === 'Medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'
-                                ]"
-                            >
-                                {{ getSalaryLevel(career.salary) }}
-                            </span>
-                        </div>
                         
                         <!-- Skills -->
                         <div class="flex flex-wrap gap-1 mb-4">
@@ -198,9 +181,11 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/users';
+import { useQuizStore } from '@/stores/quiz';
 
 const router = useRouter();
 const userStore = useUserStore();
+const quizStore = useQuizStore();
 
 // State
 const allCareers = ref([]);
@@ -209,9 +194,6 @@ const searchQuery = ref('');
 const selectedCategory = ref('all');
 const currentPage = ref(1);
 const itemsPerPage = 9;
-
-
-const api = import.meta.env.VITE_API_URL;
 
 // Categories with icons
 const categories = ref([
@@ -333,7 +315,16 @@ const fetchCareers = async () => {
     try {
         const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
         
-        // Try to get from country-specific localStorage first
+        // FIRST: Try to get from quizStore careers (most recent AI-generated)
+        if (quizStore.careers && quizStore.careers.length > 0) {
+            allCareers.value = [...quizStore.careers];
+            updateCategoryCounts();
+            loading.value = false;
+            console.log(`✅ Loaded ${allCareers.value.length} careers from quizStore for ${userCountry}`);
+            return;
+        }
+        
+        // SECOND: Try to get from country-specific localStorage
         const cachedCareers = localStorage.getItem(`cached_careers_${userCountry}`);
         if (cachedCareers) {
             const parsed = JSON.parse(cachedCareers);
@@ -346,7 +337,7 @@ const fetchCareers = async () => {
             }
         }
         
-        // Try to get from generic localStorage cache
+        // THIRD: Try to get from generic localStorage cache
         const genericCache = localStorage.getItem('cached_careers');
         if (genericCache) {
             const parsed = JSON.parse(genericCache);
@@ -359,8 +350,9 @@ const fetchCareers = async () => {
             }
         }
         
-        // Try to get from json-server
+        // FOURTH: Try to get from json-server
         try {
+            const api = import.meta.env.VITE_API_URL || 'http://localhost:3000';
             const response = await fetch(`${api}/careers`);
             if (response.ok) {
                 const careers = await response.json();
@@ -489,6 +481,13 @@ watch(searchQuery, () => {
 watch(selectedCategory, () => {
     currentPage.value = 1;
 });
+
+// Watch quizStore careers for changes
+watch(() => quizStore.careers, async () => {
+    if (quizStore.careers && quizStore.careers.length > 0) {
+        await fetchCareers();
+    }
+}, { deep: true });
 
 // Load careers on mount
 onMounted(async () => {
