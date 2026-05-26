@@ -271,32 +271,68 @@ export const useQuizStore = defineStore("quiz", () => {
     // MAIN GENERATOR
     // =========================
 
+    // const generateCareer = async (country, forceRefresh = false) => {
+    //     isLoading.value = true;
+    //     error.value = null;
+
+    //     try {
+    //         const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
+            
+    //         if (!forceRefresh && !quizJustCompleted) {
+    //             console.log('📦 Loading cached careers for country:', country);
+    //             const loaded = await loadCareersFromJson(country);
+    //             if (loaded && careers.value.length > 0) {
+    //                 console.log('✅ Using cached careers');
+    //                 isLoading.value = false;
+    //                 return;
+    //             }
+    //         }
+            
+    //         console.log('🤖 Generating new careers with AI for country:', country);
+    //         await generateCareerWithAI(country);
+    //         localStorage.removeItem('quiz_just_completed');
+            
+    //     } catch (err) {
+    //         console.error(err);
+    //         error.value = "AI failed. Using fallback system.";
+    //         generateCareerFallback(country);
+    //     } finally {
+    //         isLoading.value = false;
+    //     }
+    // };
+
     const generateCareer = async (country, forceRefresh = false) => {
         isLoading.value = true;
         error.value = null;
-
+    
         try {
-            const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
-            
-            if (!forceRefresh && !quizJustCompleted) {
-                console.log('📦 Loading cached careers for country:', country);
-                const loaded = await loadCareersFromJson(country);
+    
+            // ALWAYS GENERATE NEW CAREERS
+            // when forceRefresh = true
+            if (!forceRefresh) {
+    
+                const loaded = loadCareersFromLocalStorage(country);
+    
                 if (loaded && careers.value.length > 0) {
-                    console.log('✅ Using cached careers');
-                    isLoading.value = false;
+                    console.log("📦 Using cached careers");
+                    calculatePersonalityScores();
                     return;
                 }
             }
-            
-            console.log('🤖 Generating new careers with AI for country:', country);
+    
+            console.log("🤖 Generating NEW AI careers...");
             await generateCareerWithAI(country);
-            localStorage.removeItem('quiz_just_completed');
-            
+    
         } catch (err) {
+    
             console.error(err);
-            error.value = "AI failed. Using fallback system.";
+    
+            error.value = "AI failed. Using fallback careers.";
+    
             generateCareerFallback(country);
+    
         } finally {
+    
             isLoading.value = false;
         }
     };
