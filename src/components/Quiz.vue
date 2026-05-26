@@ -366,8 +366,10 @@ const submitQuiz = async () => {
 
     // 🔥 ADD THIS LINE - Mark that quiz was just completed
     localStorage.setItem('quiz_just_completed', 'true');
+    
 
     quizStore.generateCareer(country);
+    quizStore.debugStorage();
 
     router.push({ name: "results" });
 };
