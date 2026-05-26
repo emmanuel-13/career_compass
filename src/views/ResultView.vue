@@ -2,14 +2,6 @@
     
     <div class="pt-24 pb-20 px-6 lg:px-8">
 
-        <!-- <div v-if="quizStore.isLoading" class="text-center py-20">
-            <div class="inline-block">
-                <div class="w-16 h-16 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">🤖 OpenRouter AI is analyzing your answers...</h2>
-            <p class="text-gray-600">Finding your perfect career match</p>
-        </div> -->
-
         <!-- Intelligent Recommendation Loading -->
         <div v-if="quizStore.isLoading" class="text-center py-20">
 
@@ -97,7 +89,7 @@
                     </h1>
 
                     <p class="text-lg text-gray-600">
-                        Based on your responses, here’s your personalized career analysis.
+                        Based on your responses, here's your personalized career analysis.
                     </p>
                 </div>
             </section>
@@ -147,100 +139,7 @@
 
             </section>
 
-            <!-- CAREERS
-            <section class="max-w-7xl mx-auto px-6 pb-10">
-
-                <h2 class="text-3xl font-bold mb-8">
-                    Recommended Careers
-                </h2>
-
-                <div class="space-y-6">
-
-                    <div
-                        v-for="career in careers"
-                        :key="career.id"
-                        class="bg-white rounded-3xl border border-gray-200 p-8 shadow-sm"
-                    >
-
-                        <div class="flex justify-between gap-6">
-
-                            <div class="flex gap-5">
-
-                                <div class="w-20 h-20 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-3xl flex-shrink-0">
-                                    Show icon if exists, otherwise show emoji based on career
-                                    <span v-if="career.icon">{{ career.icon }}</span>
-                                    <span v-else-if="career.title.includes('Engineer') || career.title.includes('Developer')">💻</span>
-                                    <span v-else-if="career.title.includes('Doctor') || career.title.includes('Medical')">👨‍⚕️</span>
-                                    <span v-else-if="career.title.includes('Analyst') || career.title.includes('Security')">🔒</span>
-                                    <span v-else-if="career.title.includes('Manager') || career.title.includes('Business')">📊</span>
-                                    <span v-else>🎯</span>
-                                </div>
-
-                                <div>
-
-                                    <div class="flex items-center gap-3 mb-3">
-
-                                        <h3 class="text-3xl font-bold">
-                                            {{ career.title }}
-                                        </h3>
-
-                                        <span
-                                            v-if="career.match >= 90"
-                                            class="px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700 font-semibold"
-                                        >
-                                            Top Match
-                                        </span>
-
-                                    </div>
-
-                                    <p class="text-gray-600 mb-5 max-w-3xl">
-                                        {{ career.description }}
-                                    </p>
-
-                                    <div class="flex flex-wrap gap-2 mb-6">
-
-                                        <span
-                                            v-for="skill in career.skills"
-                                            :key="skill"
-                                            class="px-3 py-1 rounded-lg border border-gray-200 text-sm"
-                                        >
-                                            {{ skill }}
-                                        </span>
-
-                                    </div>
-
-                                    <button
-                                        @click="exploreDetail(career.slug)"
-                                        class="px-6 h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold transition-all"
-                                    >
-                                        Learn More
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                            <div class="text-right">
-
-                                <p class="text-gray-500 mb-1">
-                                    Match Score
-                                </p>
-
-                                <h3 class="text-4xl font-bold text-indigo-600">
-                                    {{ career.match }}%
-                                </h3>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section> -->
-
-            <!-- CAREERS - Updated with all sections -->
+            <!-- CAREERS - Updated with all sections including Courses -->
             <section class="max-w-7xl mx-auto px-6 pb-10">
                 <h2 class="text-3xl font-bold mb-8">Recommended Careers</h2>
                 <div class="space-y-8">
@@ -264,7 +163,6 @@
                                         <div class="flex items-center gap-3 mb-2 flex-wrap">
                                             <h3 class="text-3xl font-bold">{{ career.title }}</h3>
                                             <span v-if="career.match >= 90" class="px-3 py-1 rounded-full text-sm bg-yellow-100 text-yellow-700 font-semibold">Top Match</span>
-                                            <!-- <span v-if="career.aiGenerated" class="px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-700 font-semibold">🤖 AI Recommended</span> -->
 
                                             <div class="flex flex-wrap gap-2">
 
@@ -297,29 +195,30 @@
                                         </div>
 
                                         <p class="text-gray-700 text-lg">{{ career.shortDescription || career.description?.substring(0, 150) + '...' }}</p>
+                                        
                                         <!-- Recommendation Reasons -->
                                         <div
-                                            class="p-8 border-b border-gray-200"
+                                            class="mt-4"
                                             v-if="career.reasons && career.reasons.length"
                                         >
 
-                                            <h4 class="text-xl font-bold mb-4">
+                                            <h4 class="text-lg font-bold mb-2">
                                                 🧠 Why This Career Matches You
                                             </h4>
 
-                                            <div class="grid md:grid-cols-2 gap-4">
+                                            <div class="grid md:grid-cols-2 gap-3">
 
                                                 <div
                                                     v-for="reason in career.reasons"
                                                     :key="reason"
-                                                    class="flex items-start gap-3 p-4 rounded-xl bg-green-50 border border-green-100"
+                                                    class="flex items-start gap-2 p-3 rounded-xl bg-green-50 border border-green-100"
                                                 >
 
-                                                    <div class="text-green-600 text-lg">
+                                                    <div class="text-green-600 text-base">
                                                         ✅
                                                     </div>
 
-                                                    <p class="text-gray-700 font-medium">
+                                                    <p class="text-sm text-gray-700 font-medium">
                                                         {{ reason }}
                                                     </p>
 
@@ -438,7 +337,7 @@
                         </div>
 
                         <!-- Career Pathway -->
-                        <div class="p-8" v-if="career.pathway && career.pathway.length">
+                        <div class="p-8 border-b border-gray-200" v-if="career.pathway && career.pathway.length">
                             <h4 class="text-xl font-bold mb-6">🗺️ Career Pathway Roadmap</h4>
                             <div class="space-y-4">
                                 <div v-for="step in career.pathway" :key="step.step" class="flex gap-4 p-4 bg-gray-50 rounded-xl">
@@ -449,6 +348,26 @@
                                         <h5 class="font-bold text-lg">{{ step.title }}</h5>
                                         <p class="text-sm text-indigo-600 mb-2">{{ step.duration || step.age }}</p>
                                         <p class="text-gray-600">{{ step.description }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recommended Courses -->
+                        <div class="p-8 border-b border-gray-200">
+                            <h4 class="text-xl font-bold mb-4">📚 Recommended Courses to Get Started</h4>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div v-for="course in getRecommendedCourses(career.title)" :key="course.name" class="p-4 border border-gray-200 rounded-xl hover:shadow-md transition hover:border-indigo-300">
+                                    <div class="flex items-start gap-3">
+                                        <div class="text-2xl flex-shrink-0">📖</div>
+                                        <div>
+                                            <h5 class="font-bold text-indigo-600">{{ course.name }}</h5>
+                                            <p class="text-sm text-gray-500 mb-1">{{ course.platform }}</p>
+                                            <p class="text-sm text-gray-600">{{ course.description }}</p>
+                                            <a :href="course.url" target="_blank" class="text-xs text-indigo-500 hover:underline mt-1 inline-flex items-center gap-1">
+                                                View Course <span>→</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -550,7 +469,6 @@ const router = useRouter();
 const quizStore = useQuizStore();
 const userStore = useUserStore();
 
-
 // ==============================
 // INTELLIGENT LOADING SYSTEM
 // ==============================
@@ -568,6 +486,177 @@ const loadingSteps = ref([
 const currentLoadingStep = ref(0);
 
 let loadingInterval = null;
+
+// ==============================
+// RECOMMENDED COURSES FUNCTION
+// ==============================
+
+const getRecommendedCourses = (careerTitle) => {
+    const title = careerTitle?.toLowerCase() || '';
+    
+    const courseMap = {
+        // Technology & Software Careers
+        'software': [
+            { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals and problem-solving', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
+            { name: 'The Complete Web Developer Bootcamp', platform: 'Udemy', description: 'Become a full-stack web developer', url: 'https://www.udemy.com/course/the-complete-web-developer-bootcamp/' },
+            { name: 'Python for Everybody', platform: 'Coursera', description: 'Learn Python programming from scratch', url: 'https://www.coursera.org/specializations/python' }
+        ],
+        'developer': [
+            { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
+            { name: 'JavaScript Algorithms and Data Structures', platform: 'freeCodeCamp', description: 'Master JavaScript and algorithms', url: 'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/' },
+            { name: 'React - The Complete Guide', platform: 'Udemy', description: 'Build modern web applications with React', url: 'https://www.udemy.com/course/react-the-complete-guide-incl-redux/' }
+        ],
+        'data': [
+            { name: 'Google Data Analytics Professional Certificate', platform: 'Coursera', description: 'Learn data analysis with Google', url: 'https://www.coursera.org/professional-certificates/google-data-analytics' },
+            { name: 'SQL for Data Science', platform: 'UC Davis Coursera', description: 'Master SQL for data analysis', url: 'https://www.coursera.org/learn/sql-for-data-science' },
+            { name: 'Data Visualization with Tableau', platform: 'Coursera', description: 'Create powerful visualizations', url: 'https://www.coursera.org/specializations/data-visualization' }
+        ],
+        'analyst': [
+            { name: 'Excel Skills for Business', platform: 'Macquarie Coursera', description: 'Master Excel for business analysis', url: 'https://www.coursera.org/specializations/excel-skills-business' },
+            { name: 'Business Analytics Specialization', platform: 'Wharton Coursera', description: 'Learn business analytics fundamentals', url: 'https://www.coursera.org/specializations/wharton-business-analytics' },
+            { name: 'Power BI for Beginners', platform: 'Microsoft Learn', description: 'Create interactive dashboards', url: 'https://learn.microsoft.com/en-us/power-bi/' }
+        ],
+        'cyber': [
+            { name: 'Google Cybersecurity Professional Certificate', platform: 'Coursera', description: 'Start your cybersecurity career', url: 'https://www.coursera.org/professional-certificates/google-cybersecurity' },
+            { name: 'Introduction to Cyber Security', platform: 'NYU edX', description: 'Learn security fundamentals', url: 'https://www.edx.org/course/introduction-to-cyber-security' },
+            { name: 'CompTIA Security+', platform: 'CompTIA', description: 'Industry-standard security certification', url: 'https://www.comptia.org/certifications/security' }
+        ],
+        'security': [
+            { name: 'Google Cybersecurity Professional Certificate', platform: 'Coursera', description: 'Start your cybersecurity career', url: 'https://www.coursera.org/professional-certificates/google-cybersecurity' },
+            { name: 'Network Security Fundamentals', platform: 'Cisco', description: 'Learn network protection', url: 'https://www.netacad.com/courses/cybersecurity/introduction-to-cybersecurity' }
+        ],
+        
+        // Medical & Healthcare Careers
+        'doctor': [
+            { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body systems', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
+            { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language and terminology', url: 'https://www.edx.org/course/medical-terminology' },
+            { name: 'Clinical Skills for Healthcare', platform: 'FutureLearn', description: 'Develop essential clinical skills', url: 'https://www.futurelearn.com/courses/clinical-skills' }
+        ],
+        'medical': [
+            { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body systems', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
+            { name: 'Medical Neuroscience', platform: 'Duke Coursera', description: 'Explore the nervous system', url: 'https://www.coursera.org/learn/medical-neuroscience' },
+            { name: 'Introduction to Clinical Medicine', platform: 'Stanford Online', description: 'Learn clinical fundamentals', url: 'https://online.stanford.edu/courses' }
+        ],
+        'nurse': [
+            { name: 'Nursing Fundamentals', platform: 'Coursera', description: 'Essential nursing skills and practices', url: 'https://www.coursera.org/learn/nursing-fundamentals' },
+            { name: 'Patient Care Skills', platform: 'edX', description: 'Develop patient care competencies', url: 'https://www.edx.org/course/patient-care' },
+            { name: 'Critical Care Nursing', platform: 'OpenWHO', description: 'Learn intensive care basics', url: 'https://openwho.org/courses' }
+        ],
+        'dentist': [
+            { name: 'Introduction to Dentistry', platform: 'Coursera', description: 'Explore dental medicine', url: 'https://www.coursera.org/learn/introduction-to-dentistry' },
+            { name: 'Oral Health and Medicine', platform: 'University of Michigan', description: 'Understand oral health basics', url: 'https://www.coursera.org/learn/oral-health' }
+        ],
+        'pharmacist': [
+            { name: 'Pharmacology Basics', platform: 'Coursera', description: 'Learn drug mechanisms and effects', url: 'https://www.coursera.org/learn/pharmacology' },
+            { name: 'Pharmacy Practice', platform: 'FutureLearn', description: 'Develop pharmacy skills', url: 'https://www.futurelearn.com/courses/pharmacy-practice' }
+        ],
+        'biomedical': [
+            { name: 'Biomedical Engineering', platform: 'Coursera', description: 'Learn medical device design', url: 'https://www.coursera.org/specializations/biomedical-engineering' },
+            { name: 'Introduction to Medical Imaging', platform: 'Coursera', description: 'Understand imaging technologies', url: 'https://www.coursera.org/learn/medical-imaging' }
+        ],
+        
+        // Business & Finance Careers
+        'business': [
+            { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
+            { name: 'Project Management Professional (PMP)', platform: 'Google Coursera', description: 'Master project management skills', url: 'https://www.coursera.org/professional-certificates/google-project-management' },
+            { name: 'Financial Accounting Fundamentals', platform: 'UVA Darden', description: 'Understand financial statements', url: 'https://www.coursera.org/learn/financial-accounting' }
+        ],
+        'manager': [
+            { name: 'Leadership and Management', platform: 'Coursera', description: 'Develop leadership skills', url: 'https://www.coursera.org/specializations/leadership-management' },
+            { name: 'Strategic Management', platform: 'Copenhagen Business School', description: 'Learn strategic planning', url: 'https://www.coursera.org/specializations/strategic-management' },
+            { name: 'Team Leadership', platform: 'Google', description: 'Lead effective teams', url: 'https://www.coursera.org/learn/leadership-skills' }
+        ],
+        'accountant': [
+            { name: 'Financial Accounting', platform: 'Wharton Coursera', description: 'Master financial accounting', url: 'https://www.coursera.org/learn/wharton-accounting' },
+            { name: 'Intuit Bookkeeping Professional Certificate', platform: 'Coursera', description: 'Learn bookkeeping skills', url: 'https://www.coursera.org/professional-certificates/intuit-bookkeeping' }
+        ],
+        'finance': [
+            { name: 'Financial Markets', platform: 'Yale Coursera', description: 'Understand financial markets', url: 'https://www.coursera.org/learn/financial-markets-global' },
+            { name: 'Investment Management', platform: 'Coursera', description: 'Learn investment strategies', url: 'https://www.coursera.org/specializations/investment-management' }
+        ],
+        'marketing': [
+            { name: 'Digital Marketing Specialization', platform: 'UIUC Coursera', description: 'Master digital marketing strategies', url: 'https://www.coursera.org/specializations/digital-marketing' },
+            { name: 'Google Digital Garage', platform: 'Google', description: 'Free digital marketing certification', url: 'https://learndigital.withgoogle.com/digitalgarage' },
+            { name: 'Social Media Marketing', platform: 'Facebook Blueprint', description: 'Learn social media advertising', url: 'https://www.facebook.com/business/learn' }
+        ],
+        
+        // Creative & Design Careers
+        'designer': [
+            { name: 'Graphic Design Specialization', platform: 'CalArts Coursera', description: 'Learn graphic design principles', url: 'https://www.coursera.org/specializations/graphic-design' },
+            { name: 'UI/UX Design', platform: 'Google Coursera', description: 'Master user interface and experience design', url: 'https://www.coursera.org/professional-certificates/google-ux-design' },
+            { name: 'Adobe Photoshop Masterclass', platform: 'Udemy', description: 'Master Photoshop skills', url: 'https://www.udemy.com/course/adobe-photoshop-cc-masterclass/' }
+        ],
+        'writer': [
+            { name: 'Creative Writing Specialization', platform: 'Wesleyan Coursera', description: 'Develop creative writing skills', url: 'https://www.coursera.org/specializations/creative-writing' },
+            { name: 'Good with Words: Writing and Editing', platform: 'University of Michigan', description: 'Improve writing and editing', url: 'https://www.coursera.org/specializations/good-with-words' },
+            { name: 'Technical Writing', platform: 'Coursera', description: 'Learn technical documentation', url: 'https://www.coursera.org/specializations/technical-writing' }
+        ],
+        'journalist': [
+            { name: 'Journalism Skills for the Digital Age', platform: 'Coursera', description: 'Modern journalism techniques', url: 'https://www.coursera.org/learn/journalism-skills' },
+            { name: 'Data Journalism', platform: 'Coursera', description: 'Tell stories with data', url: 'https://www.coursera.org/learn/data-journalism' }
+        ],
+        
+        // Education Careers
+        'teacher': [
+            { name: 'Foundations of Teaching for Learning', platform: 'Commonwealth Education Trust', description: 'Develop teaching fundamentals', url: 'https://www.coursera.org/specializations/foundations-teaching' },
+            { name: 'Virtual Teacher Specialization', platform: 'UC Irvine', description: 'Learn online teaching strategies', url: 'https://www.coursera.org/specializations/virtual-teacher' },
+            { name: 'Classroom Management', platform: 'Coursera', description: 'Manage classrooms effectively', url: 'https://www.coursera.org/learn/classroom-management' }
+        ],
+        'educator': [
+            { name: 'Foundations of Teaching for Learning', platform: 'Commonwealth Education Trust', description: 'Develop teaching fundamentals', url: 'https://www.coursera.org/specializations/foundations-teaching' },
+            { name: 'Learning How to Learn', platform: 'UC San Diego', description: 'Master effective learning techniques', url: 'https://www.coursera.org/learn/learning-how-to-learn' }
+        ],
+        
+        // Law & Social Sciences Careers
+        'lawyer': [
+            { name: 'Introduction to American Law', platform: 'Penn Law Coursera', description: 'Understand legal systems', url: 'https://www.coursera.org/learn/american-law' },
+            { name: 'Legal Writing and Research', platform: 'Coursera', description: 'Develop legal writing skills', url: 'https://www.coursera.org/learn/legal-writing-research' },
+            { name: 'Constitutional Law', platform: 'Coursera', description: 'Study constitutional principles', url: 'https://www.coursera.org/learn/constitutional-law' }
+        ],
+        'social': [
+            { name: 'Social Work Practice', platform: 'Coursera', description: 'Learn social work fundamentals', url: 'https://www.coursera.org/learn/social-work' },
+            { name: 'Counseling and Psychotherapy', platform: 'Coursera', description: 'Develop counseling skills', url: 'https://www.coursera.org/learn/counseling-psychotherapy' },
+            { name: 'Introduction to Psychology', platform: 'Yale Coursera', description: 'Understand human behavior', url: 'https://www.coursera.org/learn/introduction-psychology' }
+        ],
+        'psychologist': [
+            { name: 'Introduction to Psychology', platform: 'Yale Coursera', description: 'Understand human behavior', url: 'https://www.coursera.org/learn/introduction-psychology' },
+            { name: 'Clinical Psychology', platform: 'Coursera', description: 'Learn clinical assessment', url: 'https://www.coursera.org/learn/clinical-psychology' },
+            { name: 'Positive Psychology', platform: 'University of North Carolina', description: 'Study well-being science', url: 'https://www.coursera.org/learn/positive-psychology' }
+        ],
+        'counselor': [
+            { name: 'Counseling and Psychotherapy', platform: 'Coursera', description: 'Develop counseling skills', url: 'https://www.coursera.org/learn/counseling-psychotherapy' },
+            { name: 'Addiction Counseling', platform: 'Coursera', description: 'Learn addiction treatment', url: 'https://www.coursera.org/learn/addiction-counseling' }
+        ],
+        
+        // Engineering Careers
+        'engineer': [
+            { name: 'Introduction to Engineering', platform: 'Coursera', description: 'Explore engineering disciplines', url: 'https://www.coursera.org/learn/introduction-to-engineering' },
+            { name: 'Mechanical Engineering', platform: 'Coursera', description: 'Learn mechanical principles', url: 'https://www.coursera.org/specializations/mechanical-engineering' },
+            { name: 'CAD and Digital Manufacturing', platform: 'Autodesk Coursera', description: 'Master computer-aided design', url: 'https://www.coursera.org/specializations/cad-digital-manufacturing' }
+        ],
+        'civil': [
+            { name: 'Construction Management', platform: 'Columbia Coursera', description: 'Learn construction management', url: 'https://www.coursera.org/specializations/construction-management' },
+            { name: 'Structural Engineering', platform: 'Coursera', description: 'Understand structural design', url: 'https://www.coursera.org/learn/structural-engineering' }
+        ],
+        
+        // Default Courses
+        'default': [
+            { name: 'Career Success Specialization', platform: 'UC Irvine Coursera', description: 'Develop essential career skills', url: 'https://www.coursera.org/specializations/career-success' },
+            { name: 'Learning How to Learn', platform: 'UC San Diego Coursera', description: 'Master effective learning techniques', url: 'https://www.coursera.org/learn/learning-how-to-learn' },
+            { name: 'Communication Skills for Career Success', platform: 'Coursera', description: 'Improve professional communication', url: 'https://www.coursera.org/specializations/communication-skills' }
+        ]
+    };
+    
+    // Find matching courses
+    for (const [key, courses] of Object.entries(courseMap)) {
+        if (title.includes(key)) {
+            return courses;
+        }
+    }
+    
+    // Return default courses if no match found
+    return courseMap.default;
+};
 
 onMounted(async () => {
 
@@ -647,9 +736,6 @@ const getExamSystem = (country) => {
         'ng': 'WAEC/NECO',
         'us': 'SAT/ACT',
         'uk': 'A-Levels',
-        // 'canada': 'High School Diploma',
-        // 'australia': 'ATAR',
-        // 'germany': 'Abitur'
     };
     return systems[country?.toLowerCase()] || 'High School Diploma';
 };
@@ -668,7 +754,6 @@ const formatSalary = (salary) => {
     return salary;
 };
 
-// ADD THIS FUNCTION
 const saveCareer = (career) => {
     const saved = localStorage.getItem('saved_careers');
     const savedCareers = saved ? JSON.parse(saved) : [];
