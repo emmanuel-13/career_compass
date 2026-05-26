@@ -301,6 +301,10 @@ const nextQuestion = () => {
     ) {
 
         currentQuestionIndex.value++;
+        window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
     }
 };
 
@@ -310,12 +314,16 @@ const nextQuestion = () => {
 // =========================
 
 const previousQuestion = () => {
-
     if (
         currentQuestionIndex.value > 0
     ) {
-
+    
         currentQuestionIndex.value--;
+    
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
 };
 
