@@ -429,7 +429,7 @@ export const useQuizStore = defineStore("quiz", () => {
     const saveCareersToJsonServer = async (newCareers) => {
         try {
             // Check if json-server is available
-            const testResponse = await fetch(apiUrl, { method: 'HEAD' }).catch(() => null);
+            const testResponse = await fetch(apiUrl).catch(() => null);
             if (!testResponse) {
                 console.log('⚠️ JSON-server not reachable, skipping save');
                 return;
