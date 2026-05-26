@@ -12,7 +12,7 @@ const animate = {
 };
 
 const userStore = useUserStore();
-const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const api = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 onMounted(async () => {
     await userStore.fetchCurrentUser();
