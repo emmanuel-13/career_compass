@@ -211,8 +211,7 @@ const currentPage = ref(1);
 const itemsPerPage = 9;
 
 
-const baseUrl = import.meta.env.VITE_API_URL;
-const api = `${baseUrl}/careers`;
+const api = import.meta.env.VITE_API_URL;
 
 // Categories with icons
 const categories = ref([
