@@ -368,7 +368,7 @@ const submitQuiz = async () => {
     localStorage.setItem('quiz_just_completed', 'true');
     
 
-    quizStore.generateCareer(country);
+    await quizStore.generateCareer(country);
 
     router.push({ name: "results" });
 };
