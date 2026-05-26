@@ -12,6 +12,7 @@ const animate = {
 };
 
 const userStore = useUserStore();
+const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 onMounted(async () => {
     await userStore.fetchCurrentUser();
@@ -139,7 +140,7 @@ const selectCountry = async (countryCode) => {
         
         // update json-server
         await fetch(
-            `http://localhost:3000/users/${userStore.currentUser.id}`,
+            `${api}/${userStore.currentUser.id}`,
             {
                 method: "PATCH",
                 headers: {
