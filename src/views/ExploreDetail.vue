@@ -495,5 +495,3 @@ onMounted(async () => {
         </div>
     </section>
 </template>
-
-explore details
