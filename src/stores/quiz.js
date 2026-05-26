@@ -14,6 +14,10 @@ export const useQuizStore = defineStore("quiz", () => {
     const error = ref(null);
     const quizCompleted = ref(false);
 
+    // API URL for json-server
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const apiUrl = `${baseUrl}/careers`;
+
     // =========================
     // SAVE ANSWER
     // =========================
@@ -58,25 +62,21 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // SAVE CAREERS TO LOCAL STORAGE (THIS WORKS!)
+    // SAVE CAREERS TO LOCAL STORAGE
     // =========================
 
     const saveCareersToLocalStorage = () => {
         if (careers.value.length === 0) return;
         
-        // Save with country-specific key
         if (careers.value[0]?.country) {
             const countryKey = careers.value[0].country.toLowerCase();
             localStorage.setItem(`cached_careers_${countryKey}`, JSON.stringify(careers.value));
-            console.log(`💾 Saved ${careers.value.length} careers for ${countryKey}`);
+            console.log(`💾 Saved ${careers.value.length} careers for ${countryKey} to localStorage`);
         }
-        
-        // Save generic backup
         localStorage.setItem('cached_careers', JSON.stringify(careers.value));
     };
 
     const loadCareersFromLocalStorage = (country) => {
-        // Try country-specific first
         if (country) {
             const countryKey = country.toLowerCase();
             const saved = localStorage.getItem(`cached_careers_${countryKey}`);
@@ -84,24 +84,77 @@ export const useQuizStore = defineStore("quiz", () => {
                 const savedCareers = JSON.parse(saved);
                 if (savedCareers && savedCareers.length > 0) {
                     careers.value = savedCareers;
-                    console.log(`✅ Loaded ${savedCareers.length} careers from ${countryKey}`);
+                    console.log(`✅ Loaded ${savedCareers.length} careers for ${countryKey} from localStorage`);
                     return true;
                 }
             }
         }
         
-        // Try generic cache
         const saved = localStorage.getItem('cached_careers');
         if (saved) {
             const savedCareers = JSON.parse(saved);
             if (savedCareers && savedCareers.length > 0) {
                 careers.value = savedCareers;
-                console.log(`✅ Loaded ${savedCareers.length} careers from generic cache`);
+                console.log(`✅ Loaded ${savedCareers.length} careers from generic localStorage`);
                 return true;
             }
         }
-        
         return false;
+    };
+
+    // =========================
+    // SAVE CAREERS TO JSON-SERVER (FIXED - for Explore page)
+    // =========================
+
+    const saveCareersToJsonServer = async (newCareers) => {
+        if (!newCareers || newCareers.length === 0) return;
+        
+        try {
+            // Save each career to json-server
+            for (const career of newCareers) {
+                // Create a clean copy without circular references
+                const careerToSave = {
+                    id: career.id || Date.now() + Math.random(),
+                    slug: career.slug,
+                    title: career.title,
+                    icon: career.icon,
+                    shortDescription: career.shortDescription || "",
+                    description: career.description,
+                    skills: career.skills || [],
+                    personalityType: career.personalityType,
+                    country: career.country,
+                    match: career.match || 85,
+                    aiGenerated: career.aiGenerated || true,
+                    requirements: career.requirements || null,
+                    universities: career.universities || [],
+                    salary: career.salary || null,
+                    relatedCareers: career.relatedCareers || [],
+                    pathway: career.pathway || []
+                };
+                
+                // Check if career already exists
+                const checkResponse = await fetch(`${apiUrl}?slug=${career.slug}`);
+                if (checkResponse.ok) {
+                    const existing = await checkResponse.json();
+                    if (existing.length === 0) {
+                        const saveResponse = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(careerToSave)
+                        });
+                        if (saveResponse.ok) {
+                            console.log(`✅ Saved to json-server: ${career.title}`);
+                        } else {
+                            console.log(`⚠️ Failed to save ${career.title} to json-server: ${saveResponse.status}`);
+                        }
+                    } else {
+                        console.log(`📌 Career already exists in json-server: ${career.title}`);
+                    }
+                }
+            }
+        } catch (error) {
+            console.log('⚠️ json-server not available:', error.message);
+        }
     };
 
     // =========================
@@ -180,14 +233,13 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // FALLBACK CAREERS (Hardcoded - works every time)
+    // FALLBACK CAREERS
     // =========================
 
     const getFallbackCareers = (country, personality) => {
         const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
         const personalityLower = personality?.toLowerCase() || '';
         
-        // Determine personality key
         let personalityKey = 'technical innovator';
         if (personalityLower.includes('creative')) personalityKey = 'creative communicator';
         else if (personalityLower.includes('healthcare') || personalityLower.includes('helper')) personalityKey = 'healthcare helper';
@@ -259,7 +311,7 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // MAIN GENERATOR - THIS IS THE CORE FUNCTION
+    // MAIN GENERATOR
     // =========================
 
     const generateCareer = async (country, forceRefresh = false) => {
@@ -269,32 +321,17 @@ export const useQuizStore = defineStore("quiz", () => {
         try {
             const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
             
-            // If force refresh OR quiz just completed, generate new careers
             if (forceRefresh || quizJustCompleted) {
                 console.log("🤖 Generating NEW careers for", country);
-                
-                // Try AI first
-                const aiSuccess = await generateCareerWithAI(country);
-                
-                // If AI failed, use fallback
-                if (!aiSuccess) {
-                    console.log("⚠️ AI failed, using fallback careers");
-                    generateCareerFallback(country);
-                }
-                
+                await generateCareerWithAI(country);
                 localStorage.removeItem('quiz_just_completed');
-            } 
-            // Otherwise try to load from cache
-            else {
+            } else {
                 console.log("📦 Loading cached careers for", country);
                 const loaded = loadCareersFromLocalStorage(country);
                 
                 if (!loaded || careers.value.length === 0) {
                     console.log("⚠️ No cache found, generating new careers");
-                    const aiSuccess = await generateCareerWithAI(country);
-                    if (!aiSuccess) {
-                        generateCareerFallback(country);
-                    }
+                    await generateCareerWithAI(country);
                 } else {
                     calculatePersonalityScores();
                 }
@@ -309,15 +346,16 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // AI CAREER GENERATION - Returns true if successful
+    // AI CAREER GENERATION
     // =========================
 
     const generateCareerWithAI = async (country) => {
         const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
         
         if (!API_KEY) {
-            console.warn("No API key found");
-            return false;
+            console.warn("No API key found, using fallback");
+            generateCareerFallback(country);
+            return;
         }
 
         const countryLower = country?.toLowerCase() || 'us';
@@ -368,8 +406,9 @@ export const useQuizStore = defineStore("quiz", () => {
             });
 
             if (!response.ok) {
-                console.warn(`API Error: ${response.status}`);
-                return false;
+                console.warn(`API Error: ${response.status}, using fallback`);
+                generateCareerFallback(country);
+                return;
             }
 
             const data = await response.json();
@@ -398,32 +437,30 @@ export const useQuizStore = defineStore("quiz", () => {
 
             careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
             
-            // Save to localStorage (ALWAYS works)
+            // Save to BOTH localStorage AND json-server
             saveCareersToLocalStorage();
-            calculatePersonalityScores();
+            await saveCareersToJsonServer(recommendedCareers);
             
-            console.log("✅ AI careers generated successfully:", careers.value.length);
-            return true;
+            calculatePersonalityScores();
+            console.log("✅ AI careers generated and saved");
             
         } catch (error) {
             console.error("AI error:", error);
-            return false;
+            generateCareerFallback(country);
         }
     };
 
     // =========================
-    // FALLBACK SYSTEM - Always works
+    // FALLBACK SYSTEM
     // =========================
 
     const generateCareerFallback = (country) => {
-        // Try to load from localStorage first
         if (loadCareersFromLocalStorage(country)) {
             calculatePersonalityScores();
             console.log('✅ Using cached fallback careers');
             return;
         }
         
-        // Calculate dominant personality
         const personalityCounts = {};
         answers.value.forEach(answer => {
             const type = answer.option?.personalityType;
@@ -441,35 +478,11 @@ export const useQuizStore = defineStore("quiz", () => {
             }
         }
         
-        // Use hardcoded fallback careers
         careers.value = getFallbackCareers(country, dominantPersonality);
         saveCareersToLocalStorage();
+        saveCareersToJsonServer(careers.value); // Also save fallbacks to json-server
         calculatePersonalityScores();
         console.log('✅ Using hardcoded fallback careers');
-    };
-
-    // =========================
-    // RESET QUIZ
-    // =========================
-
-    const resetQuiz = () => {
-        answers.value = [];
-        careers.value = [];
-        personalityScores.value = [];
-        error.value = null;
-        quizCompleted.value = false;
-        clearLocalStorage();
-        
-        localStorage.setItem('quiz_just_completed', 'true');
-        
-        // Clear all career caches
-        const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-            if (key.startsWith('cached_careers_')) {
-                localStorage.removeItem(key);
-            }
-        });
-        localStorage.removeItem('cached_careers');
     };
 
     // =========================
@@ -488,6 +501,29 @@ export const useQuizStore = defineStore("quiz", () => {
             });
         });
         return score > 100 ? 100 : score;
+    };
+
+    // =========================
+    // RESET QUIZ
+    // =========================
+
+    const resetQuiz = () => {
+        answers.value = [];
+        careers.value = [];
+        personalityScores.value = [];
+        error.value = null;
+        quizCompleted.value = false;
+        clearLocalStorage();
+        
+        localStorage.setItem('quiz_just_completed', 'true');
+        
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith('cached_careers_')) {
+                localStorage.removeItem(key);
+            }
+        });
+        localStorage.removeItem('cached_careers');
     };
 
     // =========================
