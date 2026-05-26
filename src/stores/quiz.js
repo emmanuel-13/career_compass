@@ -513,13 +513,6 @@ export const useQuizStore = defineStore("quiz", () => {
         console.log('✅ Using hardcoded fallback careers for', dominantPersonality);
     };
 
-// Add this to your store (temporarily for debugging)
-const debugStorage = () => {
-    console.log("=== DEBUG STORAGE ===");
-    console.log("cached_careers_us:", localStorage.getItem('cached_careers_us'));
-    console.log("cached_careers:", localStorage.getItem('cached_careers'));
-    console.log("Current careers in store:", careers.value.length);
-};
 
     // =========================
     // RESET QUIZ
