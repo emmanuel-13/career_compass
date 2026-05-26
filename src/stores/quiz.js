@@ -14,8 +14,9 @@ export const useQuizStore = defineStore("quiz", () => {
     const error = ref(null);
     const quizCompleted = ref(false);
 
-    const baseUrl = import.meta.env.VITE_API_URL;
-    const api = `${baseUrl}/careers`;
+    // Get API URL from environment or use default
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const apiUrl = `${baseUrl}/careers`;
 
     // =========================
     // SAVE ANSWER
@@ -61,16 +62,21 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // SAVE CAREERS TO LOCAL STORAGE (Backup)
+    // SAVE CAREERS TO LOCAL STORAGE
     // =========================
 
     const saveCareersToLocalStorage = () => {
-        if (careers.value.length > 0 && careers.value[0]?.country) {
-            const countryKey = careers.value[0].country.toLowerCase();
-            localStorage.setItem(`cached_careers_${countryKey}`, JSON.stringify(careers.value));
-            console.log(`💾 Saved ${careers.value.length} careers for ${countryKey} to localStorage`);
+        if (careers.value.length > 0) {
+            // Save with country-specific key
+            if (careers.value[0]?.country) {
+                const countryKey = careers.value[0].country.toLowerCase();
+                localStorage.setItem(`cached_careers_${countryKey}`, JSON.stringify(careers.value));
+                console.log(`💾 Saved ${careers.value.length} careers for ${countryKey} to localStorage`);
+            }
+            // Save generic backup
+            localStorage.setItem('cached_careers', JSON.stringify(careers.value));
+            console.log(`💾 Saved ${careers.value.length} careers to generic localStorage`);
         }
-        localStorage.setItem('cached_careers', JSON.stringify(careers.value));
     };
 
     const loadCareersFromLocalStorage = (country) => {
@@ -183,7 +189,7 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // FALLBACK CAREERS (Hardcoded - used when API fails)
+    // FALLBACK CAREERS (Hardcoded)
     // =========================
 
     const getFallbackCareers = (country, personality) => {
@@ -193,40 +199,40 @@ export const useQuizStore = defineStore("quiz", () => {
         const fallbacks = {
             'us': {
                 'technical innovator': [
-                    { title: 'Software Engineer', slug: 'software-engineer', icon: '💻', shortDescription: 'Build and maintain software applications', description: 'Software engineers design, develop, and test software applications that power modern businesses.', skills: ['Programming', 'Problem Solving', 'Debugging'], match: 85, aiGenerated: true, country: 'us' },
-                    { title: 'Data Scientist', slug: 'data-scientist', icon: '📊', shortDescription: 'Analyze complex data to drive decisions', description: 'Data scientists use statistical methods and machine learning to extract insights from data.', skills: ['Python', 'Statistics', 'Machine Learning'], match: 85, aiGenerated: true, country: 'us' },
-                    { title: 'Cybersecurity Analyst', slug: 'cybersecurity-analyst', icon: '🔒', shortDescription: 'Protect systems from cyber threats', description: 'Cybersecurity analysts protect organizations from digital attacks and data breaches.', skills: ['Network Security', 'Risk Assessment', 'Incident Response'], match: 85, aiGenerated: true, country: 'us' }
+                    { id: 1, title: 'Software Engineer', slug: 'software-engineer', icon: '💻', shortDescription: 'Build and maintain software applications', description: 'Software engineers design, develop, and test software applications that power modern businesses.', skills: ['Programming', 'Problem Solving', 'Debugging'], match: 85, aiGenerated: true, country: 'us' },
+                    { id: 2, title: 'Data Scientist', slug: 'data-scientist', icon: '📊', shortDescription: 'Analyze complex data to drive decisions', description: 'Data scientists use statistical methods and machine learning to extract insights from data.', skills: ['Python', 'Statistics', 'Machine Learning'], match: 85, aiGenerated: true, country: 'us' },
+                    { id: 3, title: 'Cybersecurity Analyst', slug: 'cybersecurity-analyst', icon: '🔒', shortDescription: 'Protect systems from cyber threats', description: 'Cybersecurity analysts protect organizations from digital attacks and data breaches.', skills: ['Network Security', 'Risk Assessment', 'Incident Response'], match: 85, aiGenerated: true, country: 'us' }
                 ],
                 'creative communicator': [
-                    { title: 'Content Writer', slug: 'content-writer', icon: '✍️', shortDescription: 'Create engaging content for brands', description: 'Content writers produce articles, blogs, and social media content that engages audiences.', skills: ['Writing', 'SEO', 'Research'], match: 85, aiGenerated: true, country: 'us' },
-                    { title: 'Graphic Designer', slug: 'graphic-designer', icon: '🎨', shortDescription: 'Design visual content for brands', description: 'Graphic designers create visual concepts using software to communicate ideas.', skills: ['Adobe Suite', 'Typography', 'Color Theory'], match: 85, aiGenerated: true, country: 'us' },
-                    { title: 'Marketing Specialist', slug: 'marketing-specialist', icon: '📈', shortDescription: 'Develop marketing campaigns', description: 'Marketing specialists create strategies to promote products and services.', skills: ['Digital Marketing', 'Analytics', 'Strategy'], match: 85, aiGenerated: true, country: 'us' }
+                    { id: 1, title: 'Content Writer', slug: 'content-writer', icon: '✍️', shortDescription: 'Create engaging content for brands', description: 'Content writers produce articles, blogs, and social media content that engages audiences.', skills: ['Writing', 'SEO', 'Research'], match: 85, aiGenerated: true, country: 'us' },
+                    { id: 2, title: 'Graphic Designer', slug: 'graphic-designer', icon: '🎨', shortDescription: 'Design visual content for brands', description: 'Graphic designers create visual concepts using software to communicate ideas.', skills: ['Adobe Suite', 'Typography', 'Color Theory'], match: 85, aiGenerated: true, country: 'us' },
+                    { id: 3, title: 'Marketing Specialist', slug: 'marketing-specialist', icon: '📈', shortDescription: 'Develop marketing campaigns', description: 'Marketing specialists create strategies to promote products and services.', skills: ['Digital Marketing', 'Analytics', 'Strategy'], match: 85, aiGenerated: true, country: 'us' }
                 ],
                 'healthcare helper': [
-                    { title: 'Registered Nurse', slug: 'registered-nurse', icon: '🩺', shortDescription: 'Provide patient care', description: 'Nurses care for patients in hospitals, clinics, and other healthcare settings.', skills: ['Patient Care', 'Empathy', 'Medical Knowledge'], match: 85, aiGenerated: true, country: 'us' },
-                    { title: 'Medical Assistant', slug: 'medical-assistant', icon: '👨‍⚕️', shortDescription: 'Support healthcare professionals', description: 'Medical assistants perform clinical and administrative tasks in medical offices.', skills: ['Patient Care', 'Medical Terminology', 'Organization'], match: 85, aiGenerated: true, country: 'us' }
+                    { id: 1, title: 'Registered Nurse', slug: 'registered-nurse', icon: '🩺', shortDescription: 'Provide patient care', description: 'Nurses care for patients in hospitals, clinics, and other healthcare settings.', skills: ['Patient Care', 'Empathy', 'Medical Knowledge'], match: 85, aiGenerated: true, country: 'us' },
+                    { id: 2, title: 'Medical Assistant', slug: 'medical-assistant', icon: '👨‍⚕️', shortDescription: 'Support healthcare professionals', description: 'Medical assistants perform clinical and administrative tasks in medical offices.', skills: ['Patient Care', 'Medical Terminology', 'Organization'], match: 85, aiGenerated: true, country: 'us' }
                 ],
                 'business leader': [
-                    { title: 'Project Manager', slug: 'project-manager', icon: '📋', shortDescription: 'Lead projects to success', description: 'Project managers plan, execute, and close projects across various industries.', skills: ['Leadership', 'Planning', 'Communication'], match: 85, aiGenerated: true, country: 'us' },
-                    { title: 'Financial Analyst', slug: 'financial-analyst', icon: '💰', shortDescription: 'Analyze financial data', description: 'Financial analysts evaluate investment opportunities and financial performance.', skills: ['Excel', 'Financial Modeling', 'Analysis'], match: 85, aiGenerated: true, country: 'us' }
+                    { id: 1, title: 'Project Manager', slug: 'project-manager', icon: '📋', shortDescription: 'Lead projects to success', description: 'Project managers plan, execute, and close projects across various industries.', skills: ['Leadership', 'Planning', 'Communication'], match: 85, aiGenerated: true, country: 'us' },
+                    { id: 2, title: 'Financial Analyst', slug: 'financial-analyst', icon: '💰', shortDescription: 'Analyze financial data', description: 'Financial analysts evaluate investment opportunities and financial performance.', skills: ['Excel', 'Financial Modeling', 'Analysis'], match: 85, aiGenerated: true, country: 'us' }
                 ]
             },
             'nigeria': {
                 'technical innovator': [
-                    { title: 'Software Developer', slug: 'software-developer', icon: '💻', shortDescription: 'Build software solutions', description: 'Software developers create applications and systems that solve real-world problems.', skills: ['Programming', 'Problem Solving', 'Teamwork'], match: 85, aiGenerated: true, country: 'ng' },
-                    { title: 'Computer Engineer', slug: 'computer-engineer', icon: '🔧', shortDescription: 'Design computer systems', description: 'Computer engineers design and develop computer hardware and software systems.', skills: ['Hardware', 'Software', 'Systems Design'], match: 85, aiGenerated: true, country: 'ng' }
+                    { id: 1, title: 'Software Developer', slug: 'software-developer', icon: '💻', shortDescription: 'Build software solutions', description: 'Software developers create applications and systems that solve real-world problems.', skills: ['Programming', 'Problem Solving', 'Teamwork'], match: 85, aiGenerated: true, country: 'ng' },
+                    { id: 2, title: 'Computer Engineer', slug: 'computer-engineer', icon: '🔧', shortDescription: 'Design computer systems', description: 'Computer engineers design and develop computer hardware and software systems.', skills: ['Hardware', 'Software', 'Systems Design'], match: 85, aiGenerated: true, country: 'ng' }
                 ],
                 'creative communicator': [
-                    { title: 'Content Creator', slug: 'content-creator', icon: '✍️', shortDescription: 'Create digital content', description: 'Content creators produce engaging content for social media and websites.', skills: ['Writing', 'Video Editing', 'Creativity'], match: 85, aiGenerated: true, country: 'ng' },
-                    { title: 'Public Relations Officer', slug: 'public-relations-officer', icon: '📢', shortDescription: 'Manage public image', description: 'PROs manage communication between organizations and the public.', skills: ['Communication', 'Media Relations', 'Writing'], match: 85, aiGenerated: true, country: 'ng' }
+                    { id: 1, title: 'Content Creator', slug: 'content-creator', icon: '✍️', shortDescription: 'Create digital content', description: 'Content creators produce engaging content for social media and websites.', skills: ['Writing', 'Video Editing', 'Creativity'], match: 85, aiGenerated: true, country: 'ng' },
+                    { id: 2, title: 'Public Relations Officer', slug: 'public-relations-officer', icon: '📢', shortDescription: 'Manage public image', description: 'PROs manage communication between organizations and the public.', skills: ['Communication', 'Media Relations', 'Writing'], match: 85, aiGenerated: true, country: 'ng' }
                 ],
                 'healthcare helper': [
-                    { title: 'Nurse', slug: 'nurse', icon: '🩺', shortDescription: 'Provide patient care', description: 'Nurses provide essential healthcare services in hospitals and clinics.', skills: ['Patient Care', 'Empathy', 'Medical Knowledge'], match: 85, aiGenerated: true, country: 'ng' },
-                    { title: 'Community Health Worker', slug: 'community-health-worker', icon: '🤝', shortDescription: 'Serve communities', description: 'Community health workers provide health education and basic services.', skills: ['Community Engagement', 'Health Education', 'Communication'], match: 85, aiGenerated: true, country: 'ng' }
+                    { id: 1, title: 'Nurse', slug: 'nurse', icon: '🩺', shortDescription: 'Provide patient care', description: 'Nurses provide essential healthcare services in hospitals and clinics.', skills: ['Patient Care', 'Empathy', 'Medical Knowledge'], match: 85, aiGenerated: true, country: 'ng' },
+                    { id: 2, title: 'Community Health Worker', slug: 'community-health-worker', icon: '🤝', shortDescription: 'Serve communities', description: 'Community health workers provide health education and basic services.', skills: ['Community Engagement', 'Health Education', 'Communication'], match: 85, aiGenerated: true, country: 'ng' }
                 ],
                 'business leader': [
-                    { title: 'Business Administrator', slug: 'business-administrator', icon: '📋', shortDescription: 'Manage business operations', description: 'Business administrators oversee daily operations and strategic planning.', skills: ['Management', 'Finance', 'Leadership'], match: 85, aiGenerated: true, country: 'ng' },
-                    { title: 'Accountant', slug: 'accountant', icon: '💰', shortDescription: 'Manage finances', description: 'Accountants prepare financial records and ensure compliance with regulations.', skills: ['Accounting', 'Tax', 'Financial Reporting'], match: 85, aiGenerated: true, country: 'ng' }
+                    { id: 1, title: 'Business Administrator', slug: 'business-administrator', icon: '📋', shortDescription: 'Manage business operations', description: 'Business administrators oversee daily operations and strategic planning.', skills: ['Management', 'Finance', 'Leadership'], match: 85, aiGenerated: true, country: 'ng' },
+                    { id: 2, title: 'Accountant', slug: 'accountant', icon: '💰', shortDescription: 'Manage finances', description: 'Accountants prepare financial records and ensure compliance with regulations.', skills: ['Accounting', 'Tax', 'Financial Reporting'], match: 85, aiGenerated: true, country: 'ng' }
                 ]
             }
         };
@@ -306,7 +312,11 @@ export const useQuizStore = defineStore("quiz", () => {
     const generateCareerWithAI = async (country) => {
         const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
         
-        if (!API_KEY) throw new Error("No API key found");
+        if (!API_KEY) {
+            console.warn("No API key found, using fallback careers");
+            generateCareerFallback(country);
+            return;
+        }
 
         const countryLower = country?.toLowerCase() || 'us';
         const config = getCountryRequirements(country);
@@ -341,7 +351,8 @@ export const useQuizStore = defineStore("quiz", () => {
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "http://localhost:5173",
+                    "HTTP-Referer": "https://career-compass-v906.onrender.com",
+                    // "HTTP-Referer": "http://localhost:5173",
                     "X-Title": "Career AI Platform"
                 },
                 body: JSON.stringify({
@@ -362,7 +373,6 @@ export const useQuizStore = defineStore("quiz", () => {
             });
 
             if (!response.ok) {
-                // If API fails (402, etc.), use fallback
                 console.warn(`API Error: ${response.status}, using fallback careers`);
                 generateCareerFallback(country);
                 return;
@@ -396,8 +406,12 @@ export const useQuizStore = defineStore("quiz", () => {
 
             careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
             
-            await saveCareersToJsonServer(recommendedCareers);
+            // Save to localStorage (always works)
             saveCareersToLocalStorage();
+            
+            // Try to save to json-server (optional, don't block on error)
+            await saveCareersToJsonServer(recommendedCareers).catch(e => console.log('JSON-server save skipped:', e.message));
+            
             calculatePersonalityScores();
             
             console.log("FINAL CAREERS:", careers.value);
@@ -409,27 +423,37 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // SAVE CAREERS TO JSON-SERVER
+    // SAVE CAREERS TO JSON-SERVER (Fixed)
     // =========================
 
     const saveCareersToJsonServer = async (newCareers) => {
         try {
+            // Check if json-server is available
+            const testResponse = await fetch(apiUrl, { method: 'HEAD' }).catch(() => null);
+            if (!testResponse) {
+                console.log('⚠️ JSON-server not reachable, skipping save');
+                return;
+            }
+            
             for (const career of newCareers) {
-                const checkResponse = await fetch(`${api}?slug=${career.slug}`);
+                // Check if career already exists
+                const checkResponse = await fetch(`${apiUrl}?slug=${career.slug}`);
                 if (checkResponse.ok) {
                     const existing = await checkResponse.json();
                     if (existing.length === 0) {
-                        await fetch(`${api}`, {
+                        const saveResponse = await fetch(apiUrl, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ ...career, id: Date.now() + Math.random() })
                         });
-                        console.log(`✅ Saved: ${career.title}`);
+                        if (saveResponse.ok) {
+                            console.log(`✅ Saved to json-server: ${career.title}`);
+                        }
                     }
                 }
             }
         } catch (error) {
-            console.log('Failed to save to json-server:', error);
+            console.log('⚠️ Failed to save to json-server:', error.message);
         }
     };
 
@@ -452,7 +476,7 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // FALLBACK SYSTEM (Uses hardcoded careers)
+    // FALLBACK SYSTEM
     // =========================
 
     const generateCareerFallback = (country) => {
