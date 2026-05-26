@@ -2,7 +2,7 @@
     
     <div class="pt-24 pb-20 px-6 lg:px-8">
 
-        <!-- Intelligent Recommendation Loading -->
+        <!-- Intelligent Recommendation Loading - Shows when generating NEW careers -->
         <div v-if="quizStore.isLoading" class="text-center py-20">
 
             <div class="inline-block relative mb-6">
@@ -62,12 +62,28 @@
 
         </div>
 
+        <!-- Loading from cache indicator - Shows when loading cached careers -->
+        <div v-else-if="loadingFromCache" class="text-center py-20">
+            <div class="inline-block relative mb-6">
+                <div class="w-16 h-16 border-4 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center text-xl">
+                    📦
+                </div>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-3">
+                Loading Your Career Profile
+            </h2>
+            <p class="text-gray-600">
+                Retrieving your personalized career recommendations...
+            </p>
+        </div>
+
         <!-- Add error display after loading section -->
         <div v-else-if="quizStore.error" class="text-center py-20">
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
                 <p class="text-yellow-800">⚠️ {{ quizStore.error }}</p>
                 <button 
-                    @click="quizStore.generateCareer(userStore.currentUser?.country)"
+                    @click="retryLoad"
                     class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg"
                 >
                     Try Again
@@ -307,7 +323,7 @@
                             <div class="grid md:grid-cols-2 gap-4">
                                 <div v-for="uni in career.universities" :key="uni.name" class="p-4 border border-gray-200 rounded-xl hover:shadow-md transition">
                                     <h5 class="font-bold text-indigo-600">{{ uni.name }}</h5>
-                                    <p class="text-sm text-gray-500 mb-1">{{ uni.ranking }}</p>
+                                    <p class="text-sm text-gray-500">{{ uni.ranking }}</p>
                                     <p class="text-sm text-gray-700">{{ uni.programName }}</p>
                                 </div>
                             </div>
@@ -484,6 +500,7 @@ const loadingSteps = ref([
 ]);
 
 const currentLoadingStep = ref(0);
+const loadingFromCache = ref(true);
 
 let loadingInterval = null;
 
@@ -495,151 +512,35 @@ const getRecommendedCourses = (careerTitle) => {
     const title = careerTitle?.toLowerCase() || '';
     
     const courseMap = {
-        // Technology & Software Careers
         'software': [
-            { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals and problem-solving', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-            { name: 'The Complete Web Developer Bootcamp', platform: 'Udemy', description: 'Become a full-stack web developer', url: 'https://www.udemy.com/course/the-complete-web-developer-bootcamp/' },
-            { name: 'Python for Everybody', platform: 'Coursera', description: 'Learn Python programming from scratch', url: 'https://www.coursera.org/specializations/python' }
-        ],
-        'developer': [
             { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-            { name: 'JavaScript Algorithms and Data Structures', platform: 'freeCodeCamp', description: 'Master JavaScript and algorithms', url: 'https://www.freecodecamp.org/learn/javascript-algorithms-and-data-structures/' },
-            { name: 'React - The Complete Guide', platform: 'Udemy', description: 'Build modern web applications with React', url: 'https://www.udemy.com/course/react-the-complete-guide-incl-redux/' }
+            { name: 'The Complete Web Developer Bootcamp', platform: 'Udemy', description: 'Become a full-stack web developer', url: 'https://www.udemy.com/course/the-complete-web-developer-bootcamp/' },
+            { name: 'Python for Everybody', platform: 'Coursera', description: 'Learn Python programming', url: 'https://www.coursera.org/specializations/python' }
         ],
         'data': [
             { name: 'Google Data Analytics Professional Certificate', platform: 'Coursera', description: 'Learn data analysis with Google', url: 'https://www.coursera.org/professional-certificates/google-data-analytics' },
-            { name: 'SQL for Data Science', platform: 'UC Davis Coursera', description: 'Master SQL for data analysis', url: 'https://www.coursera.org/learn/sql-for-data-science' },
-            { name: 'Data Visualization with Tableau', platform: 'Coursera', description: 'Create powerful visualizations', url: 'https://www.coursera.org/specializations/data-visualization' }
+            { name: 'SQL for Data Science', platform: 'UC Davis Coursera', description: 'Master SQL for data analysis', url: 'https://www.coursera.org/learn/sql-for-data-science' }
         ],
-        'analyst': [
-            { name: 'Excel Skills for Business', platform: 'Macquarie Coursera', description: 'Master Excel for business analysis', url: 'https://www.coursera.org/specializations/excel-skills-business' },
-            { name: 'Business Analytics Specialization', platform: 'Wharton Coursera', description: 'Learn business analytics fundamentals', url: 'https://www.coursera.org/specializations/wharton-business-analytics' },
-            { name: 'Power BI for Beginners', platform: 'Microsoft Learn', description: 'Create interactive dashboards', url: 'https://learn.microsoft.com/en-us/power-bi/' }
-        ],
-        'cyber': [
-            { name: 'Google Cybersecurity Professional Certificate', platform: 'Coursera', description: 'Start your cybersecurity career', url: 'https://www.coursera.org/professional-certificates/google-cybersecurity' },
-            { name: 'Introduction to Cyber Security', platform: 'NYU edX', description: 'Learn security fundamentals', url: 'https://www.edx.org/course/introduction-to-cyber-security' },
-            { name: 'CompTIA Security+', platform: 'CompTIA', description: 'Industry-standard security certification', url: 'https://www.comptia.org/certifications/security' }
-        ],
-        'security': [
-            { name: 'Google Cybersecurity Professional Certificate', platform: 'Coursera', description: 'Start your cybersecurity career', url: 'https://www.coursera.org/professional-certificates/google-cybersecurity' },
-            { name: 'Network Security Fundamentals', platform: 'Cisco', description: 'Learn network protection', url: 'https://www.netacad.com/courses/cybersecurity/introduction-to-cybersecurity' }
-        ],
-        
-        // Medical & Healthcare Careers
         'doctor': [
             { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body systems', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
-            { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language and terminology', url: 'https://www.edx.org/course/medical-terminology' },
-            { name: 'Clinical Skills for Healthcare', platform: 'FutureLearn', description: 'Develop essential clinical skills', url: 'https://www.futurelearn.com/courses/clinical-skills' }
+            { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language', url: 'https://www.edx.org/course/medical-terminology' }
         ],
-        'medical': [
-            { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body systems', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
-            { name: 'Medical Neuroscience', platform: 'Duke Coursera', description: 'Explore the nervous system', url: 'https://www.coursera.org/learn/medical-neuroscience' },
-            { name: 'Introduction to Clinical Medicine', platform: 'Stanford Online', description: 'Learn clinical fundamentals', url: 'https://online.stanford.edu/courses' }
-        ],
-        'nurse': [
-            { name: 'Nursing Fundamentals', platform: 'Coursera', description: 'Essential nursing skills and practices', url: 'https://www.coursera.org/learn/nursing-fundamentals' },
-            { name: 'Patient Care Skills', platform: 'edX', description: 'Develop patient care competencies', url: 'https://www.edx.org/course/patient-care' },
-            { name: 'Critical Care Nursing', platform: 'OpenWHO', description: 'Learn intensive care basics', url: 'https://openwho.org/courses' }
-        ],
-        'dentist': [
-            { name: 'Introduction to Dentistry', platform: 'Coursera', description: 'Explore dental medicine', url: 'https://www.coursera.org/learn/introduction-to-dentistry' },
-            { name: 'Oral Health and Medicine', platform: 'University of Michigan', description: 'Understand oral health basics', url: 'https://www.coursera.org/learn/oral-health' }
-        ],
-        'pharmacist': [
-            { name: 'Pharmacology Basics', platform: 'Coursera', description: 'Learn drug mechanisms and effects', url: 'https://www.coursera.org/learn/pharmacology' },
-            { name: 'Pharmacy Practice', platform: 'FutureLearn', description: 'Develop pharmacy skills', url: 'https://www.futurelearn.com/courses/pharmacy-practice' }
-        ],
-        'biomedical': [
-            { name: 'Biomedical Engineering', platform: 'Coursera', description: 'Learn medical device design', url: 'https://www.coursera.org/specializations/biomedical-engineering' },
-            { name: 'Introduction to Medical Imaging', platform: 'Coursera', description: 'Understand imaging technologies', url: 'https://www.coursera.org/learn/medical-imaging' }
-        ],
-        
-        // Business & Finance Careers
         'business': [
             { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
-            { name: 'Project Management Professional (PMP)', platform: 'Google Coursera', description: 'Master project management skills', url: 'https://www.coursera.org/professional-certificates/google-project-management' },
-            { name: 'Financial Accounting Fundamentals', platform: 'UVA Darden', description: 'Understand financial statements', url: 'https://www.coursera.org/learn/financial-accounting' }
+            { name: 'Project Management Professional', platform: 'Google Coursera', description: 'Master project management', url: 'https://www.coursera.org/professional-certificates/google-project-management' }
         ],
-        'manager': [
-            { name: 'Leadership and Management', platform: 'Coursera', description: 'Develop leadership skills', url: 'https://www.coursera.org/specializations/leadership-management' },
-            { name: 'Strategic Management', platform: 'Copenhagen Business School', description: 'Learn strategic planning', url: 'https://www.coursera.org/specializations/strategic-management' },
-            { name: 'Team Leadership', platform: 'Google', description: 'Lead effective teams', url: 'https://www.coursera.org/learn/leadership-skills' }
-        ],
-        'accountant': [
-            { name: 'Financial Accounting', platform: 'Wharton Coursera', description: 'Master financial accounting', url: 'https://www.coursera.org/learn/wharton-accounting' },
-            { name: 'Intuit Bookkeeping Professional Certificate', platform: 'Coursera', description: 'Learn bookkeeping skills', url: 'https://www.coursera.org/professional-certificates/intuit-bookkeeping' }
-        ],
-        'finance': [
-            { name: 'Financial Markets', platform: 'Yale Coursera', description: 'Understand financial markets', url: 'https://www.coursera.org/learn/financial-markets-global' },
-            { name: 'Investment Management', platform: 'Coursera', description: 'Learn investment strategies', url: 'https://www.coursera.org/specializations/investment-management' }
-        ],
-        'marketing': [
-            { name: 'Digital Marketing Specialization', platform: 'UIUC Coursera', description: 'Master digital marketing strategies', url: 'https://www.coursera.org/specializations/digital-marketing' },
-            { name: 'Google Digital Garage', platform: 'Google', description: 'Free digital marketing certification', url: 'https://learndigital.withgoogle.com/digitalgarage' },
-            { name: 'Social Media Marketing', platform: 'Facebook Blueprint', description: 'Learn social media advertising', url: 'https://www.facebook.com/business/learn' }
-        ],
-        
-        // Creative & Design Careers
         'designer': [
             { name: 'Graphic Design Specialization', platform: 'CalArts Coursera', description: 'Learn graphic design principles', url: 'https://www.coursera.org/specializations/graphic-design' },
-            { name: 'UI/UX Design', platform: 'Google Coursera', description: 'Master user interface and experience design', url: 'https://www.coursera.org/professional-certificates/google-ux-design' },
-            { name: 'Adobe Photoshop Masterclass', platform: 'Udemy', description: 'Master Photoshop skills', url: 'https://www.udemy.com/course/adobe-photoshop-cc-masterclass/' }
+            { name: 'UI/UX Design', platform: 'Google Coursera', description: 'Master user interface design', url: 'https://www.coursera.org/professional-certificates/google-ux-design' }
         ],
-        'writer': [
-            { name: 'Creative Writing Specialization', platform: 'Wesleyan Coursera', description: 'Develop creative writing skills', url: 'https://www.coursera.org/specializations/creative-writing' },
-            { name: 'Good with Words: Writing and Editing', platform: 'University of Michigan', description: 'Improve writing and editing', url: 'https://www.coursera.org/specializations/good-with-words' },
-            { name: 'Technical Writing', platform: 'Coursera', description: 'Learn technical documentation', url: 'https://www.coursera.org/specializations/technical-writing' }
+        'lawyer': [
+            { name: 'Introduction to American Law', platform: 'Penn Law Coursera', description: 'Understand legal systems', url: 'https://www.coursera.org/learn/american-law' },
+            { name: 'Legal Writing and Research', platform: 'Coursera', description: 'Develop legal writing skills', url: 'https://www.coursera.org/learn/legal-writing-research' }
         ],
-        'journalist': [
-            { name: 'Journalism Skills for the Digital Age', platform: 'Coursera', description: 'Modern journalism techniques', url: 'https://www.coursera.org/learn/journalism-skills' },
-            { name: 'Data Journalism', platform: 'Coursera', description: 'Tell stories with data', url: 'https://www.coursera.org/learn/data-journalism' }
-        ],
-        
-        // Education Careers
         'teacher': [
-            { name: 'Foundations of Teaching for Learning', platform: 'Commonwealth Education Trust', description: 'Develop teaching fundamentals', url: 'https://www.coursera.org/specializations/foundations-teaching' },
-            { name: 'Virtual Teacher Specialization', platform: 'UC Irvine', description: 'Learn online teaching strategies', url: 'https://www.coursera.org/specializations/virtual-teacher' },
-            { name: 'Classroom Management', platform: 'Coursera', description: 'Manage classrooms effectively', url: 'https://www.coursera.org/learn/classroom-management' }
-        ],
-        'educator': [
             { name: 'Foundations of Teaching for Learning', platform: 'Commonwealth Education Trust', description: 'Develop teaching fundamentals', url: 'https://www.coursera.org/specializations/foundations-teaching' },
             { name: 'Learning How to Learn', platform: 'UC San Diego', description: 'Master effective learning techniques', url: 'https://www.coursera.org/learn/learning-how-to-learn' }
         ],
-        
-        // Law & Social Sciences Careers
-        'lawyer': [
-            { name: 'Introduction to American Law', platform: 'Penn Law Coursera', description: 'Understand legal systems', url: 'https://www.coursera.org/learn/american-law' },
-            { name: 'Legal Writing and Research', platform: 'Coursera', description: 'Develop legal writing skills', url: 'https://www.coursera.org/learn/legal-writing-research' },
-            { name: 'Constitutional Law', platform: 'Coursera', description: 'Study constitutional principles', url: 'https://www.coursera.org/learn/constitutional-law' }
-        ],
-        'social': [
-            { name: 'Social Work Practice', platform: 'Coursera', description: 'Learn social work fundamentals', url: 'https://www.coursera.org/learn/social-work' },
-            { name: 'Counseling and Psychotherapy', platform: 'Coursera', description: 'Develop counseling skills', url: 'https://www.coursera.org/learn/counseling-psychotherapy' },
-            { name: 'Introduction to Psychology', platform: 'Yale Coursera', description: 'Understand human behavior', url: 'https://www.coursera.org/learn/introduction-psychology' }
-        ],
-        'psychologist': [
-            { name: 'Introduction to Psychology', platform: 'Yale Coursera', description: 'Understand human behavior', url: 'https://www.coursera.org/learn/introduction-psychology' },
-            { name: 'Clinical Psychology', platform: 'Coursera', description: 'Learn clinical assessment', url: 'https://www.coursera.org/learn/clinical-psychology' },
-            { name: 'Positive Psychology', platform: 'University of North Carolina', description: 'Study well-being science', url: 'https://www.coursera.org/learn/positive-psychology' }
-        ],
-        'counselor': [
-            { name: 'Counseling and Psychotherapy', platform: 'Coursera', description: 'Develop counseling skills', url: 'https://www.coursera.org/learn/counseling-psychotherapy' },
-            { name: 'Addiction Counseling', platform: 'Coursera', description: 'Learn addiction treatment', url: 'https://www.coursera.org/learn/addiction-counseling' }
-        ],
-        
-        // Engineering Careers
-        'engineer': [
-            { name: 'Introduction to Engineering', platform: 'Coursera', description: 'Explore engineering disciplines', url: 'https://www.coursera.org/learn/introduction-to-engineering' },
-            { name: 'Mechanical Engineering', platform: 'Coursera', description: 'Learn mechanical principles', url: 'https://www.coursera.org/specializations/mechanical-engineering' },
-            { name: 'CAD and Digital Manufacturing', platform: 'Autodesk Coursera', description: 'Master computer-aided design', url: 'https://www.coursera.org/specializations/cad-digital-manufacturing' }
-        ],
-        'civil': [
-            { name: 'Construction Management', platform: 'Columbia Coursera', description: 'Learn construction management', url: 'https://www.coursera.org/specializations/construction-management' },
-            { name: 'Structural Engineering', platform: 'Coursera', description: 'Understand structural design', url: 'https://www.coursera.org/learn/structural-engineering' }
-        ],
-        
-        // Default Courses
         'default': [
             { name: 'Career Success Specialization', platform: 'UC Irvine Coursera', description: 'Develop essential career skills', url: 'https://www.coursera.org/specializations/career-success' },
             { name: 'Learning How to Learn', platform: 'UC San Diego Coursera', description: 'Master effective learning techniques', url: 'https://www.coursera.org/learn/learning-how-to-learn' },
@@ -647,29 +548,33 @@ const getRecommendedCourses = (careerTitle) => {
         ]
     };
     
-    // Find matching courses
     for (const [key, courses] of Object.entries(courseMap)) {
         if (title.includes(key)) {
             return courses;
         }
     }
     
-    // Return default courses if no match found
     return courseMap.default;
 };
 
+const retryLoad = async () => {
+    const country = userStore.currentUser?.country;
+    if (country) {
+        loadingFromCache.value = true;
+        await quizStore.generateCareer(country, true);
+        loadingFromCache.value = false;
+    }
+};
+
 onMounted(async () => {
-
-    // animate loading steps
+    // Start the loading animation immediately
+    loadingFromCache.value = true;
+    
+    // Animate loading steps
     loadingInterval = setInterval(() => {
-
-        if (
-            currentLoadingStep.value <
-            loadingSteps.value.length - 1
-        ) {
+        if (currentLoadingStep.value < loadingSteps.value.length - 1) {
             currentLoadingStep.value++;
         }
-
     }, 1200);
 
     await userStore.fetchCurrentUser();
@@ -678,41 +583,36 @@ onMounted(async () => {
 
     if (!country) {
         console.error("User country missing");
+        loadingFromCache.value = false;
         return;
     }
 
-    const hasAnswers = quizStore.answers.length > 0;
+    const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
 
-    if (hasAnswers) {
-
+    if (quizJustCompleted) {
+        // Quiz was just taken - show AI loading animation
         console.log("🎯 Quiz just taken - generating recommendations");
-
-        await quizStore.generateCareer(
-            country,
-            false
-        );
-
+        // The store's isLoading will be true during AI generation
+        loadingFromCache.value = false;
+        await quizStore.generateCareer(country, false);
     } else {
-
+        // Loading from cache - show cache loading animation
         console.log("📦 Loading cached recommendations");
-
-        await quizStore.generateCareer(
-            country,
-            true
-        );
-
+        loadingFromCache.value = true;
+        await quizStore.generateCareer(country, true);
+        // Small delay to show loading animation
+        setTimeout(() => {
+            loadingFromCache.value = false;
+        }, 500);
     }
 
     clearInterval(loadingInterval);
-
 });
 
 onUnmounted(() => {
-
     if (loadingInterval) {
         clearInterval(loadingInterval);
     }
-
 });
 
 const careers = computed(() => quizStore.careers || []);
