@@ -307,33 +307,36 @@ export const useQuizStore = defineStore("quiz", () => {
         careers.value = [];
     
         try {
-    
-            // ALWAYS GENERATE NEW CAREERS
-            // when forceRefresh = true
-            if (!forceRefresh) {
-    
+            // Check if quiz was just completed (either by forceRefresh or localStorage flag)
+            const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
+            
+            // Force new generation if:
+            // 1. forceRefresh is true (explicitly requested), OR
+            // 2. quiz was just completed (new answers submitted)
+            if (forceRefresh || quizJustCompleted) {
+                console.log("🤖 Generating NEW AI careers for", country);
+                await generateCareerWithAI(country);
+                localStorage.removeItem('quiz_just_completed');
+            } else {
+                // Try to load from cache
+                console.log("📦 Attempting to load cached careers for", country);
                 const loaded = loadCareersFromLocalStorage(country);
-    
+                
                 if (loaded && careers.value.length > 0) {
-                    console.log("📦 Using cached careers");
+                    console.log("✅ Using cached careers");
                     calculatePersonalityScores();
-                    return;
+                } else {
+                    // No cache found, generate new
+                    console.log("🤖 No cache found, generating new careers...");
+                    await generateCareerWithAI(country);
                 }
             }
     
-            console.log("🤖 Generating NEW AI careers...");
-            await generateCareerWithAI(country);
-    
         } catch (err) {
-    
-            console.error(err);
-    
+            console.error("Generation error:", err);
             error.value = "AI failed. Using fallback careers.";
-    
             generateCareerFallback(country);
-    
         } finally {
-    
             isLoading.value = false;
         }
     };
@@ -661,22 +664,26 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
     // RESET QUIZ
     // =========================
 
-    const resetQuiz = () => {
-        answers.value = [];
-        careers.value = [];
-        personalityScores.value = [];
-        error.value = null;
-        quizCompleted.value = false;
-        clearLocalStorage();
-        // Clear all country-specific caches
-        const keys = Object.keys(localStorage);
-        keys.forEach(key => {
-            if (key.startsWith('cached_careers_')) {
-                localStorage.removeItem(key);
-            }
-        });
-        localStorage.removeItem('cached_careers');
-    };
+const resetQuiz = () => {
+    answers.value = [];
+    careers.value = [];
+    personalityScores.value = [];
+    error.value = null;
+    quizCompleted.value = false;
+    clearLocalStorage();
+    
+    // Set flag to indicate quiz was reset and needs fresh AI generation
+    localStorage.setItem('quiz_just_completed', 'true');
+    
+    // Clear all country-specific caches
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+        if (key.startsWith('cached_careers_')) {
+            localStorage.removeItem(key);
+        }
+    });
+    localStorage.removeItem('cached_careers');
+};
 
     // =========================
     // INITIALIZE
