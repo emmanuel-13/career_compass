@@ -11,7 +11,6 @@ const quizStore = useQuizStore();
 const career = ref(null);
 const loading = ref(true);
 const error = ref(null);
-const api = import.meta.env.VITE_API_URL;
 
 // Get icon for career
 const getIconForCareer = (title) => {
@@ -75,7 +74,7 @@ const handleImageError = (event) => {
     event.target.src = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
 };
 
-// Load career data from json-server and localStorage only
+// Load career data from multiple sources
 const loadCareer = async () => {
     loading.value = true;
     error.value = null;
@@ -83,22 +82,29 @@ const loadCareer = async () => {
     const slug = route.params.slug;
     const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
     
+    console.log(`🔍 Looking for career with slug: "${slug}" in ${userCountry}`);
+    
     try {
         let foundCareer = null;
+        let allCareers = [];
         
-        // First, try to load from quizStore careers (most recent AI-generated)
+        // FIRST: Try to load from quizStore careers (most recent AI-generated)
         const storeCareers = quizStore.careers;
-        foundCareer = storeCareers?.find(c => c.slug === slug);
+        console.log(`📦 Checking quizStore careers: ${storeCareers?.length || 0} careers`);
         
-        if (foundCareer) {
-            console.log('✅ Career found in quizStore');
+        if (storeCareers && storeCareers.length > 0) {
+            foundCareer = storeCareers.find(c => c.slug === slug);
+            if (foundCareer) {
+                console.log('✅ Career found in quizStore');
+            }
         }
         
-        // Second, try to load from country-specific localStorage
+        // SECOND: Try to load from country-specific localStorage
         if (!foundCareer) {
             const cachedCareers = localStorage.getItem(`cached_careers_${userCountry}`);
             if (cachedCareers) {
                 const parsedCareers = JSON.parse(cachedCareers);
+                console.log(`📦 Found ${parsedCareers.length} careers in country-specific localStorage`);
                 foundCareer = parsedCareers.find(c => c.slug === slug);
                 if (foundCareer) {
                     console.log('✅ Career found in country-specific localStorage');
@@ -106,11 +112,12 @@ const loadCareer = async () => {
             }
         }
         
-        // Third, try to load from generic localStorage cache
+        // THIRD: Try to load from generic localStorage cache
         if (!foundCareer) {
             const cachedCareers = localStorage.getItem('cached_careers');
             if (cachedCareers) {
                 const parsedCareers = JSON.parse(cachedCareers);
+                console.log(`📦 Found ${parsedCareers.length} careers in generic localStorage`);
                 foundCareer = parsedCareers.find(c => c.slug === slug);
                 if (foundCareer) {
                     console.log('✅ Career found in generic localStorage');
@@ -118,32 +125,50 @@ const loadCareer = async () => {
             }
         }
         
-        // Fourth, try to load from json-server
+        // FOURTH: Try to load from json-server
         if (!foundCareer) {
             try {
-                const response = await fetch(`${api}/careers`);
+                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+                console.log(`🌐 Fetching from json-server: ${apiUrl}/careers`);
+                const response = await fetch(`${apiUrl}/careers`);
                 if (response.ok) {
-                    const allCareers = await response.json();
+                    allCareers = await response.json();
+                    console.log(`📦 Found ${allCareers.length} careers in json-server`);
                     foundCareer = allCareers.find(c => c.slug === slug);
                     if (foundCareer) {
                         console.log('✅ Career found in json-server');
                     }
+                } else {
+                    console.log(`⚠️ json-server responded with status: ${response.status}`);
                 }
             } catch (err) {
-                console.log('json-server not available');
+                console.log('⚠️ json-server not available:', err.message);
             }
         }
         
-        if (foundCareer) {
-            career.value = foundCareer;
-            console.log('✅ Career loaded successfully');
+        // FIFTH: Check if there are any careers at all and show first one as fallback
+        if (!foundCareer) {
+            // Try to get any career from localStorage to show
+            const anyCareers = localStorage.getItem('cached_careers');
+            if (anyCareers) {
+                const parsed = JSON.parse(anyCareers);
+                if (parsed && parsed.length > 0) {
+                    console.log(`📦 No matching slug found. Available slugs: ${parsed.map(c => c.slug).join(', ')}`);
+                    error.value = `Career "${slug}" not found. Available careers: ${parsed.map(c => c.title).join(', ')}`;
+                } else {
+                    error.value = 'Career not found. Please complete the quiz first.';
+                }
+            } else {
+                error.value = 'Career not found. Please complete the quiz first.';
+            }
         } else {
-            error.value = 'Career not found';
+            career.value = foundCareer;
+            console.log('✅ Career loaded successfully:', foundCareer.title);
         }
         
     } catch (err) {
         console.error('Error loading career:', err);
-        error.value = 'Failed to load career details';
+        error.value = 'Failed to load career details. Please try again.';
     } finally {
         loading.value = false;
     }
@@ -183,10 +208,16 @@ onMounted(async () => {
             <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
                 <p class="text-yellow-800">⚠️ {{ error }}</p>
                 <button 
-                    @click="$router.back()" 
-                    class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg"
+                    @click="$router.push('/results')" 
+                    class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg mr-2"
                 >
-                    Go Back
+                    View My Results
+                </button>
+                <button 
+                    @click="$router.push('/quiz')" 
+                    class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg"
+                >
+                    Take Quiz
                 </button>
             </div>
         </div>
@@ -225,14 +256,14 @@ onMounted(async () => {
             <!-- Full Description -->
             <div class="bg-white border rounded-3xl p-8 mb-8">
                 <h2 class="text-2xl font-bold mb-4">📖 Career Overview</h2>
-                <p class="text-gray-700 leading-relaxed">{{ career.description }}</p>
+                <p class="text-gray-700 leading-relaxed">{{ career.description || 'No description available.' }}</p>
             </div>
 
             <!-- Key Skills -->
             <div class="bg-white border rounded-3xl p-8 mb-8">
                 <h2 class="text-2xl font-bold mb-4">⚡ Key Skills Required</h2>
                 <div class="flex flex-wrap gap-2">
-                    <span v-for="skill in career.skills" :key="skill" 
+                    <span v-for="skill in (career.skills || [])" :key="skill" 
                           class="px-4 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-medium">
                         {{ skill }}
                     </span>
@@ -248,7 +279,7 @@ onMounted(async () => {
                     <p class="text-gray-600 mb-3">{{ career.requirements.examDescription || 'Standard entrance examination requirements' }}</p>
                     <div class="flex flex-wrap gap-2">
                         <span v-for="subject in (career.requirements.examSubjects || [])" :key="subject" 
-                              class="px-3 py-1 rounded-lg border border-gray-200 bg-blue-50 text-blue-700">
+                              class="px-3 py-1 rounded-lg border border-gray-200 text-sm bg-blue-50 text-blue-700">
                             {{ subject }}
                         </span>
                     </div>
@@ -258,7 +289,7 @@ onMounted(async () => {
                     <h3 class="font-semibold text-lg mb-2">JAMB Subject Combination</h3>
                     <div class="flex flex-wrap gap-2">
                         <span v-for="subject in career.requirements.jambSubjects" :key="subject" 
-                              class="px-3 py-1 rounded-lg border border-gray-200 bg-green-50 text-green-700">
+                              class="px-3 py-1 rounded-lg border border-gray-200 text-sm bg-green-50 text-green-700">
                             {{ subject }}
                         </span>
                     </div>
@@ -268,7 +299,7 @@ onMounted(async () => {
                     <h3 class="font-semibold text-lg mb-2">Additional Tests</h3>
                     <div class="flex flex-wrap gap-2">
                         <span v-for="test in career.requirements.additionalTests" :key="test" 
-                              class="px-3 py-1 rounded-lg border border-gray-200 bg-orange-50 text-orange-700">
+                              class="px-3 py-1 rounded-lg border border-gray-200 text-sm bg-orange-50 text-orange-700">
                             {{ test }}
                         </span>
                     </div>
