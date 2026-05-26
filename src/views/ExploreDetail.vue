@@ -1,497 +1,807 @@
-<script setup>
-import { useRoute } from "vue-router";
-import { useUserStore } from "@/stores/users";
-import { useQuizStore } from "@/stores/quiz";
-import { ref, onMounted, watch, computed } from "vue";
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-const route = useRoute();
-const userStore = useUserStore();
-const quizStore = useQuizStore();
+export const useQuizStore = defineStore("quiz", () => {
 
-const career = ref(null);
-const loading = ref(true);
-const error = ref(null);
+    // =========================
+    // STATE
+    // =========================
 
-// ==============================
-// COUNTRY-SPECIFIC REQUIREMENTS
-// ==============================
+    const answers = ref([]);
+    const careers = ref([]);
+    const personalityScores = ref([]);
+    const isLoading = ref(false);
+    const error = ref(null);
+    const quizCompleted = ref(false);
 
-// Get country-specific exam requirements
-const getCountryExamRequirements = (country, careerTitle) => {
-    const countryLower = country?.toLowerCase() || 'us';
-    const title = careerTitle?.toLowerCase() || '';
-    
-    // Determine career field for subject mapping
-    let careerField = 'general';
-    if (title.includes('engineer') || title.includes('engineering') || title.includes('civil') || title.includes('mechanical') || title.includes('electrical')) {
-        careerField = 'engineering';
-    } else if (title.includes('doctor') || title.includes('medical') || title.includes('physician') || title.includes('nurse') || title.includes('dentist') || title.includes('biomedical')) {
-        careerField = 'medical';
-    } else if (title.includes('lawyer') || title.includes('attorney') || title.includes('social') || title.includes('counselor') || title.includes('psychologist')) {
-        careerField = 'social';
-    } else if (title.includes('business') || title.includes('manager') || title.includes('accountant') || title.includes('finance') || title.includes('marketing')) {
-        careerField = 'business';
-    } else if (title.includes('designer') || title.includes('artist') || title.includes('writer') || title.includes('journalist')) {
-        careerField = 'arts';
-    }
-    
-    const requirements = {
-        'ng': {
-            examSystem: 'WAEC/NECO',
-            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
-            additionalTests: ['Post-UTME (varies by university)'],
-            currency: 'NGN',
-            currencySymbol: '₦',
-            examSubjects: {
-                engineering: ['English Language', 'Mathematics', 'Physics', 'Chemistry'],
-                medical: ['English Language', 'Mathematics', 'Biology', 'Chemistry'],
-                social: ['English Language', 'Government', 'Economics', 'Literature'],
-                business: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
-                arts: ['English Language', 'Literature', 'Government', 'Economics'],
-                general: ['English Language', 'Mathematics', 'Government', 'Economics']
-            },
-            jambSubjects: {
-                engineering: ['English', 'Mathematics', 'Physics', 'Chemistry'],
-                medical: ['English', 'Biology', 'Chemistry', 'Physics'],
-                social: ['English', 'Government', 'Economics', 'Literature'],
-                business: ['English', 'Mathematics', 'Economics', 'Accounting'],
-                arts: ['English', 'Literature', 'Government', 'Economics'],
-                general: ['English', 'Mathematics', 'Government', 'Economics']
-            },
-            universities: {
-                engineering: ['University of Lagos', 'Obafemi Awolowo University', 'University of Ibadan', 'Ahmadu Bello University', 'Federal University of Technology Minna'],
-                medical: ['University of Lagos', 'University of Ibadan', 'Obafemi Awolowo University', 'Ahmadu Bello University', 'University of Nigeria Nsukka'],
-                social: ['University of Lagos', 'Obafemi Awolowo University', 'University of Ibadan', 'University of Nigeria Nsukka'],
-                business: ['University of Lagos', 'Obafemi Awolowo University', 'Pan-Atlantic University', 'University of Ibadan'],
-                arts: ['University of Lagos', 'Obafemi Awolowo University', 'University of Ibadan', 'Ahmadu Bello University'],
-                general: ['University of Lagos', 'Obafemi Awolowo University', 'University of Ibadan']
-            }
-        },
-        'us': {
-            examSystem: 'SAT/ACT',
-            examDescription: 'Scholastic Assessment Test (SAT) or American College Testing (ACT)',
-            additionalTests: ['TOEFL/IELTS (for international students)'],
-            currency: 'USD',
-            currencySymbol: '$',
-            examSubjects: {
-                engineering: ['English', 'Mathematics', 'Physics', 'Chemistry', 'SAT Subject Test'],
-                medical: ['English', 'Biology', 'Chemistry', 'Mathematics', 'SAT Subject Test'],
-                social: ['English', 'Government', 'History', 'Economics', 'SAT Subject Test'],
-                business: ['English', 'Mathematics', 'Economics', 'Accounting', 'SAT Subject Test'],
-                arts: ['English', 'Literature', 'History', 'Arts', 'SAT Subject Test'],
-                general: ['English', 'Mathematics', 'Science', 'Optional Essay']
-            },
-            jambSubjects: [],
-            universities: {
-                engineering: ['MIT', 'Stanford University', 'UC Berkeley', 'Caltech', 'Georgia Tech'],
-                medical: ['Harvard University', 'Johns Hopkins University', 'Stanford University', 'Mayo Clinic', 'UCSF'],
-                social: ['Harvard University', 'Yale University', 'Stanford University', 'UC Berkeley', 'University of Chicago'],
-                business: ['Harvard Business School', 'Stanford GSB', 'Wharton', 'MIT Sloan', 'Chicago Booth'],
-                arts: ['Rhode Island School of Design', 'Yale University', 'Juilliard School', 'USC', 'NYU'],
-                general: ['Harvard University', 'Stanford University', 'MIT', 'UC Berkeley', 'Columbia University']
-            }
-        },
-        'uk': {
-            examSystem: 'A-Levels',
-            examDescription: 'General Certificate of Education Advanced Level (A-Levels)',
-            additionalTests: ['IELTS/TOEFL for international students'],
-            currency: 'GBP',
-            currencySymbol: '£',
-            examSubjects: {
-                engineering: ['Mathematics', 'Physics', 'Chemistry', 'Further Mathematics'],
-                medical: ['Biology', 'Chemistry', 'Mathematics', 'Physics'],
-                social: ['English', 'Government', 'History', 'Law'],
-                business: ['Mathematics', 'Economics', 'Business Studies', 'Accounting'],
-                arts: ['English Literature', 'Art', 'History', 'Media Studies'],
-                general: ['3-4 subjects related to career field']
-            },
-            jambSubjects: [],
-            universities: {
-                engineering: ['University of Cambridge', 'Imperial College London', 'University of Oxford', 'University of Manchester', 'University of Bristol'],
-                medical: ['University of Oxford', 'University of Cambridge', 'Imperial College London', 'UCL', 'King\'s College London'],
-                social: ['London School of Economics', 'University of Oxford', 'University of Cambridge', 'UCL', 'University of Edinburgh'],
-                business: ['London Business School', 'University of Oxford', 'University of Cambridge', 'Warwick Business School', 'LSE'],
-                arts: ['Royal College of Art', 'University of the Arts London', 'University of Oxford', 'University of Cambridge', 'University of Edinburgh'],
-                general: ['University of Oxford', 'University of Cambridge', 'Imperial College London', 'UCL', 'LSE']
-            }
+    // API URL for json-server
+    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const apiUrl = `${baseUrl}/careers`;
+
+    // =========================
+    // SAVE ANSWER
+    // =========================
+
+    const saveAnswer = (questionId, option) => {
+        const existing = answers.value.find(item => item.questionId === questionId);
+        if (existing) {
+            existing.option = option;
+        } else {
+            answers.value.push({ questionId, option });
+        }
+        quizCompleted.value = false;
+        saveToLocalStorage();
+    };
+
+    // =========================
+    // GET ANSWER
+    // =========================
+
+    const getAnswer = (questionId) => {
+        return answers.value.find(item => item.questionId === questionId);
+    };
+
+    // =========================
+    // LOCAL STORAGE
+    // =========================
+
+    const saveToLocalStorage = () => {
+        localStorage.setItem('quiz_answers', JSON.stringify(answers.value));
+    };
+
+    const loadFromLocalStorage = () => {
+        const saved = localStorage.getItem('quiz_answers');
+        if (saved) {
+            answers.value = JSON.parse(saved);
         }
     };
-    
-    const countryData = requirements[countryLower] || requirements['us'];
-    const careerFieldKey = careerField;
-    
-    return {
-        examSystem: countryData.examSystem,
-        examDescription: countryData.examDescription,
-        examSubjects: countryData.examSubjects[careerFieldKey] || countryData.examSubjects.general,
-        jambSubjects: countryData.jambSubjects?.[careerFieldKey] || countryData.jambSubjects?.general || [],
-        additionalTests: countryData.additionalTests,
-        currency: countryData.currency,
-        currencySymbol: countryData.currencySymbol,
-        universities: countryData.universities[careerFieldKey] || countryData.universities.general
+
+    const clearLocalStorage = () => {
+        localStorage.removeItem('quiz_answers');
+        localStorage.removeItem('quiz_completed');
     };
-};
 
-// Get icon for career
-const getIconForCareer = (title) => {
-    if (!title) return '🎯';
-    const t = title.toLowerCase();
-    
-    if (t.includes('software') || t.includes('developer') || t.includes('programmer')) return '💻';
-    if (t.includes('engineer') || t.includes('engineering')) return '🔧';
-    if (t.includes('data') || t.includes('analyst')) return '📊';
-    if (t.includes('cyber') || t.includes('security')) return '🔒';
-    if (t.includes('doctor') || t.includes('physician')) return '👨‍⚕️';
-    if (t.includes('nurse')) return '🩺';
-    if (t.includes('dentist')) return '🦷';
-    if (t.includes('social') || t.includes('counselor')) return '🤝';
-    if (t.includes('lawyer') || t.includes('attorney')) return '⚖️';
-    if (t.includes('teacher') || t.includes('educator')) return '📚';
-    if (t.includes('accountant') || t.includes('finance')) return '💰';
-    if (t.includes('manager') || t.includes('business')) return '📋';
-    if (t.includes('designer') || t.includes('artist')) return '🎨';
-    if (t.includes('writer') || t.includes('journalist')) return '✍️';
-    if (t.includes('scientist') || t.includes('researcher')) return '🔬';
-    return '🎯';
-};
+    // =========================
+    // SAVE CAREERS TO LOCAL STORAGE
+    // =========================
 
-// Format salary with country-specific currency
-const formatSalary = (salary) => {
-    if (!salary) return 'Information not available';
-    
-    const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
-    const countryRequirements = getCountryExamRequirements(userCountry, career.value?.title);
-    
-    if (typeof salary === 'object' && salary.min && salary.max) {
-        const formatter = new Intl.NumberFormat(userCountry === 'ng' ? 'en-NG' : userCountry === 'uk' ? 'en-GB' : 'en-US', {
-            style: 'currency',
-            currency: countryRequirements.currency,
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-        return `${formatter.format(salary.min)} - ${formatter.format(salary.max)} / ${salary.period || 'year'}`;
-    }
-    return 'Information not available';
-};
-
-// Get country-specific requirements for display
-const countryRequirements = computed(() => {
-    if (!career.value) return null;
-    const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
-    return getCountryExamRequirements(userCountry, career.value.title);
-});
-
-// Get country-specific universities
-const countryUniversities = computed(() => {
-    if (!countryRequirements.value) return [];
-    return countryRequirements.value.universities.map((uni, index) => ({
-        name: uni,
-        ranking: index === 0 ? 'Top Ranked' : index === 1 ? 'Highly Ranked' : 'Leading University',
-        programName: `${career.value?.title || 'Relevant'} Degree`
-    }));
-});
-
-// Image handling
-const imageError = ref(false);
-const fallbackImages = [
-    'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800',
-    'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800',
-    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800'
-];
-
-const getCareerImage = (careerItem) => {
-    if (imageError.value) {
-        return fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-    }
-    if (careerItem?.image) return careerItem.image;
-    const searchQuery = encodeURIComponent(careerItem?.title || 'career');
-    return `https://source.unsplash.com/featured/800x600?${searchQuery}`;
-};
-
-const handleImageError = (event) => {
-    imageError.value = true;
-    event.target.src = fallbackImages[Math.floor(Math.random() * fallbackImages.length)];
-};
-
-// Load career data from multiple sources
-const loadCareer = async () => {
-    loading.value = true;
-    error.value = null;
-    
-    const slug = route.params.slug;
-    const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
-    
-    console.log(`🔍 Looking for career with slug: "${slug}" in ${userCountry}`);
-    
-    try {
-        let foundCareer = null;
+    const saveCareersToLocalStorage = () => {
+        if (careers.value.length === 0) return;
         
-        // FIRST: Try to load from quizStore careers (most recent AI-generated)
-        const storeCareers = quizStore.careers;
-        if (storeCareers && storeCareers.length > 0) {
-            foundCareer = storeCareers.find(c => c.slug === slug);
-            if (foundCareer) {
-                console.log('✅ Career found in quizStore');
-            }
+        if (careers.value[0]?.country) {
+            const countryKey = careers.value[0].country.toLowerCase();
+            localStorage.setItem(`cached_careers_${countryKey}`, JSON.stringify(careers.value));
+            console.log(`💾 Saved ${careers.value.length} careers for ${countryKey}`);
         }
-        
-        // SECOND: Try to load from country-specific localStorage
-        if (!foundCareer) {
-            const cachedCareers = localStorage.getItem(`cached_careers_${userCountry}`);
-            if (cachedCareers) {
-                const parsedCareers = JSON.parse(cachedCareers);
-                foundCareer = parsedCareers.find(c => c.slug === slug);
-                if (foundCareer) {
-                    console.log('✅ Career found in country-specific localStorage');
+        localStorage.setItem('cached_careers', JSON.stringify(careers.value));
+    };
+
+    const loadCareersFromLocalStorage = (country) => {
+        if (country) {
+            const countryKey = country.toLowerCase();
+            const saved = localStorage.getItem(`cached_careers_${countryKey}`);
+            if (saved) {
+                const savedCareers = JSON.parse(saved);
+                if (savedCareers && savedCareers.length > 0) {
+                    careers.value = savedCareers;
+                    console.log(`✅ Loaded ${savedCareers.length} careers for ${countryKey}`);
+                    return true;
                 }
             }
         }
         
-        // THIRD: Try to load from generic localStorage cache
-        if (!foundCareer) {
-            const cachedCareers = localStorage.getItem('cached_careers');
-            if (cachedCareers) {
-                const parsedCareers = JSON.parse(cachedCareers);
-                foundCareer = parsedCareers.find(c => c.slug === slug);
-                if (foundCareer) {
-                    console.log('✅ Career found in generic localStorage');
-                }
+        const saved = localStorage.getItem('cached_careers');
+        if (saved) {
+            const savedCareers = JSON.parse(saved);
+            if (savedCareers && savedCareers.length > 0) {
+                careers.value = savedCareers;
+                console.log(`✅ Loaded ${savedCareers.length} careers from generic cache`);
+                return true;
             }
         }
+        return false;
+    };
+
+    // =========================
+    // SAVE CAREERS TO JSON-SERVER
+    // =========================
+
+    const saveCareersToJsonServer = async (newCareers) => {
+        if (!newCareers || newCareers.length === 0) return;
         
-        // FOURTH: Try to load from json-server
-        if (!foundCareer) {
-            try {
-                const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-                const response = await fetch(`${apiUrl}/careers`);
-                if (response.ok) {
-                    const allCareers = await response.json();
-                    foundCareer = allCareers.find(c => c.slug === slug);
-                    if (foundCareer) {
-                        console.log('✅ Career found in json-server');
+        try {
+            for (const career of newCareers) {
+                const careerToSave = {
+                    id: career.id,
+                    slug: career.slug,
+                    title: career.title,
+                    icon: career.icon,
+                    shortDescription: career.shortDescription,
+                    description: career.description,
+                    skills: career.skills,
+                    traits: career.traits || [],
+                    interests: career.interests || [],
+                    personalityType: career.personalityType,
+                    country: career.country,
+                    requirements: career.requirements,
+                    universities: career.universities,
+                    salary: career.salary,
+                    relatedCareers: career.relatedCareers,
+                    pathway: career.pathway,
+                    courses: career.courses || [],
+                    degrees: career.degrees || [],
+                    match: career.match,
+                    aiGenerated: true
+                };
+                
+                const checkResponse = await fetch(`${apiUrl}?slug=${career.slug}`).catch(() => null);
+                if (checkResponse && checkResponse.ok) {
+                    const existing = await checkResponse.json();
+                    if (existing.length === 0) {
+                        await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(careerToSave)
+                        }).catch(() => {});
+                        console.log(`✅ Saved to json-server: ${career.title}`);
                     }
                 }
-            } catch (err) {
-                console.log('⚠️ json-server not available:', err.message);
+            }
+        } catch (error) {
+            console.log('⚠️ Failed to save to json-server');
+        }
+    };
+
+    // =========================
+    // GET ICON FOR CAREER
+    // =========================
+    
+    const getIconForCareer = (title) => {
+        if (!title) return '💼';
+        const t = title.toLowerCase();
+        
+        if (t.includes('software') || t.includes('developer')) return '💻';
+        if (t.includes('engineer')) return '🔧';
+        if (t.includes('data')) return '📊';
+        if (t.includes('doctor') || t.includes('medical')) return '👨‍⚕️';
+        if (t.includes('nurse')) return '🩺';
+        if (t.includes('social') || t.includes('counselor')) return '🤝';
+        if (t.includes('lawyer')) return '⚖️';
+        if (t.includes('teacher')) return '📚';
+        if (t.includes('business') || t.includes('manager')) return '📋';
+        if (t.includes('designer')) return '🎨';
+        if (t.includes('writer')) return '✍️';
+        return '🎯';
+    };
+
+    // =========================
+    // COMPLETE FALLBACK CAREERS WITH ALL DATA
+    // =========================
+
+    const getCompleteFallbackCareers = (country, personality) => {
+        const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
+        const personalityLower = personality?.toLowerCase() || '';
+        
+        let personalityType = 'Technical Innovator';
+        let careerType = 'technical';
+        
+        if (personalityLower.includes('creative')) {
+            personalityType = 'Creative Communicator';
+            careerType = 'creative';
+        } else if (personalityLower.includes('healthcare') || personalityLower.includes('helper')) {
+            personalityType = 'Healthcare Helper';
+            careerType = 'healthcare';
+        } else if (personalityLower.includes('business') || personalityLower.includes('leader')) {
+            personalityType = 'Business Leader';
+            careerType = 'business';
+        }
+        
+        if (countryLower === 'nigeria') {
+            if (careerType === 'technical') {
+                return [
+                    {
+                        id: 1,
+                        title: 'Software Developer',
+                        slug: 'software-developer',
+                        icon: '💻',
+                        shortDescription: 'Build innovative software solutions for Nigerian businesses',
+                        description: 'Software developers create applications, websites, and systems that solve real-world problems. In Nigeria, this career is growing rapidly with the tech ecosystem in Lagos, Abuja, and other cities. Developers work in fintech, e-commerce, healthtech, and many other sectors.',
+                        skills: ['JavaScript', 'Python', 'React', 'Node.js', 'Database Management', 'Problem Solving'],
+                        traits: ['Analytical', 'Logical', 'Creative', 'Detail-oriented'],
+                        interests: ['Technology', 'Coding', 'Problem-solving', 'Innovation'],
+                        personalityType: personalityType,
+                        country: 'ng',
+                        requirements: {
+                            examSystem: 'WAEC/NECO',
+                            examSubjects: ['English Language', 'Mathematics', 'Physics', 'Computer Studies'],
+                            jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
+                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                            additionalTests: ['Post-UTME (varies by university)']
+                        },
+                        universities: [
+                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Computer Science' },
+                            { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Computer Engineering' },
+                            { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Computer Science' },
+                            { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Computer Science' },
+                            { name: 'Federal University of Technology, Minna', ranking: 'Top Tech University', programName: 'Software Engineering' },
+                            { name: 'Covenant University', ranking: 'Top Private University', programName: 'Computer Science' },
+                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: 'Top 10', programName: 'Computer Science' },
+                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Computer Science' },
+                            { name: 'Babcock University', ranking: 'Top Private', programName: 'Software Engineering' },
+                            { name: 'University of Benin (UNIBEN)', ranking: 'Top 10', programName: 'Computer Engineering' }
+                        ],
+                        salary: {
+                            entry: 1200000,
+                            midMin: 2400000,
+                            midMax: 4200000,
+                            senior: 6000000,
+                            currency: 'NGN',
+                            period: 'year'
+                        },
+                        relatedCareers: ['Frontend Developer', 'Backend Developer', 'DevOps Engineer', 'Mobile App Developer', 'IT Consultant'],
+                        pathway: [
+                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Physics, and Computer Studies in WAEC/NECO.' },
+                            { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete a degree in Computer Science, Software Engineering, or related field.' },
+                            { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create personal projects, contribute to open source, and build a GitHub portfolio.' },
+                            { step: 4, title: 'Internship', duration: '6-12 months', description: 'Gain practical experience through internships at tech companies.' },
+                            { step: 5, title: 'Professional Certification', duration: 'Ongoing', description: 'Pursue certifications like AWS, Google Cloud, or Microsoft Azure.' }
+                        ],
+                        courses: [
+                            { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
+                            { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' },
+                            { name: 'Python for Everybody', platform: 'University of Michigan', description: 'Master Python programming', url: 'https://www.coursera.org/specializations/python' }
+                        ],
+                        degrees: ['Bachelor of Science in Computer Science', 'Bachelor of Engineering in Software Engineering', 'Master of Science in Computer Science'],
+                        match: 85,
+                        aiGenerated: true
+                    }
+                ];
+            } else if (careerType === 'healthcare') {
+                return [
+                    {
+                        id: 2,
+                        title: 'Medical Doctor',
+                        slug: 'medical-doctor',
+                        icon: '👨‍⚕️',
+                        shortDescription: 'Provide essential healthcare services to Nigerian communities',
+                        description: 'Medical doctors diagnose and treat illnesses, injuries, and other health conditions. In Nigeria, doctors work in hospitals, clinics, and community health centers, addressing various health challenges including malaria, typhoid, and other tropical diseases.',
+                        skills: ['Diagnosis', 'Patient Care', 'Medical Knowledge', 'Emergency Response', 'Communication', 'Empathy'],
+                        traits: ['Compassionate', 'Patient', 'Observant', 'Dedicated'],
+                        interests: ['Healthcare', 'Helping others', 'Science', 'Medical research'],
+                        personalityType: personalityType,
+                        country: 'ng',
+                        requirements: {
+                            examSystem: 'WAEC/NECO',
+                            examSubjects: ['English Language', 'Mathematics', 'Biology', 'Chemistry', 'Physics'],
+                            jambSubjects: ['English', 'Biology', 'Chemistry', 'Physics'],
+                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                            additionalTests: ['Post-UTME', 'Medical School Entrance Exam']
+                        },
+                        universities: [
+                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Medicine and Surgery' },
+                            { name: 'University of Ibadan (UI)', ranking: '2nd in Nigeria', programName: 'Medicine and Surgery' },
+                            { name: 'Obafemi Awolowo University (OAU)', ranking: '3rd in Nigeria', programName: 'Medicine' },
+                            { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Medicine' },
+                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: '5th in Nigeria', programName: 'Medicine' },
+                            { name: 'University of Benin (UNIBEN)', ranking: 'Top 10', programName: 'Medicine' },
+                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Medicine' },
+                            { name: 'Bayero University Kano (BUK)', ranking: 'Top Northern University', programName: 'Medicine' },
+                            { name: 'University of Ilorin', ranking: 'Top 10', programName: 'Medicine' },
+                            { name: 'Nigerian Defence Academy', ranking: 'Specialized Institution', programName: 'Medicine' }
+                        ],
+                        salary: {
+                            entry: 2400000,
+                            midMin: 4800000,
+                            midMax: 7200000,
+                            senior: 12000000,
+                            currency: 'NGN',
+                            period: 'year'
+                        },
+                        relatedCareers: ['Pediatrician', 'Surgeon', 'Psychiatrist', 'Public Health Physician', 'Medical Researcher'],
+                        pathway: [
+                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Sciences - Biology, Chemistry, Physics.' },
+                            { step: 2, title: 'Bachelor of Medicine (MBBS)', duration: '6 years', description: 'Complete medical school at a Nigerian university.' },
+                            { step: 3, title: 'Internship (Housemanship)', duration: '1 year', description: 'Rotating internship at a teaching hospital.' },
+                            { step: 4, title: 'National Youth Service Corps (NYSC)', duration: '1 year', description: 'Service to the nation.' },
+                            { step: 5, title: 'Residency Program', duration: '4-6 years', description: 'Specialize in a specific field of medicine.' }
+                        ],
+                        courses: [
+                            { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
+                            { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language', url: 'https://www.edx.org/course/medical-terminology' },
+                            { name: 'Tropical Medicine', platform: 'Liverpool School of Tropical Medicine', description: 'Study tropical diseases', url: 'https://www.lstmed.ac.uk/study' }
+                        ],
+                        degrees: ['Bachelor of Medicine, Bachelor of Surgery (MBBS)', 'Doctor of Medicine (MD)', 'Master of Public Health (MPH)'],
+                        match: 85,
+                        aiGenerated: true
+                    }
+                ];
+            } else if (careerType === 'business') {
+                return [
+                    {
+                        id: 3,
+                        title: 'Business Administrator',
+                        slug: 'business-administrator',
+                        icon: '📋',
+                        shortDescription: 'Lead and manage business operations in Nigerian organizations',
+                        description: 'Business administrators oversee daily operations, manage teams, and develop strategies for organizational growth. In Nigeria\'s growing economy, business administrators are essential in banking, manufacturing, telecommunications, and other sectors.',
+                        skills: ['Management', 'Leadership', 'Strategic Planning', 'Financial Analysis', 'Communication', 'Problem Solving'],
+                        traits: ['Organized', 'Decisive', 'Strategic', 'Motivated'],
+                        interests: ['Business', 'Management', 'Leadership', 'Entrepreneurship'],
+                        personalityType: personalityType,
+                        country: 'ng',
+                        requirements: {
+                            examSystem: 'WAEC/NECO',
+                            examSubjects: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
+                            jambSubjects: ['English', 'Mathematics', 'Economics', 'Commerce'],
+                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                            additionalTests: ['Post-UTME (varies by university)']
+                        },
+                        universities: [
+                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Business Administration' },
+                            { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Business Administration' },
+                            { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Business Administration' },
+                            { name: 'Pan-Atlantic University (Lagos Business School)', ranking: 'Top Business School', programName: 'Business Administration' },
+                            { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Business Administration' },
+                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: 'Top 10', programName: 'Business Administration' },
+                            { name: 'Covenant University', ranking: 'Top Private', programName: 'Business Administration' },
+                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Business Administration' },
+                            { name: 'University of Benin (UNIBEN)', ranking: 'Top 10', programName: 'Business Administration' },
+                            { name: 'Babcock University', ranking: 'Top Private', programName: 'Business Administration' }
+                        ],
+                        salary: {
+                            entry: 1800000,
+                            midMin: 3000000,
+                            midMax: 5400000,
+                            senior: 9000000,
+                            currency: 'NGN',
+                            period: 'year'
+                        },
+                        relatedCareers: ['Management Consultant', 'Project Manager', 'Operations Manager', 'Entrepreneur', 'Financial Analyst'],
+                        pathway: [
+                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Economics, and Accounting.' },
+                            { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete BSc in Business Administration or related field.' },
+                            { step: 3, title: 'Gain Work Experience', duration: '2-3 years', description: 'Work in entry-level management positions.' },
+                            { step: 4, title: 'Master\'s Degree (MBA)', duration: '2 years', description: 'Pursue an MBA for advanced opportunities.' },
+                            { step: 5, title: 'Professional Certifications', duration: 'Ongoing', description: 'PMP, CIPM, or other management certifications.' }
+                        ],
+                        courses: [
+                            { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
+                            { name: 'Project Management Professional', platform: 'Google Coursera', description: 'Master project management', url: 'https://www.coursera.org/professional-certificates/google-project-management' },
+                            { name: 'Financial Accounting', platform: 'UVA Darden', description: 'Understand financial statements', url: 'https://www.coursera.org/learn/financial-accounting' }
+                        ],
+                        degrees: ['Bachelor of Science in Business Administration', 'Master of Business Administration (MBA)', 'Master of Management'],
+                        match: 85,
+                        aiGenerated: true
+                    }
+                ];
+            } else {
+                return [
+                    {
+                        id: 4,
+                        title: 'Content Creator',
+                        slug: 'content-creator',
+                        icon: '✍️',
+                        shortDescription: 'Create engaging digital content for Nigerian and global audiences',
+                        description: 'Content creators produce videos, articles, social media posts, and other digital content. Nigeria has a vibrant creative industry with opportunities in Nollywood, music, social media influencing, and digital marketing.',
+                        skills: ['Writing', 'Video Editing', 'Creativity', 'Social Media Management', 'Storytelling', 'Photography'],
+                        traits: ['Creative', 'Expressive', 'Empathetic', 'Adaptable'],
+                        interests: ['Content creation', 'Social media', 'Storytelling', 'Digital marketing'],
+                        personalityType: personalityType,
+                        country: 'ng',
+                        requirements: {
+                            examSystem: 'WAEC/NECO',
+                            examSubjects: ['English Language', 'Literature', 'Government', 'Economics'],
+                            jambSubjects: ['English', 'Literature', 'Government', 'Economics'],
+                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                            additionalTests: ['Post-UTME (varies by university)']
+                        },
+                        universities: [
+                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Mass Communication' },
+                            { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Mass Communication' },
+                            { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Communication and Language Arts' },
+                            { name: 'Pan-Atlantic University', ranking: 'Top Private', programName: 'Media and Communication' },
+                            { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Mass Communication' },
+                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: 'Top 10', programName: 'Mass Communication' },
+                            { name: 'Covenant University', ranking: 'Top Private', programName: 'Mass Communication' },
+                            { name: 'Redeemer\'s University', ranking: 'Top Private', programName: 'Mass Communication' },
+                            { name: 'Babcock University', ranking: 'Top Private', programName: 'Mass Communication' },
+                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Mass Communication' }
+                        ],
+                        salary: {
+                            entry: 960000,
+                            midMin: 1800000,
+                            midMax: 3600000,
+                            senior: 6000000,
+                            currency: 'NGN',
+                            period: 'year'
+                        },
+                        relatedCareers: ['Social Media Manager', 'Video Editor', 'Digital Marketer', 'Podcaster', 'Graphic Designer'],
+                        pathway: [
+                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on English, Literature, and Arts.' },
+                            { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Study Mass Communication, Media Studies, or related field.' },
+                            { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create content, grow social media presence.' },
+                            { step: 4, title: 'Internship', duration: '6-12 months', description: 'Work with media companies or agencies.' },
+                            { step: 5, title: 'Specialize', duration: 'Ongoing', description: 'Focus on video, writing, design, or social media.' }
+                        ],
+                        courses: [
+                            { name: 'Content Creation Masterclass', platform: 'HubSpot Academy', description: 'Learn content marketing', url: 'https://academy.hubspot.com/courses/content-marketing' },
+                            { name: 'Video Editing with DaVinci Resolve', platform: 'Blackmagic Design', description: 'Master video editing', url: 'https://www.blackmagicdesign.com/products/davinciresolve/training' },
+                            { name: 'Social Media Marketing', platform: 'Meta Blueprint', description: 'Learn social media advertising', url: 'https://www.facebook.com/business/learn' }
+                        ],
+                        degrees: ['Bachelor of Arts in Mass Communication', 'Bachelor of Arts in Media Studies', 'Master of Arts in Digital Media'],
+                        match: 85,
+                        aiGenerated: true
+                    }
+                ];
+            }
+        } else {
+            // US fallback
+            return [
+                {
+                    id: 1,
+                    title: 'Software Engineer',
+                    slug: 'software-engineer',
+                    icon: '💻',
+                    shortDescription: 'Build and maintain software applications',
+                    description: 'Software engineers design, develop, and test software applications that power modern businesses. This career offers high earning potential and remote work opportunities.',
+                    skills: ['Programming', 'Problem Solving', 'Debugging', 'Teamwork', 'System Design'],
+                    traits: ['Analytical', 'Detail-oriented', 'Logical', 'Innovative'],
+                    interests: ['Technology', 'Problem-solving', 'Innovation', 'Coding'],
+                    personalityType: personalityType,
+                    country: 'us',
+                    requirements: {
+                        examSystem: 'SAT/ACT',
+                        examSubjects: ['English', 'Mathematics', 'Physics', 'Computer Science'],
+                        jambSubjects: [],
+                        examDescription: 'Scholastic Assessment Test (SAT) or American College Testing (ACT)',
+                        additionalTests: ['TOEFL/IELTS (for international students)']
+                    },
+                    universities: [
+                        { name: 'Massachusetts Institute of Technology (MIT)', ranking: '1st in US', programName: 'Computer Science' },
+                        { name: 'Stanford University', ranking: '2nd in US', programName: 'Computer Science' },
+                        { name: 'Carnegie Mellon University', ranking: '3rd in US', programName: 'Software Engineering' },
+                        { name: 'University of California, Berkeley', ranking: '4th in US', programName: 'Computer Science' },
+                        { name: 'California Institute of Technology', ranking: '5th in US', programName: 'Computer Science' },
+                        { name: 'Harvard University', ranking: '6th in US', programName: 'Computer Science' },
+                        { name: 'Princeton University', ranking: '7th in US', programName: 'Computer Science' },
+                        { name: 'University of Washington', ranking: '8th in US', programName: 'Computer Science' },
+                        { name: 'Cornell University', ranking: '9th in US', programName: 'Computer Science' },
+                        { name: 'Georgia Institute of Technology', ranking: '10th in US', programName: 'Computer Science' }
+                    ],
+                    salary: {
+                        entry: 85000,
+                        midMin: 110000,
+                        midMax: 150000,
+                        senior: 200000,
+                        currency: 'USD',
+                        period: 'year'
+                    },
+                    relatedCareers: ['Data Scientist', 'DevOps Engineer', 'Cloud Architect', 'Mobile Developer'],
+                    pathway: [
+                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Math and Science courses.' },
+                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Earn a BS in Computer Science or related field.' },
+                        { step: 3, title: 'Internship', duration: '3-6 months', description: 'Gain practical experience.' },
+                        { step: 4, title: 'Entry-Level Position', duration: '2 years', description: 'Start as a junior developer.' },
+                        { step: 5, title: 'Senior Engineer', duration: 'Ongoing', description: 'Advance to senior roles.' }
+                    ],
+                    courses: [
+                        { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
+                        { name: 'Data Structures and Algorithms', platform: 'Coursera', description: 'Master algorithms', url: 'https://www.coursera.org/specializations/data-structures-algorithms' },
+                        { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' }
+                    ],
+                    degrees: ['Bachelor of Science in Computer Science', 'Bachelor of Engineering in Software Engineering', 'Master of Science in Computer Science'],
+                    match: 85,
+                    aiGenerated: true
+                }
+            ];
+        }
+    };
+
+    // =========================
+    // PERSONALITY SCORES
+    // =========================
+
+    const calculatePersonalityScores = () => {
+        const personalityTypeScores = {};
+        answers.value.forEach(answer => {
+            const type = answer.option?.personalityType;
+            if (type) {
+                personalityTypeScores[type] = (personalityTypeScores[type] || 0) + 1;
+            }
+        });
+        const total = answers.value.length || 1;
+        personalityScores.value = Object.entries(personalityTypeScores).map(
+            ([name, score]) => ({
+                name,
+                score: Math.round((score / total) * 100)
+            })
+        );
+    };
+
+    // =========================
+    // MAIN GENERATOR
+    // =========================
+
+    const generateCareer = async (country, forceRefresh = false) => {
+        isLoading.value = true;
+        error.value = null;
+    
+        try {
+            const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
+            
+            if (forceRefresh || quizJustCompleted) {
+                console.log("🤖 Generating NEW careers for", country);
+                await generateCareerWithAI(country);
+                localStorage.removeItem('quiz_just_completed');
+            } else {
+                console.log("📦 Loading cached careers for", country);
+                const loaded = loadCareersFromLocalStorage(country);
+                
+                if (!loaded || careers.value.length === 0) {
+                    console.log("⚠️ No cache found, using fallback careers");
+                    generateCareerFallback(country);
+                } else {
+                    calculatePersonalityScores();
+                }
+            }
+    
+        } catch (err) {
+            console.error("Generation error:", err);
+            generateCareerFallback(country);
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    // =========================
+    // AI CAREER GENERATION
+    // =========================
+
+    const generateCareerWithAI = async (country) => {
+        const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+        
+        // If no API key or API is not working, use fallback immediately
+        if (!API_KEY) {
+            console.warn("No API key found, using fallback careers");
+            generateCareerFallback(country);
+            return false;
+        }
+
+        const countryLower = country?.toLowerCase() || 'us';
+        
+        // Calculate dominant personality
+        const personalityCounts = {};
+        answers.value.forEach(item => {
+            const type = item.option?.personalityType;
+            if (type) {
+                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
+            }
+        });
+        
+        let dominantPersonality = "Technical Innovator";
+        let maxCount = 0;
+        for (const [type, count] of Object.entries(personalityCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                dominantPersonality = type;
+            }
+        }
+
+        try {
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "HTTP-Referer": "https://career-compass-v906.onrender.com",
+                    "X-Title": "Career AI Platform"
+                },
+                body: JSON.stringify({
+                    model: "deepseek/deepseek-chat",
+                    messages: [
+                        {
+                            role: "system",
+                            content: `You are a career expert for ${country.toUpperCase()}. Return ONLY valid JSON with career recommendations.`
+                        },
+                        { 
+                            role: "user", 
+                            content: `Recommend 3 careers for a ${dominantPersonality} personality in ${country.toUpperCase()}. Include title, slug, shortDescription, description, skills array, traits array, interests array.` 
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
+
+            if (!response.ok) {
+                console.warn(`API Error: ${response.status}, using fallback careers`);
+                generateCareerFallback(country);
+                return false;
+            }
+
+            const data = await response.json();
+            let aiText = data.choices[0].message.content;
+            
+            aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
+            const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+            if (jsonMatch) aiText = jsonMatch[0];
+            
+            const parsed = JSON.parse(aiText);
+            if (!parsed.recommendations) throw new Error("Invalid response");
+
+            // Get complete fallback data and merge with AI
+            const fallbackCareers = getCompleteFallbackCareers(country, dominantPersonality);
+            
+            const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
+                const fallback = fallbackCareers[index % fallbackCareers.length];
+                const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'ng' : 'us';
+                const config = countryLower === 'ng' ? {
+                    examSystem: 'WAEC/NECO',
+                    examSubjects: ['English Language', 'Mathematics', 'Physics', 'Chemistry'],
+                    jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
+                    examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                    additionalTests: ['Post-UTME (varies by university)'],
+                    currency: 'NGN',
+                    salaryRange: { min: 1800000, max: 4200000 }
+                } : {
+                    examSystem: 'SAT/ACT',
+                    examSubjects: ['English', 'Mathematics', 'Science', 'Optional Essay'],
+                    jambSubjects: [],
+                    examDescription: 'Scholastic Assessment Test (SAT) or American College Testing (ACT)',
+                    additionalTests: ['TOEFL/IELTS (for international students)'],
+                    currency: 'USD',
+                    salaryRange: { min: 45000, max: 85000 }
+                };
+                
+                return {
+                    id: Date.now() + index + Math.random(),
+                    slug: aiCareer.slug || fallback.slug,
+                    title: aiCareer.title || fallback.title,
+                    icon: fallback.icon,
+                    shortDescription: aiCareer.shortDescription || fallback.shortDescription,
+                    description: aiCareer.description || fallback.description,
+                    skills: aiCareer.skills || fallback.skills,
+                    traits: fallback.traits,
+                    interests: fallback.interests,
+                    personalityType: dominantPersonality,
+                    country: countryLower === 'ng' ? 'ng' : 'us',
+                    requirements: fallback.requirements || {
+                        examSystem: config.examSystem,
+                        examSubjects: config.examSubjects,
+                        jambSubjects: config.jambSubjects,
+                        examDescription: config.examDescription,
+                        additionalTests: config.additionalTests
+                    },
+                    universities: fallback.universities || [],
+                    salary: fallback.salary || {
+                        entry: config.salaryRange.min,
+                        midMin: config.salaryRange.min,
+                        midMax: config.salaryRange.max,
+                        senior: config.salaryRange.max,
+                        currency: config.currency,
+                        period: "year"
+                    },
+                    relatedCareers: fallback.relatedCareers || [],
+                    pathway: fallback.pathway || [],
+                    courses: fallback.courses || [],
+                    degrees: fallback.degrees || [],
+                    match: 85,
+                    aiGenerated: true
+                };
+            });
+
+            careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
+            
+            saveCareersToLocalStorage();
+            await saveCareersToJsonServer(recommendedCareers).catch(() => {});
+            calculatePersonalityScores();
+            
+            console.log("✅ AI careers generated with fallback data:", careers.value.length);
+            return true;
+            
+        } catch (error) {
+            console.error("AI error:", error);
+            generateCareerFallback(country);
+            return false;
+        }
+    };
+
+    // =========================
+    // FALLBACK SYSTEM
+    // =========================
+
+    const generateCareerFallback = (country) => {
+        if (loadCareersFromLocalStorage(country)) {
+            calculatePersonalityScores();
+            console.log('✅ Using cached fallback careers');
+            return;
+        }
+        
+        const personalityCounts = {};
+        answers.value.forEach(answer => {
+            const type = answer.option?.personalityType;
+            if (type) {
+                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
+            }
+        });
+        
+        let dominantPersonality = "Technical Innovator";
+        let maxCount = 0;
+        for (const [type, count] of Object.entries(personalityCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                dominantPersonality = type;
             }
         }
         
-        if (foundCareer) {
-            // Enhance career with country-specific data
-            career.value = {
-                ...foundCareer,
-                countryRequirements: countryRequirements.value,
-                countryUniversities: countryUniversities.value
-            };
-            console.log('✅ Career loaded successfully:', foundCareer.title);
-        } else {
-            error.value = 'Career not found. Please complete the quiz first.';
-        }
+        careers.value = getCompleteFallbackCareers(country, dominantPersonality);
+        saveCareersToLocalStorage();
+        saveCareersToJsonServer(careers.value);
+        calculatePersonalityScores();
+        console.log('✅ Using complete fallback careers');
+    };
+
+    // =========================
+    // MATCH CALCULATOR
+    // =========================
+
+    const calculateMatch = (career) => {
+        let score = 0;
+        answers.value.forEach(answer => {
+            if (answer.option?.personalityType === career.personalityType) score += 25;
+            answer.option?.traits?.forEach(trait => {
+                if (career.traits?.includes(trait)) score += 10;
+            });
+            answer.option?.interests?.forEach(interest => {
+                if (career.interests?.includes(interest)) score += 10;
+            });
+        });
+        return score > 100 ? 100 : score;
+    };
+
+    // =========================
+    // RESET QUIZ
+    // =========================
+
+    const resetQuiz = () => {
+        answers.value = [];
+        careers.value = [];
+        personalityScores.value = [];
+        error.value = null;
+        quizCompleted.value = false;
+        clearLocalStorage();
         
-    } catch (err) {
-        console.error('Error loading career:', err);
-        error.value = 'Failed to load career details. Please try again.';
-    } finally {
-        loading.value = false;
-    }
-};
+        localStorage.setItem('quiz_just_completed', 'true');
+        
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith('cached_careers_')) {
+                localStorage.removeItem(key);
+            }
+        });
+        localStorage.removeItem('cached_careers');
+    };
 
-// Watch for country changes - reload career with new country data
-watch(() => userStore.currentUser?.country, async () => {
-    if (career.value) {
-        console.log(`Country changed, reloading career with new country data...`);
-        await loadCareer();
-    }
+    // =========================
+    // INITIALIZE
+    // =========================
+
+    const initialize = () => {
+        loadFromLocalStorage();
+    };
+
+    initialize();
+
+    return {
+        answers,
+        careers,
+        personalityScores,
+        isLoading,
+        error,
+        saveAnswer,
+        generateCareer,
+        getAnswer,
+        resetQuiz,
+        initialize
+    };
 });
-
-// Watch for route param changes
-watch(() => route.params.slug, async () => {
-    await loadCareer();
-});
-
-onMounted(async () => {
-    await userStore.fetchCurrentUser();
-    await loadCareer();
-});
-</script>
-
-<template>
-    <section class="pt-28 pb-20 px-6">
-        <!-- Loading State -->
-        <div v-if="loading" class="text-center py-20">
-            <div class="inline-block">
-                <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-            </div>
-            <p class="text-gray-600">Loading career details...</p>
-        </div>
-
-        <!-- Error State -->
-        <div v-else-if="error" class="text-center py-20">
-            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6 max-w-md mx-auto">
-                <p class="text-yellow-800">⚠️ {{ error }}</p>
-                <button 
-                    @click="$router.push('/results')" 
-                    class="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg mr-2"
-                >
-                    View My Results
-                </button>
-                <button 
-                    @click="$router.push('/quiz')" 
-                    class="mt-4 px-6 py-2 bg-green-600 text-white rounded-lg"
-                >
-                    Take Quiz
-                </button>
-            </div>
-        </div>
-
-        <!-- Career Details -->
-        <div class="max-w-6xl mx-auto" v-else-if="career">
-            <!-- Hero Section -->
-            <div class="grid lg:grid-cols-2 gap-12 items-start mb-16">
-                <div>
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="text-6xl">{{ career.icon || getIconForCareer(career.title) }}</span>
-                        <h1 class="text-5xl font-bold">{{ career.title }}</h1>
-                    </div>
-                    <p class="text-xl text-gray-600 mb-6">{{ career.shortDescription || career.description?.substring(0, 200) }}</p>
-                    
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-sm mb-4">
-                        🌍 Available in {{ userStore.currentUser?.country || 'International' }}
-                    </div>
-                    
-                    <div class="bg-indigo-50 rounded-2xl p-6">
-                        <h2 class="font-bold mb-2">Salary Range ({{ userStore.currentUser?.country || 'International' }})</h2>
-                        <p class="text-indigo-700 text-2xl font-bold">
-                            {{ formatSalary(career.salary) }}
-                        </p>
-                        <p class="text-sm text-gray-500 mt-2">Annual (Per Year)</p>
-                    </div>
-                </div>
-                <img 
-                    :src="getCareerImage(career)" 
-                    :alt="career.title"
-                    class="w-full h-96 object-cover rounded-2xl shadow-lg"
-                    @error="handleImageError"
-                />
-            </div>
-
-            <!-- Full Description -->
-            <div class="bg-white border rounded-3xl p-8 mb-8">
-                <h2 class="text-2xl font-bold mb-4">📖 Career Overview</h2>
-                <p class="text-gray-700 leading-relaxed">{{ career.description || 'No description available.' }}</p>
-            </div>
-
-            <!-- Key Skills -->
-            <div class="bg-white border rounded-3xl p-8 mb-8">
-                <h2 class="text-2xl font-bold mb-4">⚡ Key Skills Required</h2>
-                <div class="flex flex-wrap gap-2">
-                    <span v-for="skill in (career.skills || [])" :key="skill" 
-                          class="px-4 py-2 rounded-lg bg-indigo-50 text-indigo-700 font-medium">
-                        {{ skill }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Educational Requirements - Country Specific -->
-            <div class="bg-white border rounded-3xl p-8 mb-8">
-                <h2 class="text-2xl font-bold mb-4">📚 Educational Requirements ({{ userStore.currentUser?.country || 'International' }})</h2>
-                
-                <!-- Exam System -->
-                <div class="mb-6">
-                    <h3 class="font-semibold text-lg mb-2">{{ countryRequirements?.examSystem || 'Standardized Tests' }}</h3>
-                    <p class="text-gray-600 mb-3">{{ countryRequirements?.examDescription || 'Standard entrance examination requirements' }}</p>
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="subject in (countryRequirements?.examSubjects || [])" :key="subject" 
-                              class="px-3 py-1 rounded-lg border border-gray-200 text-sm bg-blue-50 text-blue-700">
-                            {{ subject }}
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- JAMB Subjects (Nigeria only) -->
-                <div class="mb-6" v-if="countryRequirements?.jambSubjects?.length">
-                    <h3 class="font-semibold text-lg mb-2">JAMB Subject Combination</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="subject in countryRequirements.jambSubjects" :key="subject" 
-                              class="px-3 py-1 rounded-lg border border-gray-200 text-sm bg-green-50 text-green-700">
-                            {{ subject }}
-                        </span>
-                    </div>
-                </div>
-                
-                <!-- Additional Tests -->
-                <div v-if="countryRequirements?.additionalTests?.length">
-                    <h3 class="font-semibold text-lg mb-2">Additional Tests</h3>
-                    <div class="flex flex-wrap gap-2">
-                        <span v-for="test in countryRequirements.additionalTests" :key="test" 
-                              class="px-3 py-1 rounded-lg border border-gray-200 text-sm bg-orange-50 text-orange-700">
-                            {{ test }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- University Degrees -->
-            <div class="bg-white border rounded-3xl p-8 mb-8" v-if="career.degrees?.length">
-                <h2 class="text-2xl font-bold mb-4">🎓 Typical University Degrees</h2>
-                <div class="flex flex-wrap gap-2">
-                    <span v-for="degree in career.degrees" :key="degree" 
-                          class="px-4 py-2 rounded-lg bg-green-50 text-green-700 font-medium">
-                        {{ degree }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Top Universities - Country Specific -->
-            <div class="bg-white border rounded-3xl p-8 mb-8">
-                <h2 class="text-2xl font-bold mb-4">🏛️ Top Universities ({{ userStore.currentUser?.country || 'International' }})</h2>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div v-for="uni in countryUniversities" :key="uni.name" class="p-4 border rounded-xl hover:shadow-md transition">
-                        <h3 class="font-bold text-indigo-600">{{ uni.name }}</h3>
-                        <p class="text-sm text-gray-500">{{ uni.ranking }}</p>
-                        <p class="text-sm text-gray-700">{{ uni.programName }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Related Careers -->
-            <div class="bg-white border rounded-3xl p-8 mb-8" v-if="career.relatedCareers?.length">
-                <h2 class="text-2xl font-bold mb-4">🔗 Related Careers</h2>
-                <div class="flex flex-wrap gap-3">
-                    <span v-for="related in career.relatedCareers" :key="related" 
-                          class="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 cursor-pointer"
-                          @click="$router.push(`/explore/${related.toLowerCase().replace(/\s+/g, '-')}`)">
-                        {{ related }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Career Pathway -->
-            <div class="bg-white border rounded-3xl p-8" v-if="career.pathway?.length">
-                <h2 class="text-2xl font-bold mb-6">🗺️ Career Pathway Roadmap</h2>
-                <div class="space-y-4">
-                    <div v-for="step in career.pathway" :key="step.step" class="flex gap-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                        <div class="w-12 h-12 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xl font-bold flex-shrink-0">
-                            {{ step.step }}
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-lg">{{ step.title }}</h3>
-                            <p class="text-sm text-indigo-600 mb-1">{{ step.duration || step.age }}</p>
-                            <p class="text-gray-600">{{ step.description }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Back Button -->
-            <div class="mt-8 text-center">
-                <button 
-                    @click="$router.back()" 
-                    class="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold transition-all"
-                >
-                    ← Back to Results
-                </button>
-            </div>
-        </div>
-    </section>
-</template>
