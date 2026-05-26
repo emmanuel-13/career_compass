@@ -14,7 +14,7 @@
                         </div>
 
                         <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight text-gray-900 tracking-tight">
-                            Welcome back, {{ user.currentUser.name }}! <br>
+                            Welcome {{ user.currentUser.name }}! <br>
                             <span class="text-indigo-600">Continue Exploring</span>
                         </h1>
                         <p class="leading-relexed text-xl text-grey-600 mb-8">
