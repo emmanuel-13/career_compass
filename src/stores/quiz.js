@@ -382,9 +382,9 @@ Make all data REALISTIC and ACCURATE for ${country.toUpperCase()}.`;
                     "X-Title": "Career AI Platform"
                 },
                 body: JSON.stringify({
-                    // model: "deepseek/deepseek-chat",
+                    model: "deepseek/deepseek-chat",
                     // Change this line in the API call:
-                    model: "google/gemini-2.0-flash-lite-preview-02-05",  // Free tier model
+                    // model: "google/gemini-2.0-flash-lite-preview-02-05",  // Free tier model
                     messages: [
                         {
                             role: "system",
