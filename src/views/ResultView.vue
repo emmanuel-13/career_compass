@@ -680,24 +680,4 @@ const saveCareer = (career) => {
         alert(`📌 ${career.title} is already saved!`);
     }
 };
-
-onMounted(async () => {
-    await userStore.fetchCurrentUser();
-    const country = userStore.currentUser?.country;
-    
-    if (!country) {
-        console.error("User country missing");
-        return;
-    }
-    
-    const hasAnswers = quizStore.answers.length > 0;
-    
-    if (hasAnswers) {
-        console.log("🎯 Quiz just taken - generating AI recommendations");
-        await quizStore.generateCareer(country, false);
-    } else {
-        console.log("📦 Page refresh - loading cached careers");
-        await quizStore.generateCareer(country, true);
-    }
-});
 </script>
