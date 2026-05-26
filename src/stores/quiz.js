@@ -153,6 +153,47 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
+    // HELPER: GET COUNTRY-SPECIFIC REQUIREMENTS (for AI prompt)
+    // =========================
+
+    const getCountryRequirements = (country) => {
+        const countryLower = country?.toLowerCase() || 'us';
+        
+        const requirements = {
+            'nigeria': {
+                examSystem: 'WAEC/NECO',
+                examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                additionalTests: ['Post-UTME (varies by university)'],
+                currency: 'NGN',
+                currencySymbol: '₦'
+            },
+            'ng': {
+                examSystem: 'WAEC/NECO',
+                examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
+                additionalTests: ['Post-UTME (varies by university)'],
+                currency: 'NGN',
+                currencySymbol: '₦'
+            },
+            'us': {
+                examSystem: 'SAT/ACT',
+                examDescription: 'Scholastic Assessment Test (SAT) or American College Testing (ACT)',
+                additionalTests: ['TOEFL/IELTS (for international students)'],
+                currency: 'USD',
+                currencySymbol: '$'
+            },
+            'uk': {
+                examSystem: 'A-Levels',
+                examDescription: 'General Certificate of Education Advanced Level (A-Levels)',
+                additionalTests: ['IELTS/TOEFL for international students'],
+                currency: 'GBP',
+                currencySymbol: '£'
+            }
+        };
+        
+        return requirements[countryLower] || requirements['us'];
+    };
+
+    // =========================
     // GET ICON FOR CAREER
     // =========================
     
@@ -172,329 +213,6 @@ export const useQuizStore = defineStore("quiz", () => {
         if (t.includes('designer')) return '🎨';
         if (t.includes('writer')) return '✍️';
         return '🎯';
-    };
-
-    // =========================
-    // COMPLETE FALLBACK CAREERS WITH ALL DATA (SALARY, UNIVERSITIES, REQUIREMENTS, ETC.)
-    // =========================
-
-    const getCompleteFallbackCareers = (country, personality) => {
-        const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
-        const personalityLower = personality?.toLowerCase() || '';
-        
-        let personalityType = 'Technical Innovator';
-        let careerType = 'technical';
-        
-        if (personalityLower.includes('creative')) {
-            personalityType = 'Creative Communicator';
-            careerType = 'creative';
-        } else if (personalityLower.includes('healthcare') || personalityLower.includes('helper')) {
-            personalityType = 'Healthcare Helper';
-            careerType = 'healthcare';
-        } else if (personalityLower.includes('business') || personalityLower.includes('leader')) {
-            personalityType = 'Business Leader';
-            careerType = 'business';
-        }
-        
-        if (countryLower === 'nigeria') {
-            if (careerType === 'technical') {
-                return [
-                    {
-                        id: 1,
-                        title: 'Software Developer',
-                        slug: 'software-developer',
-                        icon: '💻',
-                        shortDescription: 'Build innovative software solutions for Nigerian businesses',
-                        description: 'Software developers create applications, websites, and systems that solve real-world problems. In Nigeria, this career is growing rapidly with the tech ecosystem in Lagos, Abuja, and other cities.',
-                        skills: ['JavaScript', 'Python', 'React', 'Node.js', 'Database Management', 'Problem Solving'],
-                        traits: ['Analytical', 'Logical', 'Creative', 'Detail-oriented'],
-                        interests: ['Technology', 'Coding', 'Problem-solving', 'Innovation'],
-                        personalityType: personalityType,
-                        country: 'ng',
-                        requirements: {
-                            examSystem: 'WAEC/NECO',
-                            examSubjects: ['English Language', 'Mathematics', 'Physics', 'Computer Studies'],
-                            jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
-                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
-                            additionalTests: ['Post-UTME (varies by university)']
-                        },
-                        universities: [
-                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Computer Science' },
-                            { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Computer Engineering' },
-                            { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Computer Science' },
-                            { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Computer Science' },
-                            { name: 'Federal University of Technology, Minna', ranking: 'Top Tech University', programName: 'Software Engineering' },
-                            { name: 'Covenant University', ranking: 'Top Private University', programName: 'Computer Science' },
-                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: 'Top 10', programName: 'Computer Science' },
-                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Computer Science' },
-                            { name: 'Babcock University', ranking: 'Top Private', programName: 'Software Engineering' },
-                            { name: 'University of Benin (UNIBEN)', ranking: 'Top 10', programName: 'Computer Engineering' }
-                        ],
-                        salary: {
-                            entry: 1200000,
-                            midMin: 2400000,
-                            midMax: 4200000,
-                            senior: 6000000,
-                            currency: 'NGN',
-                            period: 'year'
-                        },
-                        relatedCareers: ['Frontend Developer', 'Backend Developer', 'DevOps Engineer', 'Mobile App Developer', 'IT Consultant'],
-                        pathway: [
-                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Physics, and Computer Studies.' },
-                            { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete a degree in Computer Science or related field.' },
-                            { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create personal projects and build a GitHub portfolio.' },
-                            { step: 4, title: 'Internship', duration: '6-12 months', description: 'Gain practical experience at tech companies.' },
-                            { step: 5, title: 'Professional Certification', duration: 'Ongoing', description: 'Pursue AWS, Google Cloud, or Azure certifications.' }
-                        ],
-                        courses: [
-                            { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-                            { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' },
-                            { name: 'Python for Everybody', platform: 'University of Michigan', description: 'Master Python programming', url: 'https://www.coursera.org/specializations/python' }
-                        ],
-                        degrees: ['BSc Computer Science', 'BEng Software Engineering', 'MSc Computer Science'],
-                        match: 85,
-                        aiGenerated: true
-                    }
-                ];
-            } else if (careerType === 'healthcare') {
-                return [
-                    {
-                        id: 2,
-                        title: 'Medical Doctor',
-                        slug: 'medical-doctor',
-                        icon: '👨‍⚕️',
-                        shortDescription: 'Provide essential healthcare services to Nigerian communities',
-                        description: 'Medical doctors diagnose and treat illnesses, injuries, and other health conditions. In Nigeria, doctors work in hospitals, clinics, and community health centers.',
-                        skills: ['Diagnosis', 'Patient Care', 'Medical Knowledge', 'Emergency Response', 'Communication', 'Empathy'],
-                        traits: ['Compassionate', 'Patient', 'Observant', 'Dedicated'],
-                        interests: ['Healthcare', 'Helping others', 'Science', 'Medical research'],
-                        personalityType: personalityType,
-                        country: 'ng',
-                        requirements: {
-                            examSystem: 'WAEC/NECO',
-                            examSubjects: ['English Language', 'Mathematics', 'Biology', 'Chemistry', 'Physics'],
-                            jambSubjects: ['English', 'Biology', 'Chemistry', 'Physics'],
-                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
-                            additionalTests: ['Post-UTME', 'Medical School Entrance Exam']
-                        },
-                        universities: [
-                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Medicine and Surgery' },
-                            { name: 'University of Ibadan (UI)', ranking: '2nd in Nigeria', programName: 'Medicine and Surgery' },
-                            { name: 'Obafemi Awolowo University (OAU)', ranking: '3rd in Nigeria', programName: 'Medicine' },
-                            { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Medicine' },
-                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: '5th in Nigeria', programName: 'Medicine' },
-                            { name: 'University of Benin (UNIBEN)', ranking: 'Top 10', programName: 'Medicine' },
-                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Medicine' },
-                            { name: 'Bayero University Kano (BUK)', ranking: 'Top Northern University', programName: 'Medicine' },
-                            { name: 'University of Ilorin', ranking: 'Top 10', programName: 'Medicine' },
-                            { name: 'Nigerian Defence Academy', ranking: 'Specialized Institution', programName: 'Medicine' }
-                        ],
-                        salary: {
-                            entry: 2400000,
-                            midMin: 4800000,
-                            midMax: 7200000,
-                            senior: 12000000,
-                            currency: 'NGN',
-                            period: 'year'
-                        },
-                        relatedCareers: ['Pediatrician', 'Surgeon', 'Psychiatrist', 'Public Health Physician', 'Medical Researcher'],
-                        pathway: [
-                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Sciences - Biology, Chemistry, Physics.' },
-                            { step: 2, title: 'Bachelor of Medicine (MBBS)', duration: '6 years', description: 'Complete medical school.' },
-                            { step: 3, title: 'Internship (Housemanship)', duration: '1 year', description: 'Rotating internship at a teaching hospital.' },
-                            { step: 4, title: 'NYSC', duration: '1 year', description: 'National Youth Service Corps.' },
-                            { step: 5, title: 'Residency Program', duration: '4-6 years', description: 'Specialize in a specific field of medicine.' }
-                        ],
-                        courses: [
-                            { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
-                            { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language', url: 'https://www.edx.org/course/medical-terminology' },
-                            { name: 'Tropical Medicine', platform: 'Liverpool School', description: 'Study tropical diseases', url: 'https://www.lstmed.ac.uk/study' }
-                        ],
-                        degrees: ['MBBS', 'MD', 'MPH'],
-                        match: 85,
-                        aiGenerated: true
-                    }
-                ];
-            } else if (careerType === 'business') {
-                return [
-                    {
-                        id: 3,
-                        title: 'Business Administrator',
-                        slug: 'business-administrator',
-                        icon: '📋',
-                        shortDescription: 'Lead and manage business operations in Nigerian organizations',
-                        description: 'Business administrators oversee daily operations, manage teams, and develop strategies for organizational growth.',
-                        skills: ['Management', 'Leadership', 'Strategic Planning', 'Financial Analysis', 'Communication', 'Problem Solving'],
-                        traits: ['Organized', 'Decisive', 'Strategic', 'Motivated'],
-                        interests: ['Business', 'Management', 'Leadership', 'Entrepreneurship'],
-                        personalityType: personalityType,
-                        country: 'ng',
-                        requirements: {
-                            examSystem: 'WAEC/NECO',
-                            examSubjects: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
-                            jambSubjects: ['English', 'Mathematics', 'Economics', 'Commerce'],
-                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
-                            additionalTests: ['Post-UTME (varies by university)']
-                        },
-                        universities: [
-                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Business Administration' },
-                            { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Business Administration' },
-                            { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Business Administration' },
-                            { name: 'Pan-Atlantic University (LBS)', ranking: 'Top Business School', programName: 'Business Administration' },
-                            { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Business Administration' },
-                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: 'Top 10', programName: 'Business Administration' },
-                            { name: 'Covenant University', ranking: 'Top Private', programName: 'Business Administration' },
-                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Business Administration' },
-                            { name: 'University of Benin (UNIBEN)', ranking: 'Top 10', programName: 'Business Administration' },
-                            { name: 'Babcock University', ranking: 'Top Private', programName: 'Business Administration' }
-                        ],
-                        salary: {
-                            entry: 1800000,
-                            midMin: 3000000,
-                            midMax: 5400000,
-                            senior: 9000000,
-                            currency: 'NGN',
-                            period: 'year'
-                        },
-                        relatedCareers: ['Management Consultant', 'Project Manager', 'Operations Manager', 'Entrepreneur', 'Financial Analyst'],
-                        pathway: [
-                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Economics, and Accounting.' },
-                            { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete BSc in Business Administration.' },
-                            { step: 3, title: 'Gain Work Experience', duration: '2-3 years', description: 'Work in entry-level management positions.' },
-                            { step: 4, title: 'Master\'s Degree (MBA)', duration: '2 years', description: 'Pursue an MBA for advanced opportunities.' },
-                            { step: 5, title: 'Professional Certifications', duration: 'Ongoing', description: 'PMP, CIPM, or other certifications.' }
-                        ],
-                        courses: [
-                            { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
-                            { name: 'Project Management Professional', platform: 'Google Coursera', description: 'Master project management', url: 'https://www.coursera.org/professional-certificates/google-project-management' },
-                            { name: 'Financial Accounting', platform: 'UVA Darden', description: 'Understand financial statements', url: 'https://www.coursera.org/learn/financial-accounting' }
-                        ],
-                        degrees: ['BSc Business Administration', 'MBA', 'MSc Management'],
-                        match: 85,
-                        aiGenerated: true
-                    }
-                ];
-            } else {
-                return [
-                    {
-                        id: 4,
-                        title: 'Content Creator',
-                        slug: 'content-creator',
-                        icon: '✍️',
-                        shortDescription: 'Create engaging digital content for Nigerian and global audiences',
-                        description: 'Content creators produce videos, articles, social media posts, and other digital content.',
-                        skills: ['Writing', 'Video Editing', 'Creativity', 'Social Media Management', 'Storytelling', 'Photography'],
-                        traits: ['Creative', 'Expressive', 'Empathetic', 'Adaptable'],
-                        interests: ['Content creation', 'Social media', 'Storytelling', 'Digital marketing'],
-                        personalityType: personalityType,
-                        country: 'ng',
-                        requirements: {
-                            examSystem: 'WAEC/NECO',
-                            examSubjects: ['English Language', 'Literature', 'Government', 'Economics'],
-                            jambSubjects: ['English', 'Literature', 'Government', 'Economics'],
-                            examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
-                            additionalTests: ['Post-UTME (varies by university)']
-                        },
-                        universities: [
-                            { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Mass Communication' },
-                            { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Mass Communication' },
-                            { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Communication and Language Arts' },
-                            { name: 'Pan-Atlantic University', ranking: 'Top Private', programName: 'Media and Communication' },
-                            { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Mass Communication' },
-                            { name: 'University of Nigeria, Nsukka (UNN)', ranking: 'Top 10', programName: 'Mass Communication' },
-                            { name: 'Covenant University', ranking: 'Top Private', programName: 'Mass Communication' },
-                            { name: 'Redeemer\'s University', ranking: 'Top Private', programName: 'Mass Communication' },
-                            { name: 'Babcock University', ranking: 'Top Private', programName: 'Mass Communication' },
-                            { name: 'Lagos State University (LASU)', ranking: 'Top State University', programName: 'Mass Communication' }
-                        ],
-                        salary: {
-                            entry: 960000,
-                            midMin: 1800000,
-                            midMax: 3600000,
-                            senior: 6000000,
-                            currency: 'NGN',
-                            period: 'year'
-                        },
-                        relatedCareers: ['Social Media Manager', 'Video Editor', 'Digital Marketer', 'Podcaster', 'Graphic Designer'],
-                        pathway: [
-                            { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on English, Literature, and Arts.' },
-                            { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Study Mass Communication or related field.' },
-                            { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create content, grow social media presence.' },
-                            { step: 4, title: 'Internship', duration: '6-12 months', description: 'Work with media companies.' },
-                            { step: 5, title: 'Specialize', duration: 'Ongoing', description: 'Focus on video, writing, or social media.' }
-                        ],
-                        courses: [
-                            { name: 'Content Creation Masterclass', platform: 'HubSpot Academy', description: 'Learn content marketing', url: 'https://academy.hubspot.com/courses/content-marketing' },
-                            { name: 'Video Editing with DaVinci Resolve', platform: 'Blackmagic Design', description: 'Master video editing', url: 'https://www.blackmagicdesign.com/products/davinciresolve/training' },
-                            { name: 'Social Media Marketing', platform: 'Meta Blueprint', description: 'Learn social media advertising', url: 'https://www.facebook.com/business/learn' }
-                        ],
-                        degrees: ['BA Mass Communication', 'BA Media Studies', 'MA Digital Media'],
-                        match: 85,
-                        aiGenerated: true
-                    }
-                ];
-            }
-        } else {
-            // US fallback with complete data
-            return [
-                {
-                    id: 1,
-                    title: 'Software Engineer',
-                    slug: 'software-engineer',
-                    icon: '💻',
-                    shortDescription: 'Build and maintain software applications',
-                    description: 'Software engineers design, develop, and test software applications that power modern businesses.',
-                    skills: ['Programming', 'Problem Solving', 'Debugging', 'Teamwork', 'System Design'],
-                    traits: ['Analytical', 'Detail-oriented', 'Logical', 'Innovative'],
-                    interests: ['Technology', 'Problem-solving', 'Innovation', 'Coding'],
-                    personalityType: personalityType,
-                    country: 'us',
-                    requirements: {
-                        examSystem: 'SAT/ACT',
-                        examSubjects: ['English', 'Mathematics', 'Physics', 'Computer Science'],
-                        jambSubjects: [],
-                        examDescription: 'Scholastic Assessment Test (SAT) or American College Testing (ACT)',
-                        additionalTests: ['TOEFL/IELTS (for international students)']
-                    },
-                    universities: [
-                        { name: 'MIT', ranking: '1st in US', programName: 'Computer Science' },
-                        { name: 'Stanford University', ranking: '2nd in US', programName: 'Computer Science' },
-                        { name: 'Carnegie Mellon University', ranking: '3rd in US', programName: 'Software Engineering' },
-                        { name: 'UC Berkeley', ranking: '4th in US', programName: 'Computer Science' },
-                        { name: 'Caltech', ranking: '5th in US', programName: 'Computer Science' },
-                        { name: 'Harvard University', ranking: '6th in US', programName: 'Computer Science' },
-                        { name: 'Princeton University', ranking: '7th in US', programName: 'Computer Science' },
-                        { name: 'University of Washington', ranking: '8th in US', programName: 'Computer Science' },
-                        { name: 'Cornell University', ranking: '9th in US', programName: 'Computer Science' },
-                        { name: 'Georgia Tech', ranking: '10th in US', programName: 'Computer Science' }
-                    ],
-                    salary: {
-                        entry: 85000,
-                        midMin: 110000,
-                        midMax: 150000,
-                        senior: 200000,
-                        currency: 'USD',
-                        period: 'year'
-                    },
-                    relatedCareers: ['Data Scientist', 'DevOps Engineer', 'Cloud Architect', 'Mobile Developer'],
-                    pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Math and Science.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Earn a BS in Computer Science.' },
-                        { step: 3, title: 'Internship', duration: '3-6 months', description: 'Gain practical experience.' },
-                        { step: 4, title: 'Entry-Level Position', duration: '2 years', description: 'Start as a junior developer.' },
-                        { step: 5, title: 'Senior Engineer', duration: 'Ongoing', description: 'Advance to senior roles.' }
-                    ],
-                    courses: [
-                        { name: 'CS50: Intro to CS', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-                        { name: 'Data Structures and Algorithms', platform: 'Coursera', description: 'Master algorithms', url: 'https://www.coursera.org/specializations/data-structures-algorithms' },
-                        { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' }
-                    ],
-                    degrees: ['BS Computer Science', 'BEng Software Engineering', 'MS Computer Science'],
-                    match: 85,
-                    aiGenerated: true
-                }
-            ];
-        }
     };
 
     // =========================
@@ -538,8 +256,8 @@ export const useQuizStore = defineStore("quiz", () => {
                 const loaded = loadCareersFromLocalStorage(country);
                 
                 if (!loaded || careers.value.length === 0) {
-                    console.log("⚠️ No cache found, using fallback careers");
-                    generateCareerFallback(country);
+                    console.log("⚠️ No cache found, generating new careers");
+                    await generateCareerWithAI(country);
                 } else {
                     calculatePersonalityScores();
                 }
@@ -547,28 +265,29 @@ export const useQuizStore = defineStore("quiz", () => {
     
         } catch (err) {
             console.error("Generation error:", err);
-            generateCareerFallback(country);
+            error.value = "Failed to generate careers. Please try again.";
         } finally {
             isLoading.value = false;
         }
     };
 
     // =========================
-    // AI CAREER GENERATION
+    // AI CAREER GENERATION - FULL PROMPT
     // =========================
 
     const generateCareerWithAI = async (country) => {
         const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
         
         if (!API_KEY) {
-            console.warn("No API key found, using fallback");
-            generateCareerFallback(country);
+            console.error("No API key found");
+            error.value = "API key not configured. Please contact support.";
             return;
         }
 
         const countryLower = country?.toLowerCase() || 'us';
         const config = getCountryRequirements(country);
         
+        // Calculate dominant personality
         const personalityCounts = {};
         answers.value.forEach(item => {
             const type = item.option?.personalityType;
@@ -586,6 +305,73 @@ export const useQuizStore = defineStore("quiz", () => {
             }
         }
 
+        // Map personality to career categories
+        let personalityCategory = "Technology";
+        if (dominantPersonality === "Creative Communicator") personalityCategory = "Arts, Media, Communication";
+        else if (dominantPersonality === "Healthcare Helper") personalityCategory = "Healthcare, Medicine";
+        else if (dominantPersonality === "Business Leader") personalityCategory = "Business, Finance, Law";
+
+        // COMPLETE AI PROMPT - Asks for ALL data
+        const prompt = `You are a career expert for ${country.toUpperCase()}. 
+
+Based on the user's personality type (${dominantPersonality}), recommend 5 careers in the ${personalityCategory} field.
+
+For EACH career, provide COMPLETE information in the following JSON format. Return ONLY valid JSON, no other text.
+
+{
+  "recommendations": [
+    {
+      "title": "",
+      "slug": "",
+      "icon": "",
+      "shortDescription": "",
+      "description": "",
+      "skills": [],
+      "traits": [],
+      "interests": [],
+      "personalityType": "${dominantPersonality}",
+      "requirements": {
+        "examSystem": "${config.examSystem}",
+        "examSubjects": [],
+        "jambSubjects": [],
+        "examDescription": "${config.examDescription}",
+        "additionalTests": ${JSON.stringify(config.additionalTests)}
+      },
+      "universities": [
+        {"name": "", "ranking": "", "programName": ""}
+      ],
+      "salary": {
+        "entry": 0,
+        "midMin": 0,
+        "midMax": 0,
+        "senior": 0,
+        "currency": "${config.currency}",
+        "period": "year"
+      },
+      "relatedCareers": [],
+      "pathway": [
+        {"step": 1, "title": "", "duration": "", "description": ""}
+      ],
+      "courses": [
+        {"name": "", "platform": "", "description": "", "url": ""}
+      ],
+      "degrees": []
+    }
+  ]
+}
+
+Requirements for ${country.toUpperCase()}:
+- Exam System: ${config.examSystem}
+- Currency: ${config.currency} (${config.currencySymbol})
+- Use REAL university names in ${country.toUpperCase()}
+- Use REAL salary ranges in ${config.currency}
+- For Engineering careers, exam subjects should include Mathematics, Physics, Chemistry
+- For Medical careers, exam subjects should include Biology, Chemistry, Physics
+- For Business careers, exam subjects should include Mathematics, Economics, Accounting
+- For Arts careers, exam subjects should include English, Literature, Government
+
+Make all data REALISTIC and ACCURATE for ${country.toUpperCase()}.`;
+
         try {
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
@@ -600,109 +386,88 @@ export const useQuizStore = defineStore("quiz", () => {
                     messages: [
                         {
                             role: "system",
-                            content: `You are a career expert for ${country.toUpperCase()}. Return ONLY valid JSON.`
+                            content: `You are a career expert for ${country.toUpperCase()}. Return ONLY valid JSON. Provide COMPLETE, REALISTIC data. Include 5 careers. Use real university names and real salary ranges in ${config.currency}.`
                         },
-                        { 
-                            role: "user", 
-                            content: `Recommend 3 careers for a ${dominantPersonality} personality in ${country.toUpperCase()}. Return JSON with: title, slug, shortDescription, description, skills array.` 
-                        }
+                        { role: "user", content: prompt }
                     ],
                     temperature: 0.7,
-                    max_tokens: 1000
+                    max_tokens: 4000
                 })
             });
 
             if (!response.ok) {
-                console.warn(`API Error: ${response.status}, using fallback`);
-                generateCareerFallback(country);
+                console.error(`API Error: ${response.status}`);
+                error.value = `API Error: ${response.status}. Please try again.`;
                 return;
             }
 
             const data = await response.json();
             let aiText = data.choices[0].message.content;
             
+            // Clean JSON
             aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
             const jsonMatch = aiText.match(/\{[\s\S]*\}/);
             if (jsonMatch) aiText = jsonMatch[0];
             
             const parsed = JSON.parse(aiText);
-            if (!parsed.recommendations) throw new Error("Invalid response");
+            if (!parsed.recommendations || parsed.recommendations.length === 0) {
+                throw new Error("Invalid response from AI");
+            }
 
-            // Merge AI results with complete fallback data
-            const fallbackCareers = getCompleteFallbackCareers(country, dominantPersonality);
-            
-            const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
-                const fallback = fallbackCareers[index % fallbackCareers.length];
+            const recommendedCareers = parsed.recommendations.slice(0, 5).map((aiCareer, index) => {
+                // Ensure salary has all required fields
+                const salary = aiCareer.salary || {};
+                
                 return {
                     id: Date.now() + index + Math.random(),
-                    slug: aiCareer.slug || fallback.slug,
-                    title: aiCareer.title || fallback.title,
-                    icon: fallback.icon,
-                    shortDescription: aiCareer.shortDescription || fallback.shortDescription,
-                    description: aiCareer.description || fallback.description,
-                    skills: aiCareer.skills || fallback.skills,
-                    traits: fallback.traits,
-                    interests: fallback.interests,
+                    slug: aiCareer.slug || aiCareer.title?.toLowerCase().replace(/\s+/g, '-') || `career-${index}`,
+                    title: aiCareer.title || "Career Title",
+                    icon: aiCareer.icon || getIconForCareer(aiCareer.title),
+                    shortDescription: aiCareer.shortDescription || "",
+                    description: aiCareer.description || "No description available",
+                    skills: aiCareer.skills || [],
+                    traits: aiCareer.traits || [],
+                    interests: aiCareer.interests || [],
                     personalityType: dominantPersonality,
-                    country: countryLower === 'ng' ? 'ng' : 'us',
-                    requirements: fallback.requirements,
-                    universities: fallback.universities,
-                    salary: fallback.salary,
-                    relatedCareers: fallback.relatedCareers,
-                    pathway: fallback.pathway,
-                    courses: fallback.courses,
-                    degrees: fallback.degrees,
+                    country: countryLower === 'ng' ? 'ng' : countryLower,
+                    requirements: {
+                        examSystem: aiCareer.requirements?.examSystem || config.examSystem,
+                        examSubjects: aiCareer.requirements?.examSubjects || ['English', 'Mathematics', 'Science'],
+                        jambSubjects: aiCareer.requirements?.jambSubjects || [],
+                        examDescription: aiCareer.requirements?.examDescription || config.examDescription,
+                        additionalTests: aiCareer.requirements?.additionalTests || config.additionalTests
+                    },
+                    universities: aiCareer.universities || [],
+                    salary: {
+                        entry: salary.entry || 0,
+                        midMin: salary.midMin || salary.min || 0,
+                        midMax: salary.midMax || salary.max || 0,
+                        senior: salary.senior || 0,
+                        currency: salary.currency || config.currency,
+                        period: salary.period || "year"
+                    },
+                    relatedCareers: aiCareer.relatedCareers || [],
+                    pathway: aiCareer.pathway || [],
+                    courses: aiCareer.courses || [],
+                    degrees: aiCareer.degrees || [],
                     match: 85,
                     aiGenerated: true
                 };
             });
 
-            careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
+            careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 5);
             
+            // Save to localStorage and json-server
             saveCareersToLocalStorage();
             await saveCareersToJsonServer(recommendedCareers);
             calculatePersonalityScores();
-            console.log("✅ AI careers generated and saved");
+            
+            console.log(`✅ AI generated ${careers.value.length} careers for ${country}`);
             
         } catch (error) {
             console.error("AI error:", error);
-            generateCareerFallback(country);
+            error.value = "Failed to get AI recommendations. Please try again.";
         }
-    };
-
-    // =========================
-    // FALLBACK SYSTEM
-    // =========================
-
-    const generateCareerFallback = (country) => {
-        if (loadCareersFromLocalStorage(country)) {
-            calculatePersonalityScores();
-            console.log('✅ Using cached fallback careers');
-            return;
-        }
-        
-        const personalityCounts = {};
-        answers.value.forEach(answer => {
-            const type = answer.option?.personalityType;
-            if (type) {
-                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
-            }
-        });
-        
-        let dominantPersonality = "Technical Innovator";
-        let maxCount = 0;
-        for (const [type, count] of Object.entries(personalityCounts)) {
-            if (count > maxCount) {
-                maxCount = count;
-                dominantPersonality = type;
-            }
-        }
-        
-        careers.value = getCompleteFallbackCareers(country, dominantPersonality);
-        saveCareersToLocalStorage();
-        saveCareersToJsonServer(careers.value);
-        calculatePersonalityScores();
-        console.log('✅ Using complete fallback careers');
     };
 
     // =========================
