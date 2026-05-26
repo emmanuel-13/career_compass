@@ -369,7 +369,6 @@ const submitQuiz = async () => {
     
 
     quizStore.generateCareer(country);
-    quizStore.debugStorage();
 
     router.push({ name: "results" });
 };
