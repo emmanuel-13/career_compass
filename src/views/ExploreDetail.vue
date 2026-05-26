@@ -36,7 +36,7 @@ const getCountryExamRequirements = (country, careerTitle) => {
     }
     
     const requirements = {
-        'nigeria': {
+        'ng': {
             examSystem: 'WAEC/NECO',
             examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
             additionalTests: ['Post-UTME (varies by university)'],
