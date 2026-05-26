@@ -11,6 +11,7 @@ const quizStore = useQuizStore();
 const career = ref(null);
 const loading = ref(true);
 const error = ref(null);
+const api = import.meta.env.VITE_API_URL;
 
 // Get icon for career
 const getIconForCareer = (title) => {
@@ -120,7 +121,7 @@ const loadCareer = async () => {
         // Fourth, try to load from json-server
         if (!foundCareer) {
             try {
-                const response = await fetch('http://localhost:3000/careers');
+                const response = await fetch(`${api}/careers`);
                 if (response.ok) {
                     const allCareers = await response.json();
                     foundCareer = allCareers.find(c => c.slug === slug);
