@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-// REMOVE THIS LINE: import careersData from "@/data/careers.json";
 
 export const useQuizStore = defineStore("quiz", () => {
 
@@ -15,7 +14,6 @@ export const useQuizStore = defineStore("quiz", () => {
     const error = ref(null);
     const quizCompleted = ref(false);
 
-    // const api = "http://localhost:3000/careers";
     const baseUrl = import.meta.env.VITE_API_URL;
     const api = `${baseUrl}/careers`;
 
@@ -67,18 +65,15 @@ export const useQuizStore = defineStore("quiz", () => {
     // =========================
 
     const saveCareersToLocalStorage = () => {
-        // Save with country-specific key
         if (careers.value.length > 0 && careers.value[0]?.country) {
             const countryKey = careers.value[0].country.toLowerCase();
             localStorage.setItem(`cached_careers_${countryKey}`, JSON.stringify(careers.value));
             console.log(`💾 Saved ${careers.value.length} careers for ${countryKey} to localStorage`);
         }
-        // Also save to generic cache as fallback
         localStorage.setItem('cached_careers', JSON.stringify(careers.value));
     };
 
     const loadCareersFromLocalStorage = (country) => {
-        // Try country-specific key first
         if (country) {
             const countryKey = country.toLowerCase();
             const saved = localStorage.getItem(`cached_careers_${countryKey}`);
@@ -92,7 +87,6 @@ export const useQuizStore = defineStore("quiz", () => {
             }
         }
         
-        // Fallback to generic cache
         const saved = localStorage.getItem('cached_careers');
         if (saved) {
             const savedCareers = JSON.parse(saved);
@@ -174,76 +168,77 @@ export const useQuizStore = defineStore("quiz", () => {
         if (!title) return '💼';
         const t = title.toLowerCase();
         
-        if (t.includes('software') || t.includes('developer') || t.includes('programmer')) return '💻';
-        if (t.includes('engineer') || t.includes('engineering')) return '🔧';
-        if (t.includes('data') || t.includes('analyst')) return '📊';
-        if (t.includes('cyber') || t.includes('security')) return '🔒';
-        if (t.includes('ai') || t.includes('machine learning')) return '🤖';
-        if (t.includes('cloud') || t.includes('devops')) return '☁️';
-        if (t.includes('doctor') || t.includes('physician')) return '👨‍⚕️';
+        if (t.includes('software') || t.includes('developer')) return '💻';
+        if (t.includes('engineer')) return '🔧';
+        if (t.includes('data')) return '📊';
+        if (t.includes('doctor') || t.includes('medical')) return '👨‍⚕️';
         if (t.includes('nurse')) return '🩺';
-        if (t.includes('dentist')) return '🦷';
-        if (t.includes('pharmacist')) return '💊';
-        if (t.includes('psychologist') || t.includes('therapist')) return '🧠';
-        if (t.includes('biomedical')) return '🔬';
-        if (t.includes('accountant') || t.includes('finance')) return '💰';
-        if (t.includes('manager') || t.includes('executive')) return '📋';
-        if (t.includes('marketing') || t.includes('sales')) return '📈';
-        if (t.includes('business') || t.includes('entrepreneur')) return '🏢';
-        if (t.includes('consultant')) return '💡';
-        if (t.includes('lawyer') || t.includes('attorney')) return '⚖️';
         if (t.includes('social') || t.includes('counselor')) return '🤝';
-        if (t.includes('teacher') || t.includes('educator')) return '📚';
-        if (t.includes('designer') || t.includes('artist')) return '🎨';
-        if (t.includes('writer') || t.includes('journalist')) return '✍️';
-        if (t.includes('architect')) return '🏛️';
-        if (t.includes('scientist') || t.includes('researcher')) return '🔬';
-        if (t.includes('chemist')) return '🧪';
-        if (t.includes('physicist')) return '⚛️';
-        if (t.includes('biologist')) return '🧬';
-        
+        if (t.includes('lawyer')) return '⚖️';
+        if (t.includes('teacher')) return '📚';
+        if (t.includes('business') || t.includes('manager')) return '📋';
+        if (t.includes('designer')) return '🎨';
+        if (t.includes('writer')) return '✍️';
         return '🎯';
     };
 
     // =========================
-    // LOAD SAVED CAREERS FROM JSON
+    // FALLBACK CAREERS (Hardcoded - used when API fails)
     // =========================
 
-    const loadCareersFromJson = async (country) => {
-        // First try localStorage cache
-        if (loadCareersFromLocalStorage(country)) {
-            calculatePersonalityScores();
-            return true;
-        }
+    const getFallbackCareers = (country, personality) => {
+        const countryLower = country?.toLowerCase() || 'us';
+        const personalityLower = personality?.toLowerCase() || '';
         
-        try {
-            const response = await fetch(api);
-            if (response.ok) {
-                const allCareers = await response.json();
-                const countryCareers = allCareers.filter(c => 
-                    c.country?.toLowerCase() === country.toLowerCase()
-                );
-                
-                if (countryCareers.length > 0) {
-                    careers.value = countryCareers
-                        .map(career => ({
-                            ...career,
-                            match: calculateMatch(career)
-                        }))
-                        .sort((a, b) => b.match - a.match)
-                        .slice(0, 3);
-                    
-                    calculatePersonalityScores();
-                    saveCareersToLocalStorage();
-                    console.log('✅ Loaded careers from json-server:', careers.value.length);
-                    return true;
-                }
+        const fallbacks = {
+            'us': {
+                'technical innovator': [
+                    { title: 'Software Engineer', slug: 'software-engineer', icon: '💻', shortDescription: 'Build and maintain software applications', description: 'Software engineers design, develop, and test software applications that power modern businesses.', skills: ['Programming', 'Problem Solving', 'Debugging'], match: 85, aiGenerated: true, country: 'us' },
+                    { title: 'Data Scientist', slug: 'data-scientist', icon: '📊', shortDescription: 'Analyze complex data to drive decisions', description: 'Data scientists use statistical methods and machine learning to extract insights from data.', skills: ['Python', 'Statistics', 'Machine Learning'], match: 85, aiGenerated: true, country: 'us' },
+                    { title: 'Cybersecurity Analyst', slug: 'cybersecurity-analyst', icon: '🔒', shortDescription: 'Protect systems from cyber threats', description: 'Cybersecurity analysts protect organizations from digital attacks and data breaches.', skills: ['Network Security', 'Risk Assessment', 'Incident Response'], match: 85, aiGenerated: true, country: 'us' }
+                ],
+                'creative communicator': [
+                    { title: 'Content Writer', slug: 'content-writer', icon: '✍️', shortDescription: 'Create engaging content for brands', description: 'Content writers produce articles, blogs, and social media content that engages audiences.', skills: ['Writing', 'SEO', 'Research'], match: 85, aiGenerated: true, country: 'us' },
+                    { title: 'Graphic Designer', slug: 'graphic-designer', icon: '🎨', shortDescription: 'Design visual content for brands', description: 'Graphic designers create visual concepts using software to communicate ideas.', skills: ['Adobe Suite', 'Typography', 'Color Theory'], match: 85, aiGenerated: true, country: 'us' },
+                    { title: 'Marketing Specialist', slug: 'marketing-specialist', icon: '📈', shortDescription: 'Develop marketing campaigns', description: 'Marketing specialists create strategies to promote products and services.', skills: ['Digital Marketing', 'Analytics', 'Strategy'], match: 85, aiGenerated: true, country: 'us' }
+                ],
+                'healthcare helper': [
+                    { title: 'Registered Nurse', slug: 'registered-nurse', icon: '🩺', shortDescription: 'Provide patient care', description: 'Nurses care for patients in hospitals, clinics, and other healthcare settings.', skills: ['Patient Care', 'Empathy', 'Medical Knowledge'], match: 85, aiGenerated: true, country: 'us' },
+                    { title: 'Medical Assistant', slug: 'medical-assistant', icon: '👨‍⚕️', shortDescription: 'Support healthcare professionals', description: 'Medical assistants perform clinical and administrative tasks in medical offices.', skills: ['Patient Care', 'Medical Terminology', 'Organization'], match: 85, aiGenerated: true, country: 'us' }
+                ],
+                'business leader': [
+                    { title: 'Project Manager', slug: 'project-manager', icon: '📋', shortDescription: 'Lead projects to success', description: 'Project managers plan, execute, and close projects across various industries.', skills: ['Leadership', 'Planning', 'Communication'], match: 85, aiGenerated: true, country: 'us' },
+                    { title: 'Financial Analyst', slug: 'financial-analyst', icon: '💰', shortDescription: 'Analyze financial data', description: 'Financial analysts evaluate investment opportunities and financial performance.', skills: ['Excel', 'Financial Modeling', 'Analysis'], match: 85, aiGenerated: true, country: 'us' }
+                ]
+            },
+            'nigeria': {
+                'technical innovator': [
+                    { title: 'Software Developer', slug: 'software-developer', icon: '💻', shortDescription: 'Build software solutions', description: 'Software developers create applications and systems that solve real-world problems.', skills: ['Programming', 'Problem Solving', 'Teamwork'], match: 85, aiGenerated: true, country: 'ng' },
+                    { title: 'Computer Engineer', slug: 'computer-engineer', icon: '🔧', shortDescription: 'Design computer systems', description: 'Computer engineers design and develop computer hardware and software systems.', skills: ['Hardware', 'Software', 'Systems Design'], match: 85, aiGenerated: true, country: 'ng' }
+                ],
+                'creative communicator': [
+                    { title: 'Content Creator', slug: 'content-creator', icon: '✍️', shortDescription: 'Create digital content', description: 'Content creators produce engaging content for social media and websites.', skills: ['Writing', 'Video Editing', 'Creativity'], match: 85, aiGenerated: true, country: 'ng' },
+                    { title: 'Public Relations Officer', slug: 'public-relations-officer', icon: '📢', shortDescription: 'Manage public image', description: 'PROs manage communication between organizations and the public.', skills: ['Communication', 'Media Relations', 'Writing'], match: 85, aiGenerated: true, country: 'ng' }
+                ],
+                'healthcare helper': [
+                    { title: 'Nurse', slug: 'nurse', icon: '🩺', shortDescription: 'Provide patient care', description: 'Nurses provide essential healthcare services in hospitals and clinics.', skills: ['Patient Care', 'Empathy', 'Medical Knowledge'], match: 85, aiGenerated: true, country: 'ng' },
+                    { title: 'Community Health Worker', slug: 'community-health-worker', icon: '🤝', shortDescription: 'Serve communities', description: 'Community health workers provide health education and basic services.', skills: ['Community Engagement', 'Health Education', 'Communication'], match: 85, aiGenerated: true, country: 'ng' }
+                ],
+                'business leader': [
+                    { title: 'Business Administrator', slug: 'business-administrator', icon: '📋', shortDescription: 'Manage business operations', description: 'Business administrators oversee daily operations and strategic planning.', skills: ['Management', 'Finance', 'Leadership'], match: 85, aiGenerated: true, country: 'ng' },
+                    { title: 'Accountant', slug: 'accountant', icon: '💰', shortDescription: 'Manage finances', description: 'Accountants prepare financial records and ensure compliance with regulations.', skills: ['Accounting', 'Tax', 'Financial Reporting'], match: 85, aiGenerated: true, country: 'ng' }
+                ]
             }
-        } catch (error) {
-            console.log('json-server not available');
-        }
+        };
         
-        return false;
+        const countryFallbacks = fallbacks[countryLower] || fallbacks['us'];
+        let personalityKey = 'technical innovator';
+        
+        if (personalityLower.includes('creative')) personalityKey = 'creative communicator';
+        else if (personalityLower.includes('healthcare') || personalityLower.includes('helper')) personalityKey = 'healthcare helper';
+        else if (personalityLower.includes('business') || personalityLower.includes('leader')) personalityKey = 'business leader';
+        
+        return countryFallbacks[personalityKey] || countryFallbacks['technical innovator'];
     };
 
     // =========================
@@ -271,54 +266,19 @@ export const useQuizStore = defineStore("quiz", () => {
     // MAIN GENERATOR
     // =========================
 
-    // const generateCareer = async (country, forceRefresh = false) => {
-    //     isLoading.value = true;
-    //     error.value = null;
-
-    //     try {
-    //         const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
-            
-    //         if (!forceRefresh && !quizJustCompleted) {
-    //             console.log('📦 Loading cached careers for country:', country);
-    //             const loaded = await loadCareersFromJson(country);
-    //             if (loaded && careers.value.length > 0) {
-    //                 console.log('✅ Using cached careers');
-    //                 isLoading.value = false;
-    //                 return;
-    //             }
-    //         }
-            
-    //         console.log('🤖 Generating new careers with AI for country:', country);
-    //         await generateCareerWithAI(country);
-    //         localStorage.removeItem('quiz_just_completed');
-            
-    //     } catch (err) {
-    //         console.error(err);
-    //         error.value = "AI failed. Using fallback system.";
-    //         generateCareerFallback(country);
-    //     } finally {
-    //         isLoading.value = false;
-    //     }
-    // };
-
     const generateCareer = async (country, forceRefresh = false) => {
         isLoading.value = true;
         error.value = null;
         careers.value = [];
     
         try {
-            // Check if quiz was just completed (either by forceRefresh or localStorage flag)
             const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
             
-            // Force new generation if:
-            // 1. forceRefresh is true (explicitly requested), OR
-            // 2. quiz was just completed (new answers submitted)
             if (forceRefresh || quizJustCompleted) {
-                console.log("🤖 Generating NEW AI careers for", country);
+                console.log("🤖 Attempting to generate NEW AI careers for", country);
                 await generateCareerWithAI(country);
                 localStorage.removeItem('quiz_just_completed');
             } else {
-                // Try to load from cache
                 console.log("📦 Attempting to load cached careers for", country);
                 const loaded = loadCareersFromLocalStorage(country);
                 
@@ -326,15 +286,13 @@ export const useQuizStore = defineStore("quiz", () => {
                     console.log("✅ Using cached careers");
                     calculatePersonalityScores();
                 } else {
-                    // No cache found, generate new
-                    console.log("🤖 No cache found, generating new careers...");
-                    await generateCareerWithAI(country);
+                    console.log("⚠️ No cache found, using fallback careers");
+                    generateCareerFallback(country);
                 }
             }
     
         } catch (err) {
             console.error("Generation error:", err);
-            error.value = "AI failed. Using fallback careers.";
             generateCareerFallback(country);
         } finally {
             isLoading.value = false;
@@ -376,77 +334,6 @@ export const useQuizStore = defineStore("quiz", () => {
                 dominantPersonality = type;
             }
         }
-        
-        // Map personality to recommended career categories
-        const personalityToCareers = {
-            "Technical Innovator": ["Engineering", "Technology", "Data Science", "Research"],
-            "Creative Communicator": ["Arts", "Media", "Education", "Communication"],
-            "Healthcare Helper": ["Medical", "Healthcare", "Social Work", "Psychology"],
-            "Business Leader": ["Business", "Finance", "Law", "Management"]
-        };
-        
-        const recommendedCategories = personalityToCareers[dominantPersonality] || personalityToCareers["Technical Innovator"];
-        
-        // STRONGER PROMPT - Explicitly ban Software Engineering as default
-        const prompt = `You are a career expert for ${country.toUpperCase()}. 
-
-CRITICAL RULES:
-1. DO NOT recommend "Software Engineer" or "Software Engineering" unless the user explicitly shows strong programming interests
-2. Based on the user's personality (${dominantPersonality}), focus on these career categories: ${recommendedCategories.join(", ")}
-3. Recommend careers from DIFFERENT fields - mix of categories
-
-User's personality breakdown:
-${JSON.stringify(userProfile, null, 2)}
-
-Based on their answers, they show strong traits in: ${dominantPersonality}
-
-For ${country.toUpperCase()}:
-- Exam System: ${config.examSystem}
-- Currency: ${config.currency}
-
-Recommend 3 DIVERSE careers from appropriate categories. Return ONLY JSON:
-
-{
-  "recommendations": [
-    {
-      "title": "",
-      "slug": "",
-      "icon": "",
-      "shortDescription": "",
-      "description": "",
-      "skills": [],
-      "personalityType": "${dominantPersonality}",
-      "traits": [],
-      "interests": [],
-      "requirements": {
-        "examSystem": "${config.examSystem}",
-        "examSubjects": ["Career-specific subjects"],
-        ${config.jambSubjects.length > 0 ? `"jambSubjects": ["Career-specific JAMB subjects"],` : ''}
-        "examDescription": "${config.examDescription}",
-        "additionalTests": ${JSON.stringify(config.additionalTests)}
-      },
-      "universities": [
-        {"name": "Top University in ${country.toUpperCase()}", "ranking": "Top Ranked", "programName": "Degree Name"}
-      ],
-      "salary": {
-        "min": ${config.salaryRange.min},
-        "max": ${config.salaryRange.max},
-        "currency": "${config.currency}",
-        "period": "year"
-      },
-      "relatedCareers": [],
-      "pathway": [
-        {"step": 1, "title": "", "duration": "", "description": ""},
-        {"step": 2, "title": "", "duration": "", "description": ""},
-        {"step": 3, "title": "", "duration": "", "description": ""},
-        {"step": 4, "title": "", "duration": "", "description": ""},
-        {"step": 5, "title": "", "duration": "", "description": ""}
-      ]
-    }
-  ]
-}
-
-Remember: DO NOT recommend Software Engineering unless explicitly indicated by user answers.`;
 
         try {
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -454,8 +341,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "https://career-compass-v906.onrender.com",
-                    // "HTTP-Referer": "http://localhost:5173",
+                    "HTTP-Referer": "http://localhost:5173",
                     "X-Title": "Career AI Platform"
                 },
                 body: JSON.stringify({
@@ -463,16 +349,24 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                     messages: [
                         {
                             role: "system",
-                            content: `You are a career expert for ${country.toUpperCase()}. NEVER recommend "Software Engineer" as the first or default option. Base recommendations on the user's actual personality type: ${dominantPersonality}.`
+                            content: `You are a career expert for ${country.toUpperCase()}. Return ONLY valid JSON.`
                         },
-                        { role: "user", content: prompt }
+                        { 
+                            role: "user", 
+                            content: `Recommend 3 careers for a ${dominantPersonality} personality in ${country.toUpperCase()}. Return JSON with: title, slug, shortDescription, description, skills array.` 
+                        }
                     ],
-                    temperature: 0.8,
-                    max_tokens: 2000
+                    temperature: 0.7,
+                    max_tokens: 1000
                 })
             });
 
-            if (!response.ok) throw new Error(`API Error: ${response.status}`);
+            if (!response.ok) {
+                // If API fails (402, etc.), use fallback
+                console.warn(`API Error: ${response.status}, using fallback careers`);
+                generateCareerFallback(country);
+                return;
+            }
 
             const data = await response.json();
             let aiText = data.choices[0].message.content;
@@ -484,74 +378,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
             let parsed = JSON.parse(aiText);
             if (!parsed.recommendations) throw new Error("Invalid response");
 
-            // Career-specific subject mapping
-            const getSubjectsForCareer = (title) => {
-                const titleLower = title?.toLowerCase() || '';
-                
-                if (titleLower.includes('engineer') || titleLower.includes('civil') || titleLower.includes('mechanical') || titleLower.includes('electrical')) {
-                    return {
-                        examSubjects: ['English Language', 'Mathematics', 'Physics', 'Chemistry'],
-                        jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry']
-                    };
-                }
-                if (titleLower.includes('doctor') || titleLower.includes('medical') || titleLower.includes('nurse') || titleLower.includes('dentist')) {
-                    return {
-                        examSubjects: ['English Language', 'Mathematics', 'Biology', 'Chemistry'],
-                        jambSubjects: ['English', 'Biology', 'Chemistry', 'Physics']
-                    };
-                }
-                if (titleLower.includes('lawyer') || titleLower.includes('attorney')) {
-                    return {
-                        examSubjects: ['English Language', 'Government', 'Literature', 'Economics'],
-                        jambSubjects: ['English', 'Government', 'Literature', 'Economics']
-                    };
-                }
-                if (titleLower.includes('social') || titleLower.includes('psychologist') || titleLower.includes('counselor')) {
-                    return {
-                        examSubjects: ['English Language', 'Government', 'Economics', 'Literature'],
-                        jambSubjects: ['English', 'Government', 'Economics', 'Literature']
-                    };
-                }
-                if (titleLower.includes('account') || titleLower.includes('business') || titleLower.includes('economist') || titleLower.includes('finance')) {
-                    return {
-                        examSubjects: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
-                        jambSubjects: ['English', 'Mathematics', 'Economics', 'Accounting']
-                    };
-                }
-                if (titleLower.includes('software') || titleLower.includes('computer') || titleLower.includes('programmer')) {
-                    return {
-                        examSubjects: ['English Language', 'Mathematics', 'Physics', 'Computer Studies'],
-                        jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry']
-                    };
-                }
-                // Default based on personality
-                if (dominantPersonality === "Healthcare Helper") {
-                    return {
-                        examSubjects: ['English Language', 'Mathematics', 'Biology', 'Chemistry'],
-                        jambSubjects: ['English', 'Biology', 'Chemistry', 'Physics']
-                    };
-                }
-                if (dominantPersonality === "Creative Communicator") {
-                    return {
-                        examSubjects: ['English Language', 'Literature', 'Government', 'Economics'],
-                        jambSubjects: ['English', 'Literature', 'Government', 'Economics']
-                    };
-                }
-                if (dominantPersonality === "Business Leader") {
-                    return {
-                        examSubjects: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
-                        jambSubjects: ['English', 'Mathematics', 'Economics', 'Accounting']
-                    };
-                }
-                return {
-                    examSubjects: ['English Language', 'Mathematics', 'Physics', 'Chemistry'],
-                    jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry']
-                };
-            };
-
             const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
-                const careerSubjects = getSubjectsForCareer(aiCareer.title);
-                
                 return {
                     id: Date.now() + index + Math.random(),
                     slug: aiCareer.slug || aiCareer.title?.toLowerCase().replace(/\s+/g, '-') || `career-${index}`,
@@ -560,26 +387,8 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                     shortDescription: aiCareer.shortDescription || "",
                     description: aiCareer.description || "No description available",
                     skills: aiCareer.skills || [],
-                    traits: aiCareer.traits || [],
-                    interests: aiCareer.interests || [],
                     personalityType: dominantPersonality,
                     country: countryLower,
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: careerSubjects.examSubjects,
-                        jambSubjects: config.jambSubjects.length > 0 ? careerSubjects.jambSubjects : [],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: aiCareer.universities || [],
-                    salary: aiCareer.salary || {
-                        min: config.salaryRange.min,
-                        max: config.salaryRange.max,
-                        currency: config.currency,
-                        period: "year"
-                    },
-                    relatedCareers: aiCareer.relatedCareers || [],
-                    pathway: aiCareer.pathway || [],
                     match: 85,
                     aiGenerated: true
                 };
@@ -610,7 +419,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
                 if (checkResponse.ok) {
                     const existing = await checkResponse.json();
                     if (existing.length === 0) {
-                        await fetch(`${api}/careers`, {
+                        await fetch(`${api}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ ...career, id: Date.now() + Math.random() })
@@ -643,7 +452,7 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
     };
 
     // =========================
-    // FALLBACK SYSTEM (Uses cached careers from localStorage)
+    // FALLBACK SYSTEM (Uses hardcoded careers)
     // =========================
 
     const generateCareerFallback = (country) => {
@@ -654,36 +463,54 @@ Remember: DO NOT recommend Software Engineering unless explicitly indicated by u
             return;
         }
         
-        // If no careers in cache, show empty
-        careers.value = [];
+        // Calculate dominant personality from answers
+        const personalityCounts = {};
+        answers.value.forEach(answer => {
+            const type = answer.option?.personalityType;
+            if (type) {
+                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
+            }
+        });
+        
+        let dominantPersonality = "Technical Innovator";
+        let maxCount = 0;
+        for (const [type, count] of Object.entries(personalityCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                dominantPersonality = type;
+            }
+        }
+        
+        // Use hardcoded fallback careers
+        const fallbackCareers = getFallbackCareers(country, dominantPersonality);
+        careers.value = fallbackCareers;
+        saveCareersToLocalStorage();
         calculatePersonalityScores();
-        console.log('⚠️ No fallback careers available');
+        console.log('✅ Using hardcoded fallback careers for', dominantPersonality);
     };
 
     // =========================
     // RESET QUIZ
     // =========================
 
-const resetQuiz = () => {
-    answers.value = [];
-    careers.value = [];
-    personalityScores.value = [];
-    error.value = null;
-    quizCompleted.value = false;
-    clearLocalStorage();
-    
-    // Set flag to indicate quiz was reset and needs fresh AI generation
-    localStorage.setItem('quiz_just_completed', 'true');
-    
-    // Clear all country-specific caches
-    const keys = Object.keys(localStorage);
-    keys.forEach(key => {
-        if (key.startsWith('cached_careers_')) {
-            localStorage.removeItem(key);
-        }
-    });
-    localStorage.removeItem('cached_careers');
-};
+    const resetQuiz = () => {
+        answers.value = [];
+        careers.value = [];
+        personalityScores.value = [];
+        error.value = null;
+        quizCompleted.value = false;
+        clearLocalStorage();
+        
+        localStorage.setItem('quiz_just_completed', 'true');
+        
+        const keys = Object.keys(localStorage);
+        keys.forEach(key => {
+            if (key.startsWith('cached_careers_')) {
+                localStorage.removeItem(key);
+            }
+        });
+        localStorage.removeItem('cached_careers');
+    };
 
     // =========================
     // INITIALIZE
