@@ -329,16 +329,25 @@
                             </div>
                         </div>
 
-                        <!-- Salary Range -->
+                        <!-- Salary Range - FIXED -->
                         <div class="p-8 border-b border-gray-200" v-if="career.salary">
                             <h4 class="text-xl font-bold mb-4">💰 Salary Range</h4>
                             <div class="bg-gray-50 rounded-xl p-6">
-                                <p class="text-gray-600 mb-2">Starting Position: Medium</p>
-                                <p class="text-3xl font-bold text-indigo-600">
-                                    {{ formatSalary(career.salary) }}
-                                </p>
-                                <p class="text-sm text-gray-500 mt-2">Annual (Per Year)</p>
-                                <p class="text-xs text-gray-400 mt-4">Note: Salaries vary significantly based on experience, skills, benefits, location, industry sector, qualifications, and operational skills.</p>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Entry Level:</span>
+                                        <span class="font-semibold text-indigo-700">{{ formatSalaryEntry(career.salary) }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Mid Level:</span>
+                                        <span class="font-semibold text-indigo-700">{{ formatSalaryMid(career.salary) }}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Senior Level:</span>
+                                        <span class="font-semibold text-indigo-700">{{ formatSalarySenior(career.salary) }}</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-4">*Salaries vary based on experience, skills, location, and industry. Figures show annual salary ranges.</p>
                             </div>
                         </div>
 
@@ -505,6 +514,57 @@ const loadingFromCache = ref(true);
 let loadingInterval = null;
 
 // ==============================
+// SALARY FORMATTING FUNCTIONS - FIXED
+// ==============================
+
+const formatSalaryEntry = (salary) => {
+    if (!salary) return 'Information not available';
+    const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
+    const currency = salary.currency || (userCountry === 'ng' ? 'NGN' : userCountry === 'uk' ? 'GBP' : 'USD');
+    const formatter = new Intl.NumberFormat(userCountry === 'ng' ? 'en-NG' : 'en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    const amount = salary.entry || salary.min || 0;
+    return formatter.format(amount);
+};
+
+const formatSalaryMid = (salary) => {
+    if (!salary) return 'Information not available';
+    const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
+    const currency = salary.currency || (userCountry === 'ng' ? 'NGN' : userCountry === 'uk' ? 'GBP' : 'USD');
+    const formatter = new Intl.NumberFormat(userCountry === 'ng' ? 'en-NG' : 'en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    if (salary.midMin && salary.midMax) {
+        return `${formatter.format(salary.midMin)} - ${formatter.format(salary.midMax)}`;
+    }
+    if (salary.min && salary.max) {
+        return `${formatter.format(salary.min)} - ${formatter.format(salary.max)}`;
+    }
+    return formatter.format(salary.mid || 0);
+};
+
+const formatSalarySenior = (salary) => {
+    if (!salary) return 'Information not available';
+    const userCountry = userStore.currentUser?.country?.toLowerCase() || 'us';
+    const currency = salary.currency || (userCountry === 'ng' ? 'NGN' : userCountry === 'uk' ? 'GBP' : 'USD');
+    const formatter = new Intl.NumberFormat(userCountry === 'ng' ? 'en-NG' : 'en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    const amount = salary.senior || salary.max || 0;
+    return formatter.format(amount);
+};
+
+// ==============================
 // RECOMMENDED COURSES FUNCTION
 // ==============================
 
@@ -638,20 +698,6 @@ const getExamSystem = (country) => {
         'uk': 'A-Levels',
     };
     return systems[country?.toLowerCase()] || 'High School Diploma';
-};
-
-const formatSalary = (salary) => {
-    if (!salary) return 'Information not available';
-    if (typeof salary === 'object' && salary.min && salary.max) {
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: salary.currency || 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-        return `${formatter.format(salary.min)} - ${formatter.format(salary.max)} / ${salary.period || 'year'}`;
-    }
-    return salary;
 };
 
 const saveCareer = (career) => {
