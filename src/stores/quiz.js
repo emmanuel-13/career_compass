@@ -162,6 +162,8 @@ export const useQuizStore = defineStore("quiz", () => {
         const requirements = {
             'nigeria': {
                 examSystem: 'WAEC/NECO',
+                examSubjects: ['English Language', 'Mathematics', 'Physics', 'Chemistry'],
+                jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
                 examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
                 additionalTests: ['Post-UTME (varies by university)'],
                 currency: 'NGN',
@@ -169,6 +171,8 @@ export const useQuizStore = defineStore("quiz", () => {
             },
             'ng': {
                 examSystem: 'WAEC/NECO',
+                examSubjects: ['English Language', 'Mathematics', 'Physics', 'Chemistry'],
+                jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
                 examDescription: 'West African Senior School Certificate Examination (WASSCE) or NECO',
                 additionalTests: ['Post-UTME (varies by university)'],
                 currency: 'NGN',
@@ -176,6 +180,8 @@ export const useQuizStore = defineStore("quiz", () => {
             },
             'us': {
                 examSystem: 'SAT/ACT',
+                examSubjects: ['English', 'Mathematics', 'Science', 'Optional Essay'],
+                jambSubjects: [],
                 examDescription: 'Scholastic Assessment Test (SAT) or American College Testing (ACT)',
                 additionalTests: ['TOEFL/IELTS (for international students)'],
                 currency: 'USD',
@@ -183,6 +189,8 @@ export const useQuizStore = defineStore("quiz", () => {
             },
             'uk': {
                 examSystem: 'A-Levels',
+                examSubjects: ['3-4 subjects related to career field'],
+                jambSubjects: [],
                 examDescription: 'General Certificate of Education Advanced Level (A-Levels)',
                 additionalTests: ['IELTS/TOEFL for international students'],
                 currency: 'GBP',
@@ -216,156 +224,249 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // FALLBACK CAREERS (Used when API fails)
+    // CALCULATE MATCH SCORE BASED ON USER'S ANSWERS
+    // =========================
+
+    const calculateMatchScore = (career) => {
+        let score = 0;
+        let totalPossible = 0;
+        
+        answers.value.forEach(answer => {
+            const userOption = answer.option;
+            if (!userOption) return;
+            
+            // Personality match (30 points)
+            totalPossible += 30;
+            if (userOption.personalityType === career.personalityType) {
+                score += 30;
+            }
+            
+            // Traits match (up to 35 points)
+            if (userOption.traits && userOption.traits.length > 0) {
+                totalPossible += 35;
+                let traitMatches = 0;
+                userOption.traits.forEach(userTrait => {
+                    if (career.traits && career.traits.some(t => t.toLowerCase() === userTrait.toLowerCase())) {
+                        traitMatches++;
+                    }
+                });
+                // Each trait match adds proportional points
+                score += (traitMatches / userOption.traits.length) * 35;
+            }
+            
+            // Interests match (up to 35 points)
+            if (userOption.interests && userOption.interests.length > 0) {
+                totalPossible += 35;
+                let interestMatches = 0;
+                userOption.interests.forEach(userInterest => {
+                    if (career.interests && career.interests.some(i => i.toLowerCase() === userInterest.toLowerCase())) {
+                        interestMatches++;
+                    }
+                });
+                score += (interestMatches / userOption.interests.length) * 35;
+            }
+        });
+        
+        // Calculate percentage (max 100)
+        const finalScore = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
+        return Math.min(finalScore, 100);
+    };
+
+    // =========================
+    // GET FALLBACK CAREERS WITH MATCH SCORES
     // =========================
 
     const getFallbackCareers = (country, personality) => {
         const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
         const config = getCountryRequirements(country);
         
+        let baseCareers = [];
+        
         if (countryLower === 'nigeria') {
-            return [
+            baseCareers = [
                 {
                     id: 1,
                     title: 'Software Developer',
                     slug: 'software-developer',
                     icon: '💻',
-                    shortDescription: 'Build innovative software solutions',
-                    description: 'Software developers create applications and systems that solve real-world problems.',
-                    skills: ['JavaScript', 'Python', 'React', 'Node.js'],
-                    traits: ['Analytical', 'Logical', 'Creative'],
-                    interests: ['Technology', 'Coding', 'Problem-solving'],
-                    personalityType: personality,
+                    shortDescription: 'Build innovative software solutions for Nigerian businesses',
+                    description: 'Software developers create applications, websites, and systems that solve real-world problems. In Nigeria, this career is growing rapidly with the tech ecosystem in Lagos, Abuja, and other cities.',
+                    skills: ['JavaScript', 'Python', 'React', 'Node.js', 'Database Management'],
+                    traits: ['Analytical', 'Logical', 'Creative', 'Problem-solving'],
+                    interests: ['Technology', 'Coding', 'Problem-solving', 'Innovation'],
+                    personalityType: 'Technical Innovator',
                     country: 'ng',
                     requirements: {
                         examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Physics', 'Computer Studies'],
+                        examSubjects: ['English Language', 'Mathematics', 'Physics', 'Computer Studies'],
                         jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
                         examDescription: config.examDescription,
                         additionalTests: config.additionalTests
                     },
                     universities: [
-                        { name: 'University of Lagos', ranking: '1st', programName: 'Computer Science' },
-                        { name: 'Obafemi Awolowo University', ranking: '2nd', programName: 'Computer Engineering' },
-                        { name: 'University of Ibadan', ranking: '3rd', programName: 'Computer Science' }
+                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Computer Science' },
+                        { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Computer Engineering' },
+                        { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Computer Science' },
+                        { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Computer Science' },
+                        { name: 'Federal University of Technology, Minna', ranking: 'Top Tech University', programName: 'Software Engineering' }
                     ],
                     salary: { entry: 1200000, midMin: 2400000, midMax: 4200000, senior: 6000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Frontend Developer', 'Backend Developer', 'Mobile Developer'],
+                    relatedCareers: ['Frontend Developer', 'Backend Developer', 'DevOps Engineer', 'Mobile App Developer'],
                     pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics and Physics.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Computer Science.' },
-                        { step: 3, title: 'Internship', duration: '6 months', description: 'Gain practical experience.' },
-                        { step: 4, title: 'Entry-Level Job', duration: '1-2 years', description: 'Start as junior developer.' },
-                        { step: 5, title: 'Senior Developer', duration: 'Ongoing', description: 'Advance to senior role.' }
+                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Physics, and Computer Studies.' },
+                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete a degree in Computer Science or related field.' },
+                        { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create personal projects and build a GitHub portfolio.' },
+                        { step: 4, title: 'Internship', duration: '6-12 months', description: 'Gain practical experience at tech companies.' },
+                        { step: 5, title: 'Professional Certification', duration: 'Ongoing', description: 'Pursue AWS, Google Cloud, or Azure certifications.' }
                     ],
                     courses: [
-                        { name: 'CS50', platform: 'Harvard edX', description: 'Learn programming', url: 'https://www.edx.org' },
-                        { name: 'Python for Everybody', platform: 'Coursera', description: 'Learn Python', url: 'https://www.coursera.org' },
-                        { name: 'Web Development', platform: 'Udemy', description: 'Learn web dev', url: 'https://www.udemy.com' }
+                        { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
+                        { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' },
+                        { name: 'Python for Everybody', platform: 'University of Michigan', description: 'Master Python programming', url: 'https://www.coursera.org/specializations/python' }
                     ],
-                    degrees: ['BSc Computer Science', 'MSc Computer Science'],
-                    match: 85,
-                    aiGenerated: true
+                    degrees: ['BSc Computer Science', 'BEng Software Engineering', 'MSc Computer Science']
                 },
                 {
                     id: 2,
                     title: 'Medical Doctor',
                     slug: 'medical-doctor',
                     icon: '👨‍⚕️',
-                    shortDescription: 'Provide essential healthcare services',
-                    description: 'Medical doctors diagnose and treat illnesses and health conditions.',
-                    skills: ['Diagnosis', 'Patient Care', 'Medical Knowledge', 'Communication'],
-                    traits: ['Compassionate', 'Patient', 'Observant'],
-                    interests: ['Healthcare', 'Helping others', 'Science'],
-                    personalityType: personality,
+                    shortDescription: 'Provide essential healthcare services to Nigerian communities',
+                    description: 'Medical doctors diagnose and treat illnesses, injuries, and other health conditions. In Nigeria, doctors work in hospitals, clinics, and community health centers.',
+                    skills: ['Diagnosis', 'Patient Care', 'Medical Knowledge', 'Emergency Response', 'Communication'],
+                    traits: ['Compassionate', 'Patient', 'Observant', 'Dedicated', 'Empathetic'],
+                    interests: ['Healthcare', 'Helping others', 'Science', 'Medical research'],
+                    personalityType: 'Healthcare Helper',
                     country: 'ng',
                     requirements: {
                         examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Biology', 'Chemistry', 'Physics'],
+                        examSubjects: ['English Language', 'Mathematics', 'Biology', 'Chemistry', 'Physics'],
                         jambSubjects: ['English', 'Biology', 'Chemistry', 'Physics'],
                         examDescription: config.examDescription,
                         additionalTests: config.additionalTests
                     },
                     universities: [
-                        { name: 'University of Lagos', ranking: '1st', programName: 'Medicine' },
-                        { name: 'University of Ibadan', ranking: '2nd', programName: 'Medicine' },
-                        { name: 'Obafemi Awolowo University', ranking: '3rd', programName: 'Medicine' }
+                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Medicine and Surgery' },
+                        { name: 'University of Ibadan (UI)', ranking: '2nd in Nigeria', programName: 'Medicine and Surgery' },
+                        { name: 'Obafemi Awolowo University (OAU)', ranking: '3rd in Nigeria', programName: 'Medicine' },
+                        { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Medicine' },
+                        { name: 'University of Nigeria, Nsukka (UNN)', ranking: '5th in Nigeria', programName: 'Medicine' }
                     ],
                     salary: { entry: 2400000, midMin: 4800000, midMax: 7200000, senior: 12000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Pediatrician', 'Surgeon', 'Psychiatrist'],
+                    relatedCareers: ['Pediatrician', 'Surgeon', 'Psychiatrist', 'Public Health Physician', 'Medical Researcher'],
                     pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Sciences.' },
-                        { step: 2, title: 'Medical School', duration: '6 years', description: 'Complete MBBS.' },
-                        { step: 3, title: 'Internship', duration: '1 year', description: 'Hospital training.' },
-                        { step: 4, title: 'Residency', duration: '3-5 years', description: 'Specialize.' },
-                        { step: 5, title: 'Consultant', duration: 'Ongoing', description: 'Become specialist.' }
+                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Sciences - Biology, Chemistry, Physics.' },
+                        { step: 2, title: 'Bachelor of Medicine (MBBS)', duration: '6 years', description: 'Complete medical school.' },
+                        { step: 3, title: 'Internship (Housemanship)', duration: '1 year', description: 'Rotating internship at a teaching hospital.' },
+                        { step: 4, title: 'NYSC', duration: '1 year', description: 'National Youth Service Corps.' },
+                        { step: 5, title: 'Residency Program', duration: '4-6 years', description: 'Specialize in a specific field of medicine.' }
                     ],
                     courses: [
-                        { name: 'Human Anatomy', platform: 'Coursera', description: 'Learn anatomy', url: 'https://www.coursera.org' },
-                        { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical terms', url: 'https://www.edx.org' },
-                        { name: 'Clinical Skills', platform: 'FutureLearn', description: 'Develop skills', url: 'https://www.futurelearn.com' }
+                        { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
+                        { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language', url: 'https://www.edx.org/course/medical-terminology' },
+                        { name: 'Tropical Medicine', platform: 'Liverpool School of Tropical Medicine', description: 'Study tropical diseases', url: 'https://www.lstmed.ac.uk/study' }
                     ],
-                    degrees: ['MBBS', 'MD', 'MPH'],
-                    match: 85,
-                    aiGenerated: true
+                    degrees: ['MBBS', 'MD', 'MPH']
                 },
                 {
                     id: 3,
                     title: 'Business Administrator',
                     slug: 'business-administrator',
                     icon: '📋',
-                    shortDescription: 'Manage business operations',
-                    description: 'Business administrators oversee daily operations and manage teams.',
-                    skills: ['Management', 'Leadership', 'Strategic Planning', 'Communication'],
-                    traits: ['Organized', 'Decisive', 'Strategic'],
-                    interests: ['Business', 'Management', 'Leadership'],
-                    personalityType: personality,
+                    shortDescription: 'Lead and manage business operations in Nigerian organizations',
+                    description: 'Business administrators oversee daily operations, manage teams, and develop strategies for organizational growth.',
+                    skills: ['Management', 'Leadership', 'Strategic Planning', 'Financial Analysis', 'Communication'],
+                    traits: ['Organized', 'Decisive', 'Strategic', 'Motivated', 'Leadership'],
+                    interests: ['Business', 'Management', 'Leadership', 'Entrepreneurship'],
+                    personalityType: 'Business Leader',
                     country: 'ng',
                     requirements: {
                         examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Economics', 'Accounting'],
+                        examSubjects: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
                         jambSubjects: ['English', 'Mathematics', 'Economics', 'Commerce'],
                         examDescription: config.examDescription,
                         additionalTests: config.additionalTests
                     },
                     universities: [
-                        { name: 'University of Lagos', ranking: '1st', programName: 'Business Administration' },
-                        { name: 'Pan-Atlantic University', ranking: 'Top Business', programName: 'Business Administration' },
-                        { name: 'Obafemi Awolowo University', ranking: '3rd', programName: 'Business Administration' }
+                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Business Administration' },
+                        { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Business Administration' },
+                        { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Business Administration' },
+                        { name: 'Pan-Atlantic University (LBS)', ranking: 'Top Business School', programName: 'Business Administration' },
+                        { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Business Administration' }
                     ],
                     salary: { entry: 1800000, midMin: 3000000, midMax: 5400000, senior: 9000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Operations Manager', 'Project Manager', 'Entrepreneur'],
+                    relatedCareers: ['Management Consultant', 'Project Manager', 'Operations Manager', 'Entrepreneur', 'Financial Analyst'],
                     pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Business subjects.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Business Administration.' },
-                        { step: 3, title: 'Gain Experience', duration: '2-3 years', description: 'Work in management.' },
-                        { step: 4, title: 'MBA', duration: '2 years', description: 'Master of Business Administration.' },
-                        { step: 5, title: 'Executive Role', duration: 'Ongoing', description: 'Become manager or director.' }
+                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Economics, and Accounting.' },
+                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete BSc in Business Administration.' },
+                        { step: 3, title: 'Gain Work Experience', duration: '2-3 years', description: 'Work in entry-level management positions.' },
+                        { step: 4, title: 'Master\'s Degree (MBA)', duration: '2 years', description: 'Pursue an MBA for advanced opportunities.' },
+                        { step: 5, title: 'Professional Certifications', duration: 'Ongoing', description: 'PMP, CIPM, or other certifications.' }
                     ],
                     courses: [
-                        { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn business', url: 'https://www.coursera.org' },
-                        { name: 'Project Management', platform: 'Google Coursera', description: 'Learn PM', url: 'https://www.coursera.org' },
-                        { name: 'Leadership Skills', platform: 'Harvard Online', description: 'Develop leadership', url: 'https://www.harvardonline.com' }
+                        { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
+                        { name: 'Project Management Professional', platform: 'Google Coursera', description: 'Master project management', url: 'https://www.coursera.org/professional-certificates/google-project-management' },
+                        { name: 'Financial Accounting', platform: 'UVA Darden', description: 'Understand financial statements', url: 'https://www.coursera.org/learn/financial-accounting' }
                     ],
-                    degrees: ['BBA', 'MBA', 'MSc Management'],
-                    match: 85,
-                    aiGenerated: true
+                    degrees: ['BSc Business Administration', 'MBA', 'MSc Management']
                 },
                 {
                     id: 4,
-                    title: 'Data Analyst',
-                    slug: 'data-analyst',
-                    icon: '📊',
-                    shortDescription: 'Analyze data to drive business decisions',
-                    description: 'Data analysts collect and analyze data to help organizations make informed decisions.',
-                    skills: ['SQL', 'Excel', 'Python', 'Data Visualization', 'Statistics'],
-                    traits: ['Analytical', 'Detail-oriented', 'Logical'],
-                    interests: ['Data', 'Statistics', 'Technology'],
-                    personalityType: personality,
+                    title: 'Content Creator',
+                    slug: 'content-creator',
+                    icon: '✍️',
+                    shortDescription: 'Create engaging digital content for Nigerian and global audiences',
+                    description: 'Content creators produce videos, articles, social media posts, and other digital content. Nigeria has a vibrant creative industry.',
+                    skills: ['Writing', 'Video Editing', 'Creativity', 'Social Media Management', 'Storytelling'],
+                    traits: ['Creative', 'Expressive', 'Empathetic', 'Adaptable', 'Imaginative'],
+                    interests: ['Content creation', 'Social media', 'Storytelling', 'Digital marketing'],
+                    personalityType: 'Creative Communicator',
                     country: 'ng',
                     requirements: {
                         examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Economics', 'Computer Studies'],
+                        examSubjects: ['English Language', 'Literature', 'Government', 'Economics'],
+                        jambSubjects: ['English', 'Literature', 'Government', 'Economics'],
+                        examDescription: config.examDescription,
+                        additionalTests: config.additionalTests
+                    },
+                    universities: [
+                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Mass Communication' },
+                        { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Mass Communication' },
+                        { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Communication and Language Arts' },
+                        { name: 'Pan-Atlantic University', ranking: 'Top Private', programName: 'Media and Communication' },
+                        { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Mass Communication' }
+                    ],
+                    salary: { entry: 960000, midMin: 1800000, midMax: 3600000, senior: 6000000, currency: 'NGN', period: 'year' },
+                    relatedCareers: ['Social Media Manager', 'Video Editor', 'Digital Marketer', 'Podcaster', 'Graphic Designer'],
+                    pathway: [
+                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on English, Literature, and Arts.' },
+                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Study Mass Communication or related field.' },
+                        { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create content, grow social media presence.' },
+                        { step: 4, title: 'Internship', duration: '6-12 months', description: 'Work with media companies.' },
+                        { step: 5, title: 'Specialize', duration: 'Ongoing', description: 'Focus on video, writing, or social media.' }
+                    ],
+                    courses: [
+                        { name: 'Content Creation Masterclass', platform: 'HubSpot Academy', description: 'Learn content marketing', url: 'https://academy.hubspot.com/courses/content-marketing' },
+                        { name: 'Video Editing with DaVinci Resolve', platform: 'Blackmagic Design', description: 'Master video editing', url: 'https://www.blackmagicdesign.com/products/davinciresolve/training' },
+                        { name: 'Social Media Marketing', platform: 'Meta Blueprint', description: 'Learn social media advertising', url: 'https://www.facebook.com/business/learn' }
+                    ],
+                    degrees: ['BA Mass Communication', 'BA Media Studies', 'MA Digital Media']
+                },
+                {
+                    id: 5,
+                    title: 'Data Analyst',
+                    slug: 'data-analyst',
+                    icon: '📊',
+                    shortDescription: 'Analyze data to help businesses make better decisions',
+                    description: 'Data analysts collect, process, and perform statistical analyses on data to help organizations make informed decisions.',
+                    skills: ['SQL', 'Excel', 'Python', 'Data Visualization', 'Statistics', 'Critical Thinking'],
+                    traits: ['Analytical', 'Detail-oriented', 'Logical', 'Curious', 'Methodical'],
+                    interests: ['Data', 'Statistics', 'Problem-solving', 'Technology'],
+                    personalityType: 'Technical Innovator',
+                    country: 'ng',
+                    requirements: {
+                        examSystem: config.examSystem,
+                        examSubjects: ['English Language', 'Mathematics', 'Economics', 'Computer Studies'],
                         jambSubjects: ['English', 'Mathematics', 'Economics', 'Physics'],
                         examDescription: config.examDescription,
                         additionalTests: config.additionalTests
@@ -373,82 +474,40 @@ export const useQuizStore = defineStore("quiz", () => {
                     universities: [
                         { name: 'University of Lagos', ranking: '1st', programName: 'Statistics' },
                         { name: 'University of Ibadan', ranking: '2nd', programName: 'Computer Science' },
-                        { name: 'Obafemi Awolowo University', ranking: '3rd', programName: 'Mathematics' }
+                        { name: 'Obafemi Awolowo University', ranking: '3rd', programName: 'Mathematics' },
+                        { name: 'Covenant University', ranking: 'Top Private', programName: 'Data Science' },
+                        { name: 'Federal University of Technology, Minna', ranking: 'Top Tech', programName: 'Statistics' }
                     ],
                     salary: { entry: 1500000, midMin: 2800000, midMax: 4500000, senior: 6500000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Business Analyst', 'Data Scientist', 'BI Analyst'],
+                    relatedCareers: ['Business Analyst', 'Data Scientist', 'BI Analyst', 'Data Engineer'],
                     pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Statistics or Computer Science.' },
-                        { step: 3, title: 'Learn Tools', duration: '6 months', description: 'SQL, Excel, Python.' },
-                        { step: 4, title: 'Internship', duration: '6 months', description: 'Gain experience.' },
-                        { step: 5, title: 'Data Analyst', duration: 'Ongoing', description: 'Work as analyst.' }
+                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics and Statistics.' },
+                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Study Statistics, Mathematics, or Computer Science.' },
+                        { step: 3, title: 'Learn Data Tools', duration: '6-12 months', description: 'Master SQL, Excel, Python, and Tableau.' },
+                        { step: 4, title: 'Build Portfolio', duration: '1 year', description: 'Create data analysis projects on GitHub.' },
+                        { step: 5, title: 'Certification', duration: 'Ongoing', description: 'Get Google Data Analytics or Microsoft certification.' }
                     ],
                     courses: [
-                        { name: 'Google Data Analytics', platform: 'Google Coursera', description: 'Learn data analysis', url: 'https://www.coursera.org' },
-                        { name: 'SQL for Data Science', platform: 'UC Davis', description: 'Master SQL', url: 'https://www.coursera.org' },
-                        { name: 'Python for Data Science', platform: 'IBM', description: 'Learn Python', url: 'https://www.coursera.org' }
+                        { name: 'Google Data Analytics Professional Certificate', platform: 'Google Coursera', description: 'Learn data analysis', url: 'https://www.coursera.org/professional-certificates/google-data-analytics' },
+                        { name: 'SQL for Data Science', platform: 'UC Davis', description: 'Master SQL', url: 'https://www.coursera.org/learn/sql-for-data-science' },
+                        { name: 'Python for Data Science', platform: 'IBM', description: 'Learn Python for data', url: 'https://www.coursera.org/learn/python-for-applied-data-science-ai' }
                     ],
-                    degrees: ['BSc Statistics', 'BSc Computer Science', 'BSc Mathematics'],
-                    match: 85,
-                    aiGenerated: true
-                },
-                {
-                    id: 5,
-                    title: 'Content Creator',
-                    slug: 'content-creator',
-                    icon: '✍️',
-                    shortDescription: 'Create engaging digital content',
-                    description: 'Content creators produce videos, articles, and social media content.',
-                    skills: ['Writing', 'Video Editing', 'Creativity', 'Social Media'],
-                    traits: ['Creative', 'Expressive', 'Adaptable'],
-                    interests: ['Content creation', 'Social media', 'Storytelling'],
-                    personalityType: personality,
-                    country: 'ng',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English', 'Literature', 'Government', 'Economics'],
-                        jambSubjects: ['English', 'Literature', 'Government', 'Economics'],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'University of Lagos', ranking: '1st', programName: 'Mass Communication' },
-                        { name: 'Obafemi Awolowo University', ranking: '2nd', programName: 'Mass Communication' },
-                        { name: 'University of Ibadan', ranking: '3rd', programName: 'Communication Arts' }
-                    ],
-                    salary: { entry: 960000, midMin: 1800000, midMax: 3600000, senior: 6000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Social Media Manager', 'Video Editor', 'Digital Marketer'],
-                    pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Arts.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Mass Communication.' },
-                        { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create content.' },
-                        { step: 4, title: 'Grow Audience', duration: '1-2 years', description: 'Build following.' },
-                        { step: 5, title: 'Monetize', duration: 'Ongoing', description: 'Brand deals and sponsorships.' }
-                    ],
-                    courses: [
-                        { name: 'Content Creation', platform: 'HubSpot', description: 'Learn content', url: 'https://academy.hubspot.com' },
-                        { name: 'Video Editing', platform: 'Adobe', description: 'Learn editing', url: 'https://www.adobe.com' },
-                        { name: 'Social Media Marketing', platform: 'Meta', description: 'Learn social media', url: 'https://www.facebook.com/business/learn' }
-                    ],
-                    degrees: ['BA Mass Communication', 'BA Media Studies'],
-                    match: 85,
-                    aiGenerated: true
+                    degrees: ['BSc Statistics', 'BSc Computer Science', 'MSc Data Science']
                 }
             ];
         } else {
-            return [
+            baseCareers = [
                 {
                     id: 1,
                     title: 'Software Engineer',
                     slug: 'software-engineer',
                     icon: '💻',
-                    shortDescription: 'Build software applications',
-                    description: 'Software engineers design and develop software applications.',
-                    skills: ['Programming', 'Problem Solving', 'Debugging'],
-                    traits: ['Analytical', 'Logical', 'Detail-oriented'],
-                    interests: ['Technology', 'Coding', 'Problem-solving'],
-                    personalityType: personality,
+                    shortDescription: 'Build and maintain software applications',
+                    description: 'Software engineers design, develop, and test software applications that power modern businesses.',
+                    skills: ['Programming', 'Problem Solving', 'Debugging', 'Teamwork', 'System Design'],
+                    traits: ['Analytical', 'Detail-oriented', 'Logical', 'Innovative', 'Patient'],
+                    interests: ['Technology', 'Problem-solving', 'Innovation', 'Coding'],
+                    personalityType: 'Technical Innovator',
                     country: 'us',
                     requirements: {
                         examSystem: config.examSystem,
@@ -458,198 +517,36 @@ export const useQuizStore = defineStore("quiz", () => {
                         additionalTests: config.additionalTests
                     },
                     universities: [
-                        { name: 'MIT', ranking: '1st', programName: 'Computer Science' },
-                        { name: 'Stanford', ranking: '2nd', programName: 'Computer Science' },
-                        { name: 'UC Berkeley', ranking: '3rd', programName: 'Computer Science' }
+                        { name: 'Massachusetts Institute of Technology (MIT)', ranking: '1st in US', programName: 'Computer Science' },
+                        { name: 'Stanford University', ranking: '2nd in US', programName: 'Computer Science' },
+                        { name: 'Carnegie Mellon University', ranking: '3rd in US', programName: 'Software Engineering' },
+                        { name: 'UC Berkeley', ranking: '4th in US', programName: 'Computer Science' },
+                        { name: 'California Institute of Technology', ranking: '5th in US', programName: 'Computer Science' }
                     ],
                     salary: { entry: 85000, midMin: 110000, midMax: 150000, senior: 200000, currency: 'USD', period: 'year' },
-                    relatedCareers: ['Frontend Developer', 'Backend Developer', 'DevOps Engineer'],
+                    relatedCareers: ['Data Scientist', 'DevOps Engineer', 'Cloud Architect', 'Mobile Developer', 'Security Engineer'],
                     pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Math and Science.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Computer Science.' },
-                        { step: 3, title: 'Internship', duration: '3-6 months', description: 'Gain experience.' },
-                        { step: 4, title: 'Entry-Level Job', duration: '1-2 years', description: 'Junior developer.' },
-                        { step: 5, title: 'Senior Engineer', duration: 'Ongoing', description: 'Senior role.' }
+                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Mathematics and Science.' },
+                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Earn a BS in Computer Science.' },
+                        { step: 3, title: 'Internship', duration: '3-6 months', description: 'Gain practical experience.' },
+                        { step: 4, title: 'Entry-Level Position', duration: '2 years', description: 'Start as a junior developer.' },
+                        { step: 5, title: 'Senior Engineer', duration: 'Ongoing', description: 'Advance to senior roles.' }
                     ],
                     courses: [
-                        { name: 'CS50', platform: 'Harvard edX', description: 'Learn programming', url: 'https://www.edx.org' },
-                        { name: 'Data Structures', platform: 'Coursera', description: 'Learn algorithms', url: 'https://www.coursera.org' },
-                        { name: 'Web Development', platform: 'Meta Coursera', description: 'Learn web dev', url: 'https://www.coursera.org' }
+                        { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
+                        { name: 'Data Structures and Algorithms', platform: 'Coursera', description: 'Master algorithms', url: 'https://www.coursera.org/specializations/data-structures-algorithms' },
+                        { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' }
                     ],
-                    degrees: ['BS Computer Science', 'MS Computer Science'],
-                    match: 85,
-                    aiGenerated: true
-                },
-                {
-                    id: 2,
-                    title: 'Data Scientist',
-                    slug: 'data-scientist',
-                    icon: '📊',
-                    shortDescription: 'Extract insights from data',
-                    description: 'Data scientists analyze complex data to help organizations make better decisions.',
-                    skills: ['Python', 'SQL', 'Machine Learning', 'Statistics', 'Data Visualization'],
-                    traits: ['Analytical', 'Curious', 'Detail-oriented'],
-                    interests: ['Data', 'Statistics', 'Machine Learning'],
-                    personalityType: personality,
-                    country: 'us',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Computer Science', 'Statistics'],
-                        jambSubjects: [],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'Stanford', ranking: '1st', programName: 'Data Science' },
-                        { name: 'MIT', ranking: '2nd', programName: 'Data Science' },
-                        { name: 'UC Berkeley', ranking: '3rd', programName: 'Data Science' }
-                    ],
-                    salary: { entry: 95000, midMin: 120000, midMax: 160000, senior: 220000, currency: 'USD', period: 'year' },
-                    relatedCareers: ['Data Analyst', 'ML Engineer', 'Business Analyst'],
-                    pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Math and Statistics.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Data Science or Statistics.' },
-                        { step: 3, title: 'Master\'s Degree', duration: '2 years', description: 'Advanced degree often preferred.' },
-                        { step: 4, title: 'Internship', duration: '6 months', description: 'Gain experience.' },
-                        { step: 5, title: 'Data Scientist', duration: 'Ongoing', description: 'Work as data scientist.' }
-                    ],
-                    courses: [
-                        { name: 'Data Science Specialization', platform: 'Johns Hopkins', description: 'Learn data science', url: 'https://www.coursera.org' },
-                        { name: 'Machine Learning', platform: 'Stanford', description: 'Learn ML', url: 'https://www.coursera.org' },
-                        { name: 'Python for Data Science', platform: 'IBM', description: 'Learn Python', url: 'https://www.coursera.org' }
-                    ],
-                    degrees: ['BS Data Science', 'MS Data Science', 'PhD Statistics'],
-                    match: 85,
-                    aiGenerated: true
-                },
-                {
-                    id: 3,
-                    title: 'Project Manager',
-                    slug: 'project-manager',
-                    icon: '📋',
-                    shortDescription: 'Lead and manage projects',
-                    description: 'Project managers plan, execute, and close projects across various industries.',
-                    skills: ['Leadership', 'Planning', 'Communication', 'Risk Management', 'Budgeting'],
-                    traits: ['Organized', 'Decisive', 'Motivated'],
-                    interests: ['Management', 'Strategy', 'Teamwork'],
-                    personalityType: personality,
-                    country: 'us',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Business', 'Economics'],
-                        jambSubjects: [],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'Harvard', ranking: '1st', programName: 'Business Administration' },
-                        { name: 'Stanford', ranking: '2nd', programName: 'Management' },
-                        { name: 'UPenn Wharton', ranking: '3rd', programName: 'Business' }
-                    ],
-                    salary: { entry: 70000, midMin: 90000, midMax: 120000, senior: 150000, currency: 'USD', period: 'year' },
-                    relatedCareers: ['Program Manager', 'Product Manager', 'Scrum Master'],
-                    pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Business subjects.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Business or Management.' },
-                        { step: 3, title: 'PMP Certification', duration: '6 months', description: 'Get certified.' },
-                        { step: 4, title: 'Gain Experience', duration: '2-3 years', description: 'Work as project coordinator.' },
-                        { step: 5, title: 'Project Manager', duration: 'Ongoing', description: 'Lead projects.' }
-                    ],
-                    courses: [
-                        { name: 'Google Project Management', platform: 'Google Coursera', description: 'Learn PM', url: 'https://www.coursera.org' },
-                        { name: 'PMP Certification Prep', platform: 'PMI', description: 'Prepare for PMP', url: 'https://www.pmi.org' },
-                        { name: 'Agile with Scrum', platform: 'Coursera', description: 'Learn Agile', url: 'https://www.coursera.org' }
-                    ],
-                    degrees: ['BBA', 'MBA', 'MS Management'],
-                    match: 85,
-                    aiGenerated: true
-                },
-                {
-                    id: 4,
-                    title: 'Registered Nurse',
-                    slug: 'registered-nurse',
-                    icon: '🩺',
-                    shortDescription: 'Provide patient care',
-                    description: 'Nurses care for patients in hospitals, clinics, and other healthcare settings.',
-                    skills: ['Patient Care', 'Empathy', 'Medical Knowledge', 'Communication', 'Critical Thinking'],
-                    traits: ['Compassionate', 'Patient', 'Observant'],
-                    interests: ['Healthcare', 'Helping others', 'Medicine'],
-                    personalityType: personality,
-                    country: 'us',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Biology', 'Chemistry'],
-                        jambSubjects: [],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'Johns Hopkins', ranking: '1st', programName: 'Nursing' },
-                        { name: 'University of Pennsylvania', ranking: '2nd', programName: 'Nursing' },
-                        { name: 'University of Washington', ranking: '3rd', programName: 'Nursing' }
-                    ],
-                    salary: { entry: 60000, midMin: 75000, midMax: 90000, senior: 110000, currency: 'USD', period: 'year' },
-                    relatedCareers: ['Nurse Practitioner', 'Clinical Nurse Specialist', 'Nurse Educator'],
-                    pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Sciences.' },
-                        { step: 2, title: 'BSN Degree', duration: '4 years', description: 'Bachelor of Science in Nursing.' },
-                        { step: 3, title: 'NCLEX Exam', duration: '6 months', description: 'Pass licensing exam.' },
-                        { step: 4, title: 'Clinical Experience', duration: '1-2 years', description: 'Work in hospital.' },
-                        { step: 5, title: 'Specialization', duration: 'Ongoing', description: 'Focus on area of interest.' }
-                    ],
-                    courses: [
-                        { name: 'Nursing Fundamentals', platform: 'Coursera', description: 'Learn nursing basics', url: 'https://www.coursera.org' },
-                        { name: 'Patient Care Skills', platform: 'edX', description: 'Develop skills', url: 'https://www.edx.org' },
-                        { name: 'Critical Care Nursing', platform: 'OpenWHO', description: 'Learn critical care', url: 'https://openwho.org' }
-                    ],
-                    degrees: ['BSN', 'MSN', 'DNP'],
-                    match: 85,
-                    aiGenerated: true
-                },
-                {
-                    id: 5,
-                    title: 'Marketing Specialist',
-                    slug: 'marketing-specialist',
-                    icon: '📈',
-                    shortDescription: 'Develop marketing campaigns',
-                    description: 'Marketing specialists create strategies to promote products and services.',
-                    skills: ['Digital Marketing', 'Analytics', 'Strategy', 'Content Creation', 'SEO'],
-                    traits: ['Creative', 'Analytical', 'Communicative'],
-                    interests: ['Marketing', 'Advertising', 'Digital Media'],
-                    personalityType: personality,
-                    country: 'us',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Business', 'Economics'],
-                        jambSubjects: [],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'Northwestern', ranking: '1st', programName: 'Marketing' },
-                        { name: 'UPenn Wharton', ranking: '2nd', programName: 'Marketing' },
-                        { name: 'Stanford', ranking: '3rd', programName: 'Marketing' }
-                    ],
-                    salary: { entry: 50000, midMin: 65000, midMax: 85000, senior: 110000, currency: 'USD', period: 'year' },
-                    relatedCareers: ['Brand Manager', 'Digital Marketing Manager', 'SEO Specialist'],
-                    pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Business.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Study Marketing or Business.' },
-                        { step: 3, title: 'Digital Marketing Cert', duration: '6 months', description: 'Google or HubSpot cert.' },
-                        { step: 4, title: 'Internship', duration: '6 months', description: 'Gain experience.' },
-                        { step: 5, title: 'Marketing Specialist', duration: 'Ongoing', description: 'Work in marketing.' }
-                    ],
-                    courses: [
-                        { name: 'Digital Marketing', platform: 'Google Digital Garage', description: 'Learn digital marketing', url: 'https://learndigital.withgoogle.com' },
-                        { name: 'Marketing Analytics', platform: 'Coursera', description: 'Learn analytics', url: 'https://www.coursera.org' },
-                        { name: 'SEO Training', platform: 'Moz', description: 'Learn SEO', url: 'https://moz.com' }
-                    ],
-                    degrees: ['BBA Marketing', 'MS Marketing', 'MBA'],
-                    match: 85,
-                    aiGenerated: true
+                    degrees: ['BS Computer Science', 'BEng Software Engineering', 'MS Computer Science']
                 }
             ];
         }
+        
+        // Calculate match scores for each career based on user's answers
+        return baseCareers.map(career => ({
+            ...career,
+            match: calculateMatchScore(career)
+        }));
     };
 
     // =========================
@@ -742,7 +639,6 @@ export const useQuizStore = defineStore("quiz", () => {
             }
         }
 
-        // Simpler prompt for the free model
         const prompt = `You are a career expert for ${country.toUpperCase()}. 
 
 Based on the user's personality (${dominantPersonality}), recommend 3 careers.
@@ -763,7 +659,7 @@ Return ONLY valid JSON in this format:
 }`;
 
         try {
-            console.log("Calling OpenRouter with free model (Llama 3.2)...");
+            console.log("Calling OpenRouter with free model...");
             
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                 method: "POST",
@@ -774,11 +670,11 @@ Return ONLY valid JSON in this format:
                     "X-Title": "Career AI Platform"
                 },
                 body: JSON.stringify({
-                    model: "meta-llama/llama-3.2-3b-instruct",  // Free model
+                    model: "meta-llama/llama-3.2-3b-instruct",
                     messages: [
                         {
                             role: "system",
-                            content: "You are a career expert. Return ONLY valid JSON. No markdown, no extra text. Keep responses concise."
+                            content: "You are a career expert. Return ONLY valid JSON. No markdown, no extra text."
                         },
                         { 
                             role: "user", 
@@ -786,28 +682,19 @@ Return ONLY valid JSON in this format:
                         }
                     ],
                     temperature: 0.7,
-                    max_tokens: 800,  // Reduced to save credits
+                    max_tokens: 800,
                     top_p: 0.9
                 })
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                console.error("API Error:", errorData);
-                
-                // If free model fails, try fallback
-                if (errorData.error?.code === 402) {
-                    console.log("Insufficient credits, using fallback careers");
-                    generateCareerFallback(country);
-                    return;
-                }
-                
-                throw new Error(`API Error: ${response.status}`);
+                console.warn(`API Error: ${response.status}, using fallback`);
+                generateCareerFallback(country);
+                return;
             }
 
             const data = await response.json();
             let aiText = data.choices[0].message.content;
-            console.log("Raw AI response:", aiText);
             
             aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
             const jsonMatch = aiText.match(/\{[\s\S]*\}/);
@@ -816,13 +703,14 @@ Return ONLY valid JSON in this format:
             const parsed = JSON.parse(aiText);
             if (!parsed.recommendations) throw new Error("Invalid response");
 
-            // Merge AI results with fallback data for complete fields
+            // Get fallback careers for complete data
             const fallbackCareers = getFallbackCareers(country, dominantPersonality);
             
             const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
                 const fallback = fallbackCareers[index % fallbackCareers.length];
                 
-                return {
+                // Create career with AI title/description but fallback for other fields
+                const newCareer = {
                     id: Date.now() + index + Math.random(),
                     slug: aiCareer.slug || fallback.slug,
                     title: aiCareer.title || fallback.title,
@@ -832,7 +720,7 @@ Return ONLY valid JSON in this format:
                     skills: aiCareer.skills || fallback.skills,
                     traits: fallback.traits || [],
                     interests: fallback.interests || [],
-                    personalityType: dominantPersonality,
+                    personalityType: fallback.personalityType || dominantPersonality,
                     country: countryLower === 'ng' ? 'ng' : 'us',
                     requirements: fallback.requirements || {
                         examSystem: config.examSystem,
@@ -854,9 +742,13 @@ Return ONLY valid JSON in this format:
                     pathway: fallback.pathway || [],
                     courses: fallback.courses || [],
                     degrees: fallback.degrees || [],
-                    match: 85,
                     aiGenerated: true
                 };
+                
+                // Calculate match score based on user's answers
+                newCareer.match = calculateMatchScore(newCareer);
+                
+                return newCareer;
             });
 
             careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
@@ -905,25 +797,7 @@ Return ONLY valid JSON in this format:
         saveCareersToLocalStorage();
         saveCareersToJsonServer(careers.value);
         calculatePersonalityScores();
-        console.log('✅ Using fallback careers');
-    };
-
-    // =========================
-    // MATCH CALCULATOR
-    // =========================
-
-    const calculateMatch = (career) => {
-        let score = 0;
-        answers.value.forEach(answer => {
-            if (answer.option?.personalityType === career.personalityType) score += 25;
-            answer.option?.traits?.forEach(trait => {
-                if (career.traits?.includes(trait)) score += 10;
-            });
-            answer.option?.interests?.forEach(interest => {
-                if (career.interests?.includes(interest)) score += 10;
-            });
-        });
-        return score > 100 ? 100 : score;
+        console.log('✅ Using fallback careers with calculated match scores');
     };
 
     // =========================
