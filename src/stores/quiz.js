@@ -1,198 +1,3 @@
-
-<script setup>
-import { useRouter } from "vue-router";
-import { useQuizStore } from "@/stores/quiz";
-import { useUserStore } from "@/stores/users";
-import { computed, onMounted, ref, onUnmounted } from "vue";
-
-const router = useRouter();
-const quizStore = useQuizStore();
-const userStore = useUserStore();
-
-// ==============================
-// INTELLIGENT LOADING SYSTEM
-// ==============================
-
-const loadingSteps = ref([
-    "Analyzing personality traits...",
-    "Matching careers to your strengths...",
-    "Checking country-specific requirements...",
-    "Comparing salary opportunities...",
-    "Finding related career pathways...",
-    "Calculating future career growth...",
-    "Generating personalized recommendations..."
-]);
-
-const currentLoadingStep = ref(0);
-const loadingFromCache = ref(true);
-
-let loadingInterval = null;
-
-// ==============================
-// RECOMMENDED COURSES FUNCTION
-// ==============================
-
-const getRecommendedCourses = (careerTitle) => {
-    const title = careerTitle?.toLowerCase() || '';
-    
-    const courseMap = {
-        'software': [
-            { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-            { name: 'The Complete Web Developer Bootcamp', platform: 'Udemy', description: 'Become a full-stack web developer', url: 'https://www.udemy.com/course/the-complete-web-developer-bootcamp/' },
-            { name: 'Python for Everybody', platform: 'Coursera', description: 'Learn Python programming', url: 'https://www.coursera.org/specializations/python' }
-        ],
-        'data': [
-            { name: 'Google Data Analytics Professional Certificate', platform: 'Coursera', description: 'Learn data analysis with Google', url: 'https://www.coursera.org/professional-certificates/google-data-analytics' },
-            { name: 'SQL for Data Science', platform: 'UC Davis Coursera', description: 'Master SQL for data analysis', url: 'https://www.coursera.org/learn/sql-for-data-science' }
-        ],
-        'doctor': [
-            { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body systems', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
-            { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language', url: 'https://www.edx.org/course/medical-terminology' }
-        ],
-        'business': [
-            { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
-            { name: 'Project Management Professional', platform: 'Google Coursera', description: 'Master project management', url: 'https://www.coursera.org/professional-certificates/google-project-management' }
-        ],
-        'designer': [
-            { name: 'Graphic Design Specialization', platform: 'CalArts Coursera', description: 'Learn graphic design principles', url: 'https://www.coursera.org/specializations/graphic-design' },
-            { name: 'UI/UX Design', platform: 'Google Coursera', description: 'Master user interface design', url: 'https://www.coursera.org/professional-certificates/google-ux-design' }
-        ],
-        'lawyer': [
-            { name: 'Introduction to American Law', platform: 'Penn Law Coursera', description: 'Understand legal systems', url: 'https://www.coursera.org/learn/american-law' },
-            { name: 'Legal Writing and Research', platform: 'Coursera', description: 'Develop legal writing skills', url: 'https://www.coursera.org/learn/legal-writing-research' }
-        ],
-        'teacher': [
-            { name: 'Foundations of Teaching for Learning', platform: 'Commonwealth Education Trust', description: 'Develop teaching fundamentals', url: 'https://www.coursera.org/specializations/foundations-teaching' },
-            { name: 'Learning How to Learn', platform: 'UC San Diego', description: 'Master effective learning techniques', url: 'https://www.coursera.org/learn/learning-how-to-learn' }
-        ],
-        'default': [
-            { name: 'Career Success Specialization', platform: 'UC Irvine Coursera', description: 'Develop essential career skills', url: 'https://www.coursera.org/specializations/career-success' },
-            { name: 'Learning How to Learn', platform: 'UC San Diego Coursera', description: 'Master effective learning techniques', url: 'https://www.coursera.org/learn/learning-how-to-learn' },
-            { name: 'Communication Skills for Career Success', platform: 'Coursera', description: 'Improve professional communication', url: 'https://www.coursera.org/specializations/communication-skills' }
-        ]
-    };
-    
-    for (const [key, courses] of Object.entries(courseMap)) {
-        if (title.includes(key)) {
-            return courses;
-        }
-    }
-    
-    return courseMap.default;
-};
-
-const retryLoad = async () => {
-    const country = userStore.currentUser?.country;
-    if (country) {
-        loadingFromCache.value = true;
-        await quizStore.generateCareer(country, true);
-        loadingFromCache.value = false;
-    }
-};
-
-onMounted(async () => {
-    // Start the loading animation immediately
-    loadingFromCache.value = true;
-    
-    // Animate loading steps
-    loadingInterval = setInterval(() => {
-        if (currentLoadingStep.value < loadingSteps.value.length - 1) {
-            currentLoadingStep.value++;
-        }
-    }, 1200);
-
-    await userStore.fetchCurrentUser();
-
-    const country = userStore.currentUser?.country;
-
-    if (!country) {
-        console.error("User country missing");
-        loadingFromCache.value = false;
-        return;
-    }
-
-    const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
-
-    if (quizJustCompleted) {
-        // Quiz was just taken - show AI loading animation
-        console.log("🎯 Quiz just taken - generating recommendations");
-        // The store's isLoading will be true during AI generation
-        loadingFromCache.value = false;
-        await quizStore.generateCareer(country, false);
-    } else {
-        // Loading from cache - show cache loading animation
-        console.log("📦 Loading cached recommendations");
-        loadingFromCache.value = true;
-        await quizStore.generateCareer(country, true);
-        // Small delay to show loading animation
-        setTimeout(() => {
-            loadingFromCache.value = false;
-        }, 500);
-    }
-
-    clearInterval(loadingInterval);
-});
-
-onUnmounted(() => {
-    if (loadingInterval) {
-        clearInterval(loadingInterval);
-    }
-});
-
-const careers = computed(() => quizStore.careers || []);
-const personalityScores = computed(() => quizStore.personalityScores || []);
-
-const exploreSkills = () => {
-    router.push({name: "explore"});
-};
-
-const exploreDetail = (url) => {
-    router.push(`/explore/${url}`);
-};
-
-const retakeQuiz = () => {
-    quizStore.resetQuiz();
-    router.push("/quiz");
-};
-
-const getExamSystem = (country) => {
-    const systems = {
-        'ng': 'WAEC/NECO',
-        'us': 'SAT/ACT',
-        'uk': 'A-Levels',
-    };
-    return systems[country?.toLowerCase()] || 'High School Diploma';
-};
-
-const formatSalary = (salary) => {
-    if (!salary) return 'Information not available';
-    if (typeof salary === 'object' && salary.min && salary.max) {
-        const formatter = new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: salary.currency || 'USD',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        });
-        return `${formatter.format(salary.min)} - ${formatter.format(salary.max)} / ${salary.period || 'year'}`;
-    }
-    return salary;
-};
-
-const saveCareer = (career) => {
-    const saved = localStorage.getItem('saved_careers');
-    const savedCareers = saved ? JSON.parse(saved) : [];
-    if (!savedCareers.some(c => c.slug === career.slug)) {
-        savedCareers.push(career);
-        localStorage.setItem('saved_careers', JSON.stringify(savedCareers));
-        alert(`✅ ${career.title} saved to your profile!`);
-    } else {
-        alert(`📌 ${career.title} is already saved!`);
-    }
-};
-</script>
-
-quiz.js 2
-
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -266,7 +71,7 @@ export const useQuizStore = defineStore("quiz", () => {
         if (careers.value[0]?.country) {
             const countryKey = careers.value[0].country.toLowerCase();
             localStorage.setItem(`cached_careers_${countryKey}`, JSON.stringify(careers.value));
-            console.log(`💾 Saved ${careers.value.length} careers for ${countryKey} to localStorage`);
+            console.log(`💾 Saved ${careers.value.length} careers for ${countryKey}`);
         }
         localStorage.setItem('cached_careers', JSON.stringify(careers.value));
     };
@@ -279,7 +84,7 @@ export const useQuizStore = defineStore("quiz", () => {
                 const savedCareers = JSON.parse(saved);
                 if (savedCareers && savedCareers.length > 0) {
                     careers.value = savedCareers;
-                    console.log(`✅ Loaded ${savedCareers.length} careers for ${countryKey} from localStorage`);
+                    console.log(`✅ Loaded ${savedCareers.length} careers for ${countryKey}`);
                     return true;
                 }
             }
@@ -290,7 +95,7 @@ export const useQuizStore = defineStore("quiz", () => {
             const savedCareers = JSON.parse(saved);
             if (savedCareers && savedCareers.length > 0) {
                 careers.value = savedCareers;
-                console.log(`✅ Loaded ${savedCareers.length} careers from generic localStorage`);
+                console.log(`✅ Loaded ${savedCareers.length} careers from generic cache`);
                 return true;
             }
         }
@@ -348,7 +153,7 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // HELPER: GET COUNTRY-SPECIFIC REQUIREMENTS
+    // GET COUNTRY-SPECIFIC REQUIREMENTS
     // =========================
 
     const getCountryRequirements = (country) => {
@@ -409,17 +214,38 @@ export const useQuizStore = defineStore("quiz", () => {
         if (t.includes('data')) return '📊';
         if (t.includes('doctor') || t.includes('medical')) return '👨‍⚕️';
         if (t.includes('nurse')) return '🩺';
-        if (t.includes('social') || t.includes('counselor')) return '🤝';
-        if (t.includes('lawyer')) return '⚖️';
         if (t.includes('teacher')) return '📚';
         if (t.includes('business') || t.includes('manager')) return '📋';
         if (t.includes('designer')) return '🎨';
         if (t.includes('writer')) return '✍️';
+        if (t.includes('lawyer')) return '⚖️';
         return '🎯';
     };
 
     // =========================
-    // CALCULATE MATCH SCORE BASED ON USER'S ANSWERS
+    // CALCULATE PERSONALITY SCORES
+    // =========================
+
+    const calculatePersonalityScores = () => {
+        const personalityCounts = {};
+        answers.value.forEach(answer => {
+            const type = answer.option?.personalityType;
+            if (type) {
+                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
+            }
+        });
+        
+        const total = answers.value.length || 1;
+        personalityScores.value = Object.entries(personalityCounts).map(
+            ([name, score]) => ({
+                name,
+                score: Math.round((score / total) * 100)
+            })
+        );
+    };
+
+    // =========================
+    // CALCULATE MATCH SCORE
     // =========================
 
     const calculateMatchScore = (career) => {
@@ -430,13 +256,11 @@ export const useQuizStore = defineStore("quiz", () => {
             const userOption = answer.option;
             if (!userOption) return;
             
-            // Personality match (30 points)
             totalPossible += 30;
             if (userOption.personalityType === career.personalityType) {
                 score += 30;
             }
             
-            // Traits match (up to 35 points)
             if (userOption.traits && userOption.traits.length > 0) {
                 totalPossible += 35;
                 let traitMatches = 0;
@@ -445,11 +269,9 @@ export const useQuizStore = defineStore("quiz", () => {
                         traitMatches++;
                     }
                 });
-                // Each trait match adds proportional points
                 score += (traitMatches / userOption.traits.length) * 35;
             }
             
-            // Interests match (up to 35 points)
             if (userOption.interests && userOption.interests.length > 0) {
                 totalPossible += 35;
                 let interestMatches = 0;
@@ -462,307 +284,8 @@ export const useQuizStore = defineStore("quiz", () => {
             }
         });
         
-        // Calculate percentage (max 100)
         const finalScore = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
         return Math.min(finalScore, 100);
-    };
-
-    // =========================
-    // GET FALLBACK CAREERS WITH MATCH SCORES
-    // =========================
-
-    const getFallbackCareers = (country, personality) => {
-        const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
-        const config = getCountryRequirements(country);
-        
-        let baseCareers = [];
-        
-        if (countryLower === 'nigeria') {
-            baseCareers = [
-                {
-                    id: 1,
-                    title: 'Software Developer',
-                    slug: 'software-developer',
-                    icon: '💻',
-                    shortDescription: 'Build innovative software solutions for Nigerian businesses',
-                    description: 'Software developers create applications, websites, and systems that solve real-world problems. In Nigeria, this career is growing rapidly with the tech ecosystem in Lagos, Abuja, and other cities.',
-                    skills: ['JavaScript', 'Python', 'React', 'Node.js', 'Database Management'],
-                    traits: ['Analytical', 'Logical', 'Creative', 'Problem-solving'],
-                    interests: ['Technology', 'Coding', 'Problem-solving', 'Innovation'],
-                    personalityType: 'Technical Innovator',
-                    country: 'ng',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English Language', 'Mathematics', 'Physics', 'Computer Studies'],
-                        jambSubjects: ['English', 'Mathematics', 'Physics', 'Chemistry'],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Computer Science' },
-                        { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Computer Engineering' },
-                        { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Computer Science' },
-                        { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Computer Science' },
-                        { name: 'Federal University of Technology, Minna', ranking: 'Top Tech University', programName: 'Software Engineering' }
-                    ],
-                    salary: { entry: 1200000, midMin: 2400000, midMax: 4200000, senior: 6000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Frontend Developer', 'Backend Developer', 'DevOps Engineer', 'Mobile App Developer'],
-                    pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Physics, and Computer Studies.' },
-                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete a degree in Computer Science or related field.' },
-                        { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create personal projects and build a GitHub portfolio.' },
-                        { step: 4, title: 'Internship', duration: '6-12 months', description: 'Gain practical experience at tech companies.' },
-                        { step: 5, title: 'Professional Certification', duration: 'Ongoing', description: 'Pursue AWS, Google Cloud, or Azure certifications.' }
-                    ],
-                    courses: [
-                        { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-                        { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' },
-                        { name: 'Python for Everybody', platform: 'University of Michigan', description: 'Master Python programming', url: 'https://www.coursera.org/specializations/python' }
-                    ],
-                    degrees: ['BSc Computer Science', 'BEng Software Engineering', 'MSc Computer Science']
-                },
-                {
-                    id: 2,
-                    title: 'Medical Doctor',
-                    slug: 'medical-doctor',
-                    icon: '👨‍⚕️',
-                    shortDescription: 'Provide essential healthcare services to Nigerian communities',
-                    description: 'Medical doctors diagnose and treat illnesses, injuries, and other health conditions. In Nigeria, doctors work in hospitals, clinics, and community health centers.',
-                    skills: ['Diagnosis', 'Patient Care', 'Medical Knowledge', 'Emergency Response', 'Communication'],
-                    traits: ['Compassionate', 'Patient', 'Observant', 'Dedicated', 'Empathetic'],
-                    interests: ['Healthcare', 'Helping others', 'Science', 'Medical research'],
-                    personalityType: 'Healthcare Helper',
-                    country: 'ng',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English Language', 'Mathematics', 'Biology', 'Chemistry', 'Physics'],
-                        jambSubjects: ['English', 'Biology', 'Chemistry', 'Physics'],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Medicine and Surgery' },
-                        { name: 'University of Ibadan (UI)', ranking: '2nd in Nigeria', programName: 'Medicine and Surgery' },
-                        { name: 'Obafemi Awolowo University (OAU)', ranking: '3rd in Nigeria', programName: 'Medicine' },
-                        { name: 'Ahmadu Bello University (ABU)', ranking: '4th in Nigeria', programName: 'Medicine' },
-                        { name: 'University of Nigeria, Nsukka (UNN)', ranking: '5th in Nigeria', programName: 'Medicine' }
-                    ],
-                    salary: { entry: 2400000, midMin: 4800000, midMax: 7200000, senior: 12000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Pediatrician', 'Surgeon', 'Psychiatrist', 'Public Health Physician', 'Medical Researcher'],
-                    pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Sciences - Biology, Chemistry, Physics.' },
-                        { step: 2, title: 'Bachelor of Medicine (MBBS)', duration: '6 years', description: 'Complete medical school.' },
-                        { step: 3, title: 'Internship (Housemanship)', duration: '1 year', description: 'Rotating internship at a teaching hospital.' },
-                        { step: 4, title: 'NYSC', duration: '1 year', description: 'National Youth Service Corps.' },
-                        { step: 5, title: 'Residency Program', duration: '4-6 years', description: 'Specialize in a specific field of medicine.' }
-                    ],
-                    courses: [
-                        { name: 'Human Anatomy and Physiology', platform: 'Coursera', description: 'Understand the human body', url: 'https://www.coursera.org/specializations/human-anatomy-physiology' },
-                        { name: 'Medical Terminology', platform: 'edX', description: 'Learn medical language', url: 'https://www.edx.org/course/medical-terminology' },
-                        { name: 'Tropical Medicine', platform: 'Liverpool School of Tropical Medicine', description: 'Study tropical diseases', url: 'https://www.lstmed.ac.uk/study' }
-                    ],
-                    degrees: ['MBBS', 'MD', 'MPH']
-                },
-                {
-                    id: 3,
-                    title: 'Business Administrator',
-                    slug: 'business-administrator',
-                    icon: '📋',
-                    shortDescription: 'Lead and manage business operations in Nigerian organizations',
-                    description: 'Business administrators oversee daily operations, manage teams, and develop strategies for organizational growth.',
-                    skills: ['Management', 'Leadership', 'Strategic Planning', 'Financial Analysis', 'Communication'],
-                    traits: ['Organized', 'Decisive', 'Strategic', 'Motivated', 'Leadership'],
-                    interests: ['Business', 'Management', 'Leadership', 'Entrepreneurship'],
-                    personalityType: 'Business Leader',
-                    country: 'ng',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English Language', 'Mathematics', 'Economics', 'Accounting'],
-                        jambSubjects: ['English', 'Mathematics', 'Economics', 'Commerce'],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Business Administration' },
-                        { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Business Administration' },
-                        { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Business Administration' },
-                        { name: 'Pan-Atlantic University (LBS)', ranking: 'Top Business School', programName: 'Business Administration' },
-                        { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Business Administration' }
-                    ],
-                    salary: { entry: 1800000, midMin: 3000000, midMax: 5400000, senior: 9000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Management Consultant', 'Project Manager', 'Operations Manager', 'Entrepreneur', 'Financial Analyst'],
-                    pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics, Economics, and Accounting.' },
-                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Complete BSc in Business Administration.' },
-                        { step: 3, title: 'Gain Work Experience', duration: '2-3 years', description: 'Work in entry-level management positions.' },
-                        { step: 4, title: 'Master\'s Degree (MBA)', duration: '2 years', description: 'Pursue an MBA for advanced opportunities.' },
-                        { step: 5, title: 'Professional Certifications', duration: 'Ongoing', description: 'PMP, CIPM, or other certifications.' }
-                    ],
-                    courses: [
-                        { name: 'Business Foundations', platform: 'Wharton Coursera', description: 'Learn core business principles', url: 'https://www.coursera.org/specializations/wharton-business-foundations' },
-                        { name: 'Project Management Professional', platform: 'Google Coursera', description: 'Master project management', url: 'https://www.coursera.org/professional-certificates/google-project-management' },
-                        { name: 'Financial Accounting', platform: 'UVA Darden', description: 'Understand financial statements', url: 'https://www.coursera.org/learn/financial-accounting' }
-                    ],
-                    degrees: ['BSc Business Administration', 'MBA', 'MSc Management']
-                },
-                {
-                    id: 4,
-                    title: 'Content Creator',
-                    slug: 'content-creator',
-                    icon: '✍️',
-                    shortDescription: 'Create engaging digital content for Nigerian and global audiences',
-                    description: 'Content creators produce videos, articles, social media posts, and other digital content. Nigeria has a vibrant creative industry.',
-                    skills: ['Writing', 'Video Editing', 'Creativity', 'Social Media Management', 'Storytelling'],
-                    traits: ['Creative', 'Expressive', 'Empathetic', 'Adaptable', 'Imaginative'],
-                    interests: ['Content creation', 'Social media', 'Storytelling', 'Digital marketing'],
-                    personalityType: 'Creative Communicator',
-                    country: 'ng',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English Language', 'Literature', 'Government', 'Economics'],
-                        jambSubjects: ['English', 'Literature', 'Government', 'Economics'],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'University of Lagos (UNILAG)', ranking: '1st in Nigeria', programName: 'Mass Communication' },
-                        { name: 'Obafemi Awolowo University (OAU)', ranking: '2nd in Nigeria', programName: 'Mass Communication' },
-                        { name: 'University of Ibadan (UI)', ranking: '3rd in Nigeria', programName: 'Communication and Language Arts' },
-                        { name: 'Pan-Atlantic University', ranking: 'Top Private', programName: 'Media and Communication' },
-                        { name: 'Ahmadu Bello University (ABU)', ranking: 'Top Northern University', programName: 'Mass Communication' }
-                    ],
-                    salary: { entry: 960000, midMin: 1800000, midMax: 3600000, senior: 6000000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Social Media Manager', 'Video Editor', 'Digital Marketer', 'Podcaster', 'Graphic Designer'],
-                    pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on English, Literature, and Arts.' },
-                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Study Mass Communication or related field.' },
-                        { step: 3, title: 'Build Portfolio', duration: '1-2 years', description: 'Create content, grow social media presence.' },
-                        { step: 4, title: 'Internship', duration: '6-12 months', description: 'Work with media companies.' },
-                        { step: 5, title: 'Specialize', duration: 'Ongoing', description: 'Focus on video, writing, or social media.' }
-                    ],
-                    courses: [
-                        { name: 'Content Creation Masterclass', platform: 'HubSpot Academy', description: 'Learn content marketing', url: 'https://academy.hubspot.com/courses/content-marketing' },
-                        { name: 'Video Editing with DaVinci Resolve', platform: 'Blackmagic Design', description: 'Master video editing', url: 'https://www.blackmagicdesign.com/products/davinciresolve/training' },
-                        { name: 'Social Media Marketing', platform: 'Meta Blueprint', description: 'Learn social media advertising', url: 'https://www.facebook.com/business/learn' }
-                    ],
-                    degrees: ['BA Mass Communication', 'BA Media Studies', 'MA Digital Media']
-                },
-                {
-                    id: 5,
-                    title: 'Data Analyst',
-                    slug: 'data-analyst',
-                    icon: '📊',
-                    shortDescription: 'Analyze data to help businesses make better decisions',
-                    description: 'Data analysts collect, process, and perform statistical analyses on data to help organizations make informed decisions.',
-                    skills: ['SQL', 'Excel', 'Python', 'Data Visualization', 'Statistics', 'Critical Thinking'],
-                    traits: ['Analytical', 'Detail-oriented', 'Logical', 'Curious', 'Methodical'],
-                    interests: ['Data', 'Statistics', 'Problem-solving', 'Technology'],
-                    personalityType: 'Technical Innovator',
-                    country: 'ng',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English Language', 'Mathematics', 'Economics', 'Computer Studies'],
-                        jambSubjects: ['English', 'Mathematics', 'Economics', 'Physics'],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'University of Lagos', ranking: '1st', programName: 'Statistics' },
-                        { name: 'University of Ibadan', ranking: '2nd', programName: 'Computer Science' },
-                        { name: 'Obafemi Awolowo University', ranking: '3rd', programName: 'Mathematics' },
-                        { name: 'Covenant University', ranking: 'Top Private', programName: 'Data Science' },
-                        { name: 'Federal University of Technology, Minna', ranking: 'Top Tech', programName: 'Statistics' }
-                    ],
-                    salary: { entry: 1500000, midMin: 2800000, midMax: 4500000, senior: 6500000, currency: 'NGN', period: 'year' },
-                    relatedCareers: ['Business Analyst', 'Data Scientist', 'BI Analyst', 'Data Engineer'],
-                    pathway: [
-                        { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on Mathematics and Statistics.' },
-                        { step: 2, title: 'Earn Bachelor\'s Degree', duration: '4 years', description: 'Study Statistics, Mathematics, or Computer Science.' },
-                        { step: 3, title: 'Learn Data Tools', duration: '6-12 months', description: 'Master SQL, Excel, Python, and Tableau.' },
-                        { step: 4, title: 'Build Portfolio', duration: '1 year', description: 'Create data analysis projects on GitHub.' },
-                        { step: 5, title: 'Certification', duration: 'Ongoing', description: 'Get Google Data Analytics or Microsoft certification.' }
-                    ],
-                    courses: [
-                        { name: 'Google Data Analytics Professional Certificate', platform: 'Google Coursera', description: 'Learn data analysis', url: 'https://www.coursera.org/professional-certificates/google-data-analytics' },
-                        { name: 'SQL for Data Science', platform: 'UC Davis', description: 'Master SQL', url: 'https://www.coursera.org/learn/sql-for-data-science' },
-                        { name: 'Python for Data Science', platform: 'IBM', description: 'Learn Python for data', url: 'https://www.coursera.org/learn/python-for-applied-data-science-ai' }
-                    ],
-                    degrees: ['BSc Statistics', 'BSc Computer Science', 'MSc Data Science']
-                }
-            ];
-        } else {
-            baseCareers = [
-                {
-                    id: 1,
-                    title: 'Software Engineer',
-                    slug: 'software-engineer',
-                    icon: '💻',
-                    shortDescription: 'Build and maintain software applications',
-                    description: 'Software engineers design, develop, and test software applications that power modern businesses.',
-                    skills: ['Programming', 'Problem Solving', 'Debugging', 'Teamwork', 'System Design'],
-                    traits: ['Analytical', 'Detail-oriented', 'Logical', 'Innovative', 'Patient'],
-                    interests: ['Technology', 'Problem-solving', 'Innovation', 'Coding'],
-                    personalityType: 'Technical Innovator',
-                    country: 'us',
-                    requirements: {
-                        examSystem: config.examSystem,
-                        examSubjects: ['English', 'Mathematics', 'Physics', 'Computer Science'],
-                        jambSubjects: [],
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: [
-                        { name: 'Massachusetts Institute of Technology (MIT)', ranking: '1st in US', programName: 'Computer Science' },
-                        { name: 'Stanford University', ranking: '2nd in US', programName: 'Computer Science' },
-                        { name: 'Carnegie Mellon University', ranking: '3rd in US', programName: 'Software Engineering' },
-                        { name: 'UC Berkeley', ranking: '4th in US', programName: 'Computer Science' },
-                        { name: 'California Institute of Technology', ranking: '5th in US', programName: 'Computer Science' }
-                    ],
-                    salary: { entry: 85000, midMin: 110000, midMax: 150000, senior: 200000, currency: 'USD', period: 'year' },
-                    relatedCareers: ['Data Scientist', 'DevOps Engineer', 'Cloud Architect', 'Mobile Developer', 'Security Engineer'],
-                    pathway: [
-                        { step: 1, title: 'High School Diploma', duration: '4 years', description: 'Focus on Mathematics and Science.' },
-                        { step: 2, title: 'Bachelor\'s Degree', duration: '4 years', description: 'Earn a BS in Computer Science.' },
-                        { step: 3, title: 'Internship', duration: '3-6 months', description: 'Gain practical experience.' },
-                        { step: 4, title: 'Entry-Level Position', duration: '2 years', description: 'Start as a junior developer.' },
-                        { step: 5, title: 'Senior Engineer', duration: 'Ongoing', description: 'Advance to senior roles.' }
-                    ],
-                    courses: [
-                        { name: 'CS50: Introduction to Computer Science', platform: 'Harvard edX', description: 'Learn programming fundamentals', url: 'https://www.edx.org/course/cs50s-introduction-to-computer-science' },
-                        { name: 'Data Structures and Algorithms', platform: 'Coursera', description: 'Master algorithms', url: 'https://www.coursera.org/specializations/data-structures-algorithms' },
-                        { name: 'Full Stack Web Development', platform: 'Meta Coursera', description: 'Become a full-stack developer', url: 'https://www.coursera.org/professional-certificates/meta-front-end-developer' }
-                    ],
-                    degrees: ['BS Computer Science', 'BEng Software Engineering', 'MS Computer Science']
-                }
-            ];
-        }
-        
-        // Calculate match scores for each career based on user's answers
-        return baseCareers.map(career => ({
-            ...career,
-            match: calculateMatchScore(career)
-        }));
-    };
-
-    // =========================
-    // PERSONALITY SCORES
-    // =========================
-
-    const calculatePersonalityScores = () => {
-        const personalityTypeScores = {};
-        answers.value.forEach(answer => {
-            const type = answer.option?.personalityType;
-            if (type) {
-                personalityTypeScores[type] = (personalityTypeScores[type] || 0) + 1;
-            }
-        });
-        const total = answers.value.length || 1;
-        personalityScores.value = Object.entries(personalityTypeScores).map(
-            ([name, score]) => ({
-                name,
-                score: Math.round((score / total) * 100)
-            })
-        );
     };
 
     // =========================
@@ -777,16 +300,16 @@ export const useQuizStore = defineStore("quiz", () => {
             const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
             
             if (forceRefresh || quizJustCompleted) {
-                console.log("🤖 Generating NEW careers for", country);
+                console.log("🤖 Generating AI-powered career recommendations...");
                 await generateCareerWithAI(country);
                 localStorage.removeItem('quiz_just_completed');
             } else {
-                console.log("📦 Loading cached careers for", country);
+                console.log("📦 Loading cached careers");
                 const loaded = loadCareersFromLocalStorage(country);
                 
                 if (!loaded || careers.value.length === 0) {
-                    console.log("⚠️ No cache found, using fallback careers");
-                    generateCareerFallback(country);
+                    console.log("⚠️ No cache found, using AI");
+                    await generateCareerWithAI(country);
                 } else {
                     calculatePersonalityScores();
                 }
@@ -794,183 +317,38 @@ export const useQuizStore = defineStore("quiz", () => {
     
         } catch (err) {
             console.error("Generation error:", err);
-            generateCareerFallback(country);
+            error.value = "Failed to generate careers. Please try again.";
         } finally {
             isLoading.value = false;
         }
     };
 
     // =========================
-    // AI CAREER GENERATION
+    // AI CAREER GENERATION - USING USER'S ACTUAL ANSWERS
     // =========================
 
     const generateCareerWithAI = async (country) => {
         const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
         
         if (!API_KEY) {
-            console.warn("No API key found, using fallback");
-            generateCareerFallback(country);
+            console.error("No API key found");
+            error.value = "API key not configured";
             return;
         }
 
         const countryLower = country?.toLowerCase() || 'us';
         const config = getCountryRequirements(country);
         
+        // Collect ALL user answers with their personality data
+        const userAnswersData = answers.value.map(answer => ({
+            questionId: answer.questionId,
+            selectedAnswer: answer.option.text,
+            personalityType: answer.option.personalityType,
+            traits: answer.option.traits || [],
+            interests: answer.option.interests || []
+        }));
+        
         // Calculate dominant personality
-        const personalityCounts = {};
-        answers.value.forEach(item => {
-            const type = item.option?.personalityType;
-            if (type) {
-                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
-            }
-        });
-        
-        let dominantPersonality = "Technical Innovator";
-        let maxCount = 0;
-        for (const [type, count] of Object.entries(personalityCounts)) {
-            if (count > maxCount) {
-                maxCount = count;
-                dominantPersonality = type;
-            }
-        }
-
-        const prompt = `You are a career expert for ${country.toUpperCase()}. 
-
-Based on the user's personality (${dominantPersonality}), recommend 3 careers.
-
-For EACH career, provide: title, slug, shortDescription, description, and skills array (5 items).
-
-Return ONLY valid JSON in this format:
-{
-  "recommendations": [
-    {
-      "title": "",
-      "slug": "",
-      "shortDescription": "",
-      "description": "",
-      "skills": []
-    }
-  ]
-}`;
-
-        try {
-            console.log("Calling OpenRouter with free model...");
-            
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "http://localhost:5173",
-                    "X-Title": "Career AI Platform"
-                },
-                body: JSON.stringify({
-                    model: "meta-llama/llama-3.2-3b-instruct",
-                    messages: [
-                        {
-                            role: "system",
-                            content: "You are a career expert. Return ONLY valid JSON. No markdown, no extra text."
-                        },
-                        { 
-                            role: "user", 
-                            content: prompt 
-                        }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 800,
-                    top_p: 0.9
-                })
-            });
-
-            if (!response.ok) {
-                console.warn(`API Error: ${response.status}, using fallback`);
-                generateCareerFallback(country);
-                return;
-            }
-
-            const data = await response.json();
-            let aiText = data.choices[0].message.content;
-            
-            aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
-            const jsonMatch = aiText.match(/\{[\s\S]*\}/);
-            if (jsonMatch) aiText = jsonMatch[0];
-            
-            const parsed = JSON.parse(aiText);
-            if (!parsed.recommendations) throw new Error("Invalid response");
-
-            // Get fallback careers for complete data
-            const fallbackCareers = getFallbackCareers(country, dominantPersonality);
-            
-            const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
-                const fallback = fallbackCareers[index % fallbackCareers.length];
-                
-                // Create career with AI title/description but fallback for other fields
-                const newCareer = {
-                    id: Date.now() + index + Math.random(),
-                    slug: aiCareer.slug || fallback.slug,
-                    title: aiCareer.title || fallback.title,
-                    icon: fallback.icon,
-                    shortDescription: aiCareer.shortDescription || fallback.shortDescription,
-                    description: aiCareer.description || fallback.description,
-                    skills: aiCareer.skills || fallback.skills,
-                    traits: fallback.traits || [],
-                    interests: fallback.interests || [],
-                    personalityType: fallback.personalityType || dominantPersonality,
-                    country: countryLower === 'ng' ? 'ng' : 'us',
-                    requirements: fallback.requirements || {
-                        examSystem: config.examSystem,
-                        examSubjects: config.examSubjects,
-                        jambSubjects: config.jambSubjects,
-                        examDescription: config.examDescription,
-                        additionalTests: config.additionalTests
-                    },
-                    universities: fallback.universities || [],
-                    salary: fallback.salary || {
-                        entry: 0,
-                        midMin: 0,
-                        midMax: 0,
-                        senior: 0,
-                        currency: config.currency,
-                        period: "year"
-                    },
-                    relatedCareers: fallback.relatedCareers || [],
-                    pathway: fallback.pathway || [],
-                    courses: fallback.courses || [],
-                    degrees: fallback.degrees || [],
-                    aiGenerated: true
-                };
-                
-                // Calculate match score based on user's answers
-                newCareer.match = calculateMatchScore(newCareer);
-                
-                return newCareer;
-            });
-
-            careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
-            
-            saveCareersToLocalStorage();
-            await saveCareersToJsonServer(recommendedCareers);
-            calculatePersonalityScores();
-            
-            console.log(`✅ AI generated ${careers.value.length} careers for ${country}`);
-            
-        } catch (error) {
-            console.error("AI error:", error);
-            generateCareerFallback(country);
-        }
-    };
-
-    // =========================
-    // FALLBACK SYSTEM
-    // =========================
-
-    const generateCareerFallback = (country) => {
-        if (loadCareersFromLocalStorage(country)) {
-            calculatePersonalityScores();
-            console.log('✅ Using cached fallback careers');
-            return;
-        }
-        
         const personalityCounts = {};
         answers.value.forEach(answer => {
             const type = answer.option?.personalityType;
@@ -988,11 +366,337 @@ Return ONLY valid JSON in this format:
             }
         }
         
-        careers.value = getFallbackCareers(country, dominantPersonality);
+        // Collect all traits and interests
+        const allTraits = [];
+        const allInterests = [];
+        answers.value.forEach(answer => {
+            if (answer.option?.traits) allTraits.push(...answer.option.traits);
+            if (answer.option?.interests) allInterests.push(...answer.option.interests);
+        });
+        const uniqueTraits = [...new Set(allTraits)];
+        const uniqueInterests = [...new Set(allInterests)];
+        
+        console.log(`🎯 Dominant Personality: ${dominantPersonality}`);
+        console.log(`📋 Traits: ${uniqueTraits.join(', ')}`);
+        console.log(`💡 Interests: ${uniqueInterests.join(', ')}`);
+        
+        // Create a detailed prompt with the user's actual answers
+        const prompt = `You are an expert career counselor. Based on the user's quiz responses, recommend 3 careers that perfectly match their personality, traits, and interests.
+
+USER'S QUIZ RESULTS:
+- Primary Personality Type: ${dominantPersonality}
+- Key Traits: ${uniqueTraits.join(', ')}
+- Key Interests: ${uniqueInterests.join(', ')}
+
+DETAILED ANSWERS:
+${JSON.stringify(userAnswersData, null, 2)}
+
+Based on this information, recommend 3 careers that would be an excellent fit.
+
+IMPORTANT RULES:
+1. If the user has Technical Innovator traits (analytical, logical, technical), recommend careers in Engineering, Technology, Data Science
+2. If the user has Creative Communicator traits (creative, artistic, communicative), recommend careers in Arts, Media, Design, Writing
+3. If the user has Healthcare Helper traits (compassionate, caring, empathetic), recommend careers in Medicine, Nursing, Healthcare
+4. If the user has Business Leader traits (leadership, strategic, organized), recommend careers in Business, Management, Finance
+
+Return ONLY valid JSON in this exact format:
+{
+  "recommendations": [
+    {
+      "title": "",
+      "slug": "",
+      "shortDescription": "One sentence summary",
+      "description": "2-3 sentence detailed description",
+      "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
+      "traits": ["trait1", "trait2", "trait3"],
+      "interests": ["interest1", "interest2", "interest3"],
+      "personalityType": "${dominantPersonality}"
+    }
+  ]
+}`;
+
+        try {
+            console.log("🚀 Calling OpenRouter AI...");
+            
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "HTTP-Referer": "http://localhost:5173",
+                    "X-Title": "Career AI Platform"
+                },
+                body: JSON.stringify({
+                    model: "openai/gpt-3.5-turbo",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are an expert career counselor. Return ONLY valid JSON. Use the user's personality type, traits, and interests to recommend matching careers."
+                        },
+                        { 
+                            role: "user", 
+                            content: prompt 
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1500
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("API Error:", errorData);
+                
+                // Try fallback model if primary fails
+                if (response.status === 402 || response.status === 404) {
+                    console.log("Trying fallback model...");
+                    const fallbackResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${API_KEY}`,
+                            "HTTP-Referer": "http://localhost:5173",
+                            "X-Title": "Career AI Platform"
+                        },
+                        body: JSON.stringify({
+                            model: "meta-llama/llama-3.2-3b-instruct",
+                            messages: [
+                                {
+                                    role: "system",
+                                    content: "You are an expert career counselor. Return ONLY valid JSON."
+                                },
+                                { role: "user", content: prompt }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 1200
+                        })
+                    });
+                    
+                    if (!fallbackResponse.ok) {
+                        throw new Error(`Fallback API also failed: ${fallbackResponse.status}`);
+                    }
+                    
+                    const fallbackData = await fallbackResponse.json();
+                    processAIResponse(fallbackData, country, config, dominantPersonality, uniqueTraits, uniqueInterests);
+                    return;
+                }
+                
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            processAIResponse(data, country, config, dominantPersonality, uniqueTraits, uniqueInterests);
+            
+        } catch (error) {
+            console.error("AI error:", error);
+            error.value = "AI service unavailable. Please try again later.";
+            // Fallback to intelligent matching without AI
+            generateIntelligentFallback(country, dominantPersonality, uniqueTraits, uniqueInterests, config);
+        }
+    };
+    
+    // =========================
+    // PROCESS AI RESPONSE
+    // =========================
+    
+    const processAIResponse = (data, country, config, dominantPersonality, userTraits, userInterests) => {
+        let aiText = data.choices[0].message.content;
+        console.log("Raw AI response:", aiText);
+        
+        aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
+        const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) aiText = jsonMatch[0];
+        
+        const parsed = JSON.parse(aiText);
+        if (!parsed.recommendations || parsed.recommendations.length === 0) {
+            throw new Error("Invalid response from AI");
+        }
+        
+        const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
+        
+        const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
+            // Calculate match score based on user's actual answers
+            const matchScore = calculateMatchScore({
+                personalityType: aiCareer.personalityType || dominantPersonality,
+                traits: aiCareer.traits || [],
+                interests: aiCareer.interests || []
+            });
+            
+            // Country-specific data
+            const universities = countryLower === 'nigeria' ? [
+                { name: 'University of Lagos', ranking: '1st in Nigeria', programName: `${aiCareer.title} Degree` },
+                { name: 'Obafemi Awolowo University', ranking: '2nd in Nigeria', programName: `${aiCareer.title} Degree` },
+                { name: 'University of Ibadan', ranking: '3rd in Nigeria', programName: `${aiCareer.title} Degree` },
+                { name: 'Ahmadu Bello University', ranking: '4th in Nigeria', programName: `${aiCareer.title} Degree` },
+                { name: 'University of Nigeria, Nsukka', ranking: '5th in Nigeria', programName: `${aiCareer.title} Degree` }
+            ] : [
+                { name: 'Harvard University', ranking: '1st in US', programName: `${aiCareer.title} Degree` },
+                { name: 'Stanford University', ranking: '2nd in US', programName: `${aiCareer.title} Degree` },
+                { name: 'MIT', ranking: '3rd in US', programName: `${aiCareer.title} Degree` },
+                { name: 'UC Berkeley', ranking: '4th in US', programName: `${aiCareer.title} Degree` },
+                { name: 'Columbia University', ranking: '5th in US', programName: `${aiCareer.title} Degree` }
+            ];
+            
+            // Determine salary based on career type and country
+            let salary;
+            if (countryLower === 'nigeria') {
+                if (aiCareer.title?.toLowerCase().includes('doctor') || aiCareer.title?.toLowerCase().includes('medical')) {
+                    salary = { entry: 2400000, midMin: 4800000, midMax: 7200000, senior: 12000000, currency: 'NGN', period: 'year' };
+                } else if (aiCareer.title?.toLowerCase().includes('software') || aiCareer.title?.toLowerCase().includes('engineer')) {
+                    salary = { entry: 1200000, midMin: 2400000, midMax: 4200000, senior: 6000000, currency: 'NGN', period: 'year' };
+                } else if (aiCareer.title?.toLowerCase().includes('business') || aiCareer.title?.toLowerCase().includes('manager')) {
+                    salary = { entry: 1800000, midMin: 3000000, midMax: 5400000, senior: 9000000, currency: 'NGN', period: 'year' };
+                } else {
+                    salary = { entry: 1500000, midMin: 2800000, midMax: 4500000, senior: 6500000, currency: 'NGN', period: 'year' };
+                }
+            } else {
+                if (aiCareer.title?.toLowerCase().includes('doctor') || aiCareer.title?.toLowerCase().includes('medical')) {
+                    salary = { entry: 120000, midMin: 180000, midMax: 250000, senior: 350000, currency: 'USD', period: 'year' };
+                } else if (aiCareer.title?.toLowerCase().includes('software') || aiCareer.title?.toLowerCase().includes('engineer')) {
+                    salary = { entry: 85000, midMin: 110000, midMax: 150000, senior: 200000, currency: 'USD', period: 'year' };
+                } else if (aiCareer.title?.toLowerCase().includes('business') || aiCareer.title?.toLowerCase().includes('manager')) {
+                    salary = { entry: 60000, midMin: 80000, midMax: 110000, senior: 150000, currency: 'USD', period: 'year' };
+                } else {
+                    salary = { entry: 55000, midMin: 75000, midMax: 100000, senior: 130000, currency: 'USD', period: 'year' };
+                }
+            }
+            
+            return {
+                id: Date.now() + index + Math.random(),
+                slug: aiCareer.slug || aiCareer.title?.toLowerCase().replace(/\s+/g, '-') || `career-${index}`,
+                title: aiCareer.title || "Career Title",
+                icon: getIconForCareer(aiCareer.title),
+                shortDescription: aiCareer.shortDescription || "",
+                description: aiCareer.description || "No description available",
+                skills: aiCareer.skills || [],
+                traits: aiCareer.traits || [],
+                interests: aiCareer.interests || [],
+                personalityType: aiCareer.personalityType || dominantPersonality,
+                country: countryLower === 'nigeria' ? 'ng' : 'us',
+                requirements: {
+                    examSystem: config.examSystem,
+                    examSubjects: config.examSubjects,
+                    jambSubjects: config.jambSubjects,
+                    examDescription: config.examDescription,
+                    additionalTests: config.additionalTests
+                },
+                universities: universities,
+                salary: salary,
+                relatedCareers: [`Senior ${aiCareer.title}`, `${aiCareer.title} Consultant`, `${aiCareer.title} Manager`],
+                pathway: [
+                    { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on relevant subjects for this career.' },
+                    { step: 2, title: `Bachelor's Degree in ${aiCareer.title}`, duration: '4 years', description: `Complete a degree in ${aiCareer.title} or related field.` },
+                    { step: 3, title: 'Gain Practical Experience', duration: '1-2 years', description: 'Intern or work in entry-level positions.' },
+                    { step: 4, title: 'Professional Certification', duration: '1 year', description: 'Pursue industry-recognized certifications.' },
+                    { step: 5, title: 'Career Advancement', duration: 'Ongoing', description: 'Progress to senior roles or specialization.' }
+                ],
+                courses: [
+                    { name: `Introduction to ${aiCareer.title}`, platform: 'Coursera', description: `Learn the fundamentals of ${aiCareer.title}`, url: 'https://www.coursera.org' },
+                    { name: `Advanced ${aiCareer.title} Skills`, platform: 'edX', description: `Master advanced concepts`, url: 'https://www.edx.org' },
+                    { name: `${aiCareer.title} Certification Prep`, platform: 'Udemy', description: `Prepare for certification`, url: 'https://www.udemy.com' }
+                ],
+                degrees: [`Bachelor's in ${aiCareer.title}`, `Master's in ${aiCareer.title}`],
+                match: matchScore,
+                aiGenerated: true
+            };
+        });
+        
+        careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
+        
         saveCareersToLocalStorage();
         saveCareersToJsonServer(careers.value);
         calculatePersonalityScores();
-        console.log('✅ Using fallback careers with calculated match scores');
+        
+        console.log(`✅ AI generated ${careers.value.length} careers`);
+    };
+    
+    // =========================
+    // INTELLIGENT FALLBACK (NO AI)
+    // =========================
+    
+    const generateIntelligentFallback = (country, dominantPersonality, userTraits, userInterests, config) => {
+        const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
+        
+        // Career recommendations based on personality type
+        const personalityCareers = {
+            'Technical Innovator': [
+                { title: 'Software Engineer', slug: 'software-engineer', icon: '💻', traits: ['analytical', 'logical', 'technical'], interests: ['technology', 'coding', 'problem-solving'] },
+                { title: 'Data Scientist', slug: 'data-scientist', icon: '📊', traits: ['analytical', 'logical', 'detail-oriented'], interests: ['data', 'statistics', 'problem-solving'] },
+                { title: 'Civil Engineer', slug: 'civil-engineer', icon: '🏗️', traits: ['analytical', 'practical', 'problem-solving'], interests: ['construction', 'design', 'engineering'] }
+            ],
+            'Creative Communicator': [
+                { title: 'Content Creator', slug: 'content-creator', icon: '✍️', traits: ['creative', 'expressive', 'communicative'], interests: ['writing', 'social media', 'storytelling'] },
+                { title: 'Graphic Designer', slug: 'graphic-designer', icon: '🎨', traits: ['creative', 'artistic', 'detail-oriented'], interests: ['design', 'art', 'digital media'] },
+                { title: 'Journalist', slug: 'journalist', icon: '📰', traits: ['curious', 'communicative', 'detail-oriented'], interests: ['writing', 'news', 'research'] }
+            ],
+            'Healthcare Helper': [
+                { title: 'Medical Doctor', slug: 'medical-doctor', icon: '👨‍⚕️', traits: ['compassionate', 'patient', 'observant'], interests: ['healthcare', 'medicine', 'helping others'] },
+                { title: 'Registered Nurse', slug: 'registered-nurse', icon: '🩺', traits: ['compassionate', 'caring', 'patient'], interests: ['healthcare', 'patient care', 'helping others'] },
+                { title: 'Pharmacist', slug: 'pharmacist', icon: '💊', traits: ['detail-oriented', 'responsible', 'caring'], interests: ['healthcare', 'science', 'medicine'] }
+            ],
+            'Business Leader': [
+                { title: 'Business Administrator', slug: 'business-administrator', icon: '📋', traits: ['organized', 'decisive', 'strategic'], interests: ['business', 'management', 'leadership'] },
+                { title: 'Project Manager', slug: 'project-manager', icon: '📊', traits: ['organized', 'leadership', 'problem-solver'], interests: ['management', 'planning', 'teamwork'] },
+                { title: 'Marketing Manager', slug: 'marketing-manager', icon: '📈', traits: ['creative', 'strategic', 'communicative'], interests: ['marketing', 'advertising', 'branding'] }
+            ]
+        };
+        
+        const careersList = personalityCareers[dominantPersonality] || personalityCareers['Technical Innovator'];
+        
+        // Calculate match scores
+        const careersWithMatches = careersList.map(career => {
+            let score = 0;
+            userTraits.forEach(trait => {
+                if (career.traits.some(t => t.toLowerCase().includes(trait.toLowerCase()))) score += 15;
+            });
+            userInterests.forEach(interest => {
+                if (career.interests.some(i => i.toLowerCase().includes(interest.toLowerCase()))) score += 15;
+            });
+            return { ...career, match: Math.min(score + 50, 100) };
+        });
+        
+        careers.value = careersWithMatches.sort((a, b) => b.match - a.match).slice(0, 3).map((career, index) => ({
+            id: Date.now() + index + Math.random(),
+            ...career,
+            country: countryLower === 'nigeria' ? 'ng' : 'us',
+            shortDescription: `A rewarding career in ${career.title}`,
+            description: `This career path offers excellent opportunities for growth and development.`,
+            skills: ['Communication', 'Problem Solving', 'Teamwork'],
+            requirements: {
+                examSystem: config.examSystem,
+                examSubjects: config.examSubjects,
+                jambSubjects: config.jambSubjects,
+                examDescription: config.examDescription,
+                additionalTests: config.additionalTests
+            },
+            universities: countryLower === 'nigeria' ? [
+                { name: 'University of Lagos', ranking: '1st', programName: `${career.title} Degree` },
+                { name: 'Obafemi Awolowo University', ranking: '2nd', programName: `${career.title} Degree` }
+            ] : [
+                { name: 'Harvard University', ranking: '1st', programName: `${career.title} Degree` },
+                { name: 'Stanford University', ranking: '2nd', programName: `${career.title} Degree` }
+            ],
+            salary: countryLower === 'nigeria' ? 
+                { entry: 1500000, midMin: 3000000, midMax: 5000000, senior: 7000000, currency: 'NGN', period: 'year' } :
+                { entry: 65000, midMin: 85000, midMax: 120000, senior: 150000, currency: 'USD', period: 'year' },
+            relatedCareers: [`Senior ${career.title}`, `${career.title} Consultant`],
+            pathway: [
+                { step: 1, title: 'Complete Secondary Education', duration: '4 years', description: 'Focus on relevant subjects.' },
+                { step: 2, title: `Bachelor's Degree in ${career.title}`, duration: '4 years', description: `Complete a degree in ${career.title}.` },
+                { step: 3, title: 'Gain Experience', duration: '1-2 years', description: 'Intern or work entry-level.' }
+            ],
+            courses: [
+                { name: `Introduction to ${career.title}`, platform: 'Coursera', description: 'Learn fundamentals', url: 'https://www.coursera.org' },
+                { name: `${career.title} Certification`, platform: 'edX', description: 'Get certified', url: 'https://www.edx.org' }
+            ],
+            degrees: [`Bachelor's in ${career.title}`, `Master's in ${career.title}`],
+            aiGenerated: true
+        }));
+        
+        saveCareersToLocalStorage();
+        saveCareersToJsonServer(careers.value);
+        calculatePersonalityScores();
+        console.log(`✅ Generated ${careers.value.length} fallback careers for ${dominantPersonality}`);
     };
 
     // =========================
