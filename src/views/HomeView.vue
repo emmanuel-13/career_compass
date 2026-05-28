@@ -15,7 +15,7 @@
 
                         <h1 class="text-5xl lg:text-6xl font-bold mb-6 leading-tight text-gray-900 tracking-tight">
                             Welcome {{ user.currentUser.name }}! <br>
-                            <span class="text-indigo-600">Continue Exploring</span>
+                            <span class="text-indigo-600">Start Exploring</span>
                         </h1>
                         <p class="leading-relexed text-xl text-grey-600 mb-8">
                             Take a comprehensive career assessment, explore personalized matches, and develop the skills you need to succeed in your future career.
