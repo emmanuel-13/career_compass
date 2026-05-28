@@ -19,30 +19,7 @@ export const useQuizStore = defineStore("quiz", () => {
     const apiUrl = `${baseUrl}/careers`;
 
     // =========================
-    // SAVE ANSWER
-    // =========================
-
-    const saveAnswer = (questionId, option) => {
-        const existing = answers.value.find(item => item.questionId === questionId);
-        if (existing) {
-            existing.option = option;
-        } else {
-            answers.value.push({ questionId, option });
-        }
-        quizCompleted.value = false;
-        saveToLocalStorage();
-    };
-
-    // =========================
-    // GET ANSWER
-    // =========================
-
-    const getAnswer = (questionId) => {
-        return answers.value.find(item => item.questionId === questionId);
-    };
-
-    // =========================
-    // LOCAL STORAGE
+    // LOCAL STORAGE FUNCTIONS (DEFINED FIRST)
     // =========================
 
     const saveToLocalStorage = () => {
@@ -100,6 +77,29 @@ export const useQuizStore = defineStore("quiz", () => {
             }
         }
         return false;
+    };
+
+    // =========================
+    // SAVE ANSWER
+    // =========================
+
+    const saveAnswer = (questionId, option) => {
+        const existing = answers.value.find(item => item.questionId === questionId);
+        if (existing) {
+            existing.option = option;
+        } else {
+            answers.value.push({ questionId, option });
+        }
+        quizCompleted.value = false;
+        saveToLocalStorage();
+    };
+
+    // =========================
+    // GET ANSWER
+    // =========================
+
+    const getAnswer = (questionId) => {
+        return answers.value.find(item => item.questionId === questionId);
     };
 
     // =========================
@@ -289,213 +289,6 @@ export const useQuizStore = defineStore("quiz", () => {
     };
 
     // =========================
-    // MAIN GENERATOR
-    // =========================
-
-    const generateCareer = async (country, forceRefresh = false) => {
-        isLoading.value = true;
-        error.value = null;
-    
-        try {
-            const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
-            
-            if (forceRefresh || quizJustCompleted) {
-                console.log("🤖 Generating AI-powered career recommendations...");
-                await generateCareerWithAI(country);
-                localStorage.removeItem('quiz_just_completed');
-            } else {
-                console.log("📦 Loading cached careers");
-                const loaded = loadCareersFromLocalStorage(country);
-                
-                if (!loaded || careers.value.length === 0) {
-                    console.log("⚠️ No cache found, using AI");
-                    await generateCareerWithAI(country);
-                } else {
-                    calculatePersonalityScores();
-                }
-            }
-    
-        } catch (err) {
-            console.error("Generation error:", err);
-            error.value = "Failed to generate careers. Please try again.";
-        } finally {
-            isLoading.value = false;
-        }
-    };
-
-    // =========================
-    // AI CAREER GENERATION - USING USER'S ACTUAL ANSWERS
-    // =========================
-
-    const generateCareerWithAI = async (country) => {
-        const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-        
-        if (!API_KEY) {
-            console.error("No API key found");
-            error.value = "API key not configured";
-            return;
-        }
-
-        const countryLower = country?.toLowerCase() || 'us';
-        const config = getCountryRequirements(country);
-        
-        // Collect ALL user answers with their personality data
-        const userAnswersData = answers.value.map(answer => ({
-            questionId: answer.questionId,
-            selectedAnswer: answer.option.text,
-            personalityType: answer.option.personalityType,
-            traits: answer.option.traits || [],
-            interests: answer.option.interests || []
-        }));
-        
-        // Calculate dominant personality
-        const personalityCounts = {};
-        answers.value.forEach(answer => {
-            const type = answer.option?.personalityType;
-            if (type) {
-                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
-            }
-        });
-        
-        let dominantPersonality = "Technical Innovator";
-        let maxCount = 0;
-        for (const [type, count] of Object.entries(personalityCounts)) {
-            if (count > maxCount) {
-                maxCount = count;
-                dominantPersonality = type;
-            }
-        }
-        
-        // Collect all traits and interests
-        const allTraits = [];
-        const allInterests = [];
-        answers.value.forEach(answer => {
-            if (answer.option?.traits) allTraits.push(...answer.option.traits);
-            if (answer.option?.interests) allInterests.push(...answer.option.interests);
-        });
-        const uniqueTraits = [...new Set(allTraits)];
-        const uniqueInterests = [...new Set(allInterests)];
-        
-        console.log(`🎯 Dominant Personality: ${dominantPersonality}`);
-        console.log(`📋 Traits: ${uniqueTraits.join(', ')}`);
-        console.log(`💡 Interests: ${uniqueInterests.join(', ')}`);
-        
-        // Create a detailed prompt with the user's actual answers
-        const prompt = `You are an expert career counselor. Based on the user's quiz responses, recommend 3 careers that perfectly match their personality, traits, and interests.
-
-USER'S QUIZ RESULTS:
-- Primary Personality Type: ${dominantPersonality}
-- Key Traits: ${uniqueTraits.join(', ')}
-- Key Interests: ${uniqueInterests.join(', ')}
-
-DETAILED ANSWERS:
-${JSON.stringify(userAnswersData, null, 2)}
-
-Based on this information, recommend 3 careers that would be an excellent fit.
-
-IMPORTANT RULES:
-1. If the user has Technical Innovator traits (analytical, logical, technical), recommend careers in Engineering, Technology, Data Science
-2. If the user has Creative Communicator traits (creative, artistic, communicative), recommend careers in Arts, Media, Design, Writing
-3. If the user has Healthcare Helper traits (compassionate, caring, empathetic), recommend careers in Medicine, Nursing, Healthcare
-4. If the user has Business Leader traits (leadership, strategic, organized), recommend careers in Business, Management, Finance
-
-Return ONLY valid JSON in this exact format:
-{
-  "recommendations": [
-    {
-      "title": "",
-      "slug": "",
-      "shortDescription": "One sentence summary",
-      "description": "2-3 sentence detailed description",
-      "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
-      "traits": ["trait1", "trait2", "trait3"],
-      "interests": ["interest1", "interest2", "interest3"],
-      "personalityType": "${dominantPersonality}"
-    }
-  ]
-}`;
-
-        try {
-            console.log("🚀 Calling OpenRouter AI...");
-            
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "http://localhost:5173",
-                    "X-Title": "Career AI Platform"
-                },
-                body: JSON.stringify({
-                    model: "openai/gpt-3.5-turbo",
-                    messages: [
-                        {
-                            role: "system",
-                            content: "You are an expert career counselor. Return ONLY valid JSON. Use the user's personality type, traits, and interests to recommend matching careers."
-                        },
-                        { 
-                            role: "user", 
-                            content: prompt 
-                        }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 1500
-                })
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                console.error("API Error:", errorData);
-                
-                // Try fallback model if primary fails
-                if (response.status === 402 || response.status === 404) {
-                    console.log("Trying fallback model...");
-                    const fallbackResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": `Bearer ${API_KEY}`,
-                            "HTTP-Referer": "http://localhost:5173",
-                            "X-Title": "Career AI Platform"
-                        },
-                        body: JSON.stringify({
-                            model: "meta-llama/llama-3.2-3b-instruct",
-                            messages: [
-                                {
-                                    role: "system",
-                                    content: "You are an expert career counselor. Return ONLY valid JSON."
-                                },
-                                { role: "user", content: prompt }
-                            ],
-                            temperature: 0.7,
-                            max_tokens: 1200
-                        })
-                    });
-                    
-                    if (!fallbackResponse.ok) {
-                        throw new Error(`Fallback API also failed: ${fallbackResponse.status}`);
-                    }
-                    
-                    const fallbackData = await fallbackResponse.json();
-                    processAIResponse(fallbackData, country, config, dominantPersonality, uniqueTraits, uniqueInterests);
-                    return;
-                }
-                
-                throw new Error(`API Error: ${response.status}`);
-            }
-
-            const data = await response.json();
-            processAIResponse(data, country, config, dominantPersonality, uniqueTraits, uniqueInterests);
-            
-        } catch (error) {
-            console.error("AI error:", error);
-            error.value = "AI service unavailable. Please try again later.";
-            // Fallback to intelligent matching without AI
-            generateIntelligentFallback(country, dominantPersonality, uniqueTraits, uniqueInterests, config);
-        }
-    };
-    
-    // =========================
     // PROCESS AI RESPONSE
     // =========================
     
@@ -526,15 +319,11 @@ Return ONLY valid JSON in this exact format:
             const universities = countryLower === 'nigeria' ? [
                 { name: 'University of Lagos', ranking: '1st in Nigeria', programName: `${aiCareer.title} Degree` },
                 { name: 'Obafemi Awolowo University', ranking: '2nd in Nigeria', programName: `${aiCareer.title} Degree` },
-                { name: 'University of Ibadan', ranking: '3rd in Nigeria', programName: `${aiCareer.title} Degree` },
-                { name: 'Ahmadu Bello University', ranking: '4th in Nigeria', programName: `${aiCareer.title} Degree` },
-                { name: 'University of Nigeria, Nsukka', ranking: '5th in Nigeria', programName: `${aiCareer.title} Degree` }
+                { name: 'University of Ibadan', ranking: '3rd in Nigeria', programName: `${aiCareer.title} Degree` }
             ] : [
                 { name: 'Harvard University', ranking: '1st in US', programName: `${aiCareer.title} Degree` },
                 { name: 'Stanford University', ranking: '2nd in US', programName: `${aiCareer.title} Degree` },
-                { name: 'MIT', ranking: '3rd in US', programName: `${aiCareer.title} Degree` },
-                { name: 'UC Berkeley', ranking: '4th in US', programName: `${aiCareer.title} Degree` },
-                { name: 'Columbia University', ranking: '5th in US', programName: `${aiCareer.title} Degree` }
+                { name: 'MIT', ranking: '3rd in US', programName: `${aiCareer.title} Degree` }
             ];
             
             // Determine salary based on career type and country
@@ -617,7 +406,6 @@ Return ONLY valid JSON in this exact format:
     const generateIntelligentFallback = (country, dominantPersonality, userTraits, userInterests, config) => {
         const countryLower = country?.toLowerCase() === 'nigeria' || country?.toLowerCase() === 'ng' ? 'nigeria' : 'us';
         
-        // Career recommendations based on personality type
         const personalityCareers = {
             'Technical Innovator': [
                 { title: 'Software Engineer', slug: 'software-engineer', icon: '💻', traits: ['analytical', 'logical', 'technical'], interests: ['technology', 'coding', 'problem-solving'] },
@@ -643,7 +431,6 @@ Return ONLY valid JSON in this exact format:
         
         const careersList = personalityCareers[dominantPersonality] || personalityCareers['Technical Innovator'];
         
-        // Calculate match scores
         const careersWithMatches = careersList.map(career => {
             let score = 0;
             userTraits.forEach(trait => {
@@ -700,6 +487,204 @@ Return ONLY valid JSON in this exact format:
     };
 
     // =========================
+    // AI CAREER GENERATION
+    // =========================
+
+    const generateCareerWithAI = async (country) => {
+        const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+        
+        if (!API_KEY) {
+            console.error("No API key found");
+            error.value = "API key not configured";
+            return;
+        }
+
+        const countryLower = country?.toLowerCase() || 'us';
+        const config = getCountryRequirements(country);
+        
+        // Collect ALL user answers with their personality data
+        const userAnswersData = answers.value.map(answer => ({
+            questionId: answer.questionId,
+            selectedAnswer: answer.option.text,
+            personalityType: answer.option.personalityType,
+            traits: answer.option.traits || [],
+            interests: answer.option.interests || []
+        }));
+        
+        // Calculate dominant personality
+        const personalityCounts = {};
+        answers.value.forEach(answer => {
+            const type = answer.option?.personalityType;
+            if (type) {
+                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
+            }
+        });
+        
+        let dominantPersonality = "Technical Innovator";
+        let maxCount = 0;
+        for (const [type, count] of Object.entries(personalityCounts)) {
+            if (count > maxCount) {
+                maxCount = count;
+                dominantPersonality = type;
+            }
+        }
+        
+        // Collect all traits and interests
+        const allTraits = [];
+        const allInterests = [];
+        answers.value.forEach(answer => {
+            if (answer.option?.traits) allTraits.push(...answer.option.traits);
+            if (answer.option?.interests) allInterests.push(...answer.option.interests);
+        });
+        const uniqueTraits = [...new Set(allTraits)];
+        const uniqueInterests = [...new Set(allInterests)];
+        
+        console.log(`🎯 Dominant Personality: ${dominantPersonality}`);
+        console.log(`📋 Traits: ${uniqueTraits.join(', ')}`);
+        console.log(`💡 Interests: ${uniqueInterests.join(', ')}`);
+        
+        const prompt = `You are an expert career counselor. Based on the user's quiz responses, recommend 3 careers that perfectly match their personality, traits, and interests.
+
+USER'S QUIZ RESULTS:
+- Primary Personality Type: ${dominantPersonality}
+- Key Traits: ${uniqueTraits.join(', ')}
+- Key Interests: ${uniqueInterests.join(', ')}
+
+DETAILED ANSWERS:
+${JSON.stringify(userAnswersData, null, 2)}
+
+Based on this information, recommend 3 careers that would be an excellent fit.
+
+Return ONLY valid JSON in this exact format:
+{
+  "recommendations": [
+    {
+      "title": "",
+      "slug": "",
+      "shortDescription": "One sentence summary",
+      "description": "2-3 sentence detailed description",
+      "skills": ["skill1", "skill2", "skill3", "skill4", "skill5"],
+      "traits": ["trait1", "trait2", "trait3"],
+      "interests": ["interest1", "interest2", "interest3"],
+      "personalityType": "${dominantPersonality}"
+    }
+  ]
+}`;
+
+        try {
+            console.log("🚀 Calling OpenRouter AI...");
+            
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`,
+                    "HTTP-Referer": "http://localhost:5173",
+                    "X-Title": "Career AI Platform"
+                },
+                body: JSON.stringify({
+                    model: "openai/gpt-3.5-turbo",
+                    messages: [
+                        {
+                            role: "system",
+                            content: "You are an expert career counselor. Return ONLY valid JSON. Use the user's personality type, traits, and interests to recommend matching careers."
+                        },
+                        { 
+                            role: "user", 
+                            content: prompt 
+                        }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 1500
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error("API Error:", errorData);
+                
+                if (response.status === 402 || response.status === 404) {
+                    console.log("Trying fallback model...");
+                    const fallbackResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization": `Bearer ${API_KEY}`,
+                            "HTTP-Referer": "http://localhost:5173",
+                            "X-Title": "Career AI Platform"
+                        },
+                        body: JSON.stringify({
+                            model: "meta-llama/llama-3.2-3b-instruct",
+                            messages: [
+                                {
+                                    role: "system",
+                                    content: "You are an expert career counselor. Return ONLY valid JSON."
+                                },
+                                { role: "user", content: prompt }
+                            ],
+                            temperature: 0.7,
+                            max_tokens: 1200
+                        })
+                    });
+                    
+                    if (!fallbackResponse.ok) {
+                        throw new Error(`Fallback API also failed: ${fallbackResponse.status}`);
+                    }
+                    
+                    const fallbackData = await fallbackResponse.json();
+                    processAIResponse(fallbackData, country, config, dominantPersonality, uniqueTraits, uniqueInterests);
+                    return;
+                }
+                
+                throw new Error(`API Error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            processAIResponse(data, country, config, dominantPersonality, uniqueTraits, uniqueInterests);
+            
+        } catch (error) {
+            console.error("AI error:", error);
+            error.value = "AI service unavailable. Please try again later.";
+            generateIntelligentFallback(country, dominantPersonality, uniqueTraits, uniqueInterests, config);
+        }
+    };
+
+    // =========================
+    // MAIN GENERATOR
+    // =========================
+
+    const generateCareer = async (country, forceRefresh = false) => {
+        isLoading.value = true;
+        error.value = null;
+    
+        try {
+            const quizJustCompleted = localStorage.getItem('quiz_just_completed') === 'true';
+            
+            if (forceRefresh || quizJustCompleted) {
+                console.log("🤖 Generating AI-powered career recommendations...");
+                await generateCareerWithAI(country);
+                localStorage.removeItem('quiz_just_completed');
+            } else {
+                console.log("📦 Loading cached careers");
+                const loaded = loadCareersFromLocalStorage(country);
+                
+                if (!loaded || careers.value.length === 0) {
+                    console.log("⚠️ No cache found, using AI");
+                    await generateCareerWithAI(country);
+                } else {
+                    calculatePersonalityScores();
+                }
+            }
+    
+        } catch (err) {
+            console.error("Generation error:", err);
+            error.value = "Failed to generate careers. Please try again.";
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    // =========================
     // RESET QUIZ
     // =========================
 
@@ -723,7 +708,7 @@ Return ONLY valid JSON in this exact format:
     };
 
     // =========================
-    // INITIALIZE
+    // INITIALIZE (CALLED AFTER ALL FUNCTIONS ARE DEFINED)
     // =========================
 
     const initialize = () => {
