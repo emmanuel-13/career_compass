@@ -275,202 +275,357 @@ export const useQuizStore = defineStore("quiz", () => {
     // AI CAREER GENERATION - FULL PROMPT
     // =========================
 
+//     const generateCareerWithAI = async (country) => {
+//         const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+        
+//         if (!API_KEY) {
+//             console.error("No API key found");
+//             error.value = "API key not configured. Please contact support.";
+//             return;
+//         }
+
+//         const countryLower = country?.toLowerCase() || 'us';
+//         const config = getCountryRequirements(country);
+        
+//         // Calculate dominant personality
+//         const personalityCounts = {};
+//         answers.value.forEach(item => {
+//             const type = item.option?.personalityType;
+//             if (type) {
+//                 personalityCounts[type] = (personalityCounts[type] || 0) + 1;
+//             }
+//         });
+        
+//         let dominantPersonality = "Technical Innovator";
+//         let maxCount = 0;
+//         for (const [type, count] of Object.entries(personalityCounts)) {
+//             if (count > maxCount) {
+//                 maxCount = count;
+//                 dominantPersonality = type;
+//             }
+//         }
+
+//         // Map personality to career categories
+//         let personalityCategory = "Technology";
+//         if (dominantPersonality === "Creative Communicator") personalityCategory = "Arts, Media, Communication";
+//         else if (dominantPersonality === "Healthcare Helper") personalityCategory = "Healthcare, Medicine";
+//         else if (dominantPersonality === "Business Leader") personalityCategory = "Business, Finance, Law";
+
+//         // COMPLETE AI PROMPT - Asks for ALL data
+//         const prompt = `You are a career expert for ${country.toUpperCase()}. 
+
+// Based on the user's personality type (${dominantPersonality}), recommend 5 careers in the ${personalityCategory} field.
+
+// For EACH career, provide COMPLETE information in the following JSON format. Return ONLY valid JSON, no other text.
+
+// {
+//   "recommendations": [
+//     {
+//       "title": "",
+//       "slug": "",
+//       "icon": "",
+//       "shortDescription": "",
+//       "description": "",
+//       "skills": [],
+//       "traits": [],
+//       "interests": [],
+//       "personalityType": "${dominantPersonality}",
+//       "requirements": {
+//         "examSystem": "${config.examSystem}",
+//         "examSubjects": [],
+//         "jambSubjects": [],
+//         "examDescription": "${config.examDescription}",
+//         "additionalTests": ${JSON.stringify(config.additionalTests)}
+//       },
+//       "universities": [
+//         {"name": "", "ranking": "", "programName": ""}
+//       ],
+//       "salary": {
+//         "entry": 0,
+//         "midMin": 0,
+//         "midMax": 0,
+//         "senior": 0,
+//         "currency": "${config.currency}",
+//         "period": "year"
+//       },
+//       "relatedCareers": [],
+//       "pathway": [
+//         {"step": 1, "title": "", "duration": "", "description": ""}
+//       ],
+//       "courses": [
+//         {"name": "", "platform": "", "description": "", "url": ""}
+//       ],
+//       "degrees": []
+//     }
+//   ]
+// }
+
+// Requirements for ${country.toUpperCase()}:
+// - Exam System: ${config.examSystem}
+// - Currency: ${config.currency} (${config.currencySymbol})
+// - Use REAL university names in ${country.toUpperCase()}
+// - Use REAL salary ranges in ${config.currency}
+// - For Engineering careers, exam subjects should include Mathematics, Physics, Chemistry
+// - For Medical careers, exam subjects should include Biology, Chemistry, Physics
+// - For Business careers, exam subjects should include Mathematics, Economics, Accounting
+// - For Arts careers, exam subjects should include English, Literature, Government
+
+// Make all data REALISTIC and ACCURATE for ${country.toUpperCase()}.`;
+
+//         try {
+//             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+//                 method: "POST",
+//                 headers: {
+//                     "Content-Type": "application/json",
+//                     "Authorization": `Bearer ${API_KEY}`,
+//                     "HTTP-Referer": "https://career-compass-v906.onrender.com",
+//                     "X-Title": "Career AI Platform"
+//                 },
+//                 body: JSON.stringify({
+//                     model: "deepseek/deepseek-chat",
+//                     // Change this line in the API call:
+//                     // model: "google/gemini-2.0-flash-lite-preview-02-05",  // Free tier model
+//                     messages: [
+//                         {
+//                             role: "system",
+//                             content: `You are a career expert for ${country.toUpperCase()}. Return ONLY valid JSON. Provide COMPLETE, REALISTIC data. Include 5 careers. Use real university names and real salary ranges in ${config.currency}.`
+//                         },
+//                         { role: "user", content: prompt }
+//                     ],
+//                     temperature: 0.7,
+//                     max_tokens: 4000
+//                 })
+//             });
+
+//             if (!response.ok) {
+//                 console.error(`API Error: ${response.status}`);
+//                 error.value = `API Error: ${response.status}. Please try again.`;
+//                 return;
+//             }
+
+//             const data = await response.json();
+//             let aiText = data.choices[0].message.content;
+            
+//             // Clean JSON
+//             aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
+//             const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+//             if (jsonMatch) aiText = jsonMatch[0];
+            
+//             const parsed = JSON.parse(aiText);
+//             if (!parsed.recommendations || parsed.recommendations.length === 0) {
+//                 throw new Error("Invalid response from AI");
+//             }
+
+//             const recommendedCareers = parsed.recommendations.slice(0, 5).map((aiCareer, index) => {
+//                 // Ensure salary has all required fields
+//                 const salary = aiCareer.salary || {};
+                
+//                 return {
+//                     id: Date.now() + index + Math.random(),
+//                     slug: aiCareer.slug || aiCareer.title?.toLowerCase().replace(/\s+/g, '-') || `career-${index}`,
+//                     title: aiCareer.title || "Career Title",
+//                     icon: aiCareer.icon || getIconForCareer(aiCareer.title),
+//                     shortDescription: aiCareer.shortDescription || "",
+//                     description: aiCareer.description || "No description available",
+//                     skills: aiCareer.skills || [],
+//                     traits: aiCareer.traits || [],
+//                     interests: aiCareer.interests || [],
+//                     personalityType: dominantPersonality,
+//                     country: countryLower === 'ng' ? 'ng' : countryLower,
+//                     requirements: {
+//                         examSystem: aiCareer.requirements?.examSystem || config.examSystem,
+//                         examSubjects: aiCareer.requirements?.examSubjects || ['English', 'Mathematics', 'Science'],
+//                         jambSubjects: aiCareer.requirements?.jambSubjects || [],
+//                         examDescription: aiCareer.requirements?.examDescription || config.examDescription,
+//                         additionalTests: aiCareer.requirements?.additionalTests || config.additionalTests
+//                     },
+//                     universities: aiCareer.universities || [],
+//                     salary: {
+//                         entry: salary.entry || 0,
+//                         midMin: salary.midMin || salary.min || 0,
+//                         midMax: salary.midMax || salary.max || 0,
+//                         senior: salary.senior || 0,
+//                         currency: salary.currency || config.currency,
+//                         period: salary.period || "year"
+//                     },
+//                     relatedCareers: aiCareer.relatedCareers || [],
+//                     pathway: aiCareer.pathway || [],
+//                     courses: aiCareer.courses || [],
+//                     degrees: aiCareer.degrees || [],
+//                     match: 85,
+//                     aiGenerated: true
+//                 };
+//             });
+
+//             careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 5);
+            
+//             // Save to localStorage and json-server
+//             saveCareersToLocalStorage();
+//             await saveCareersToJsonServer(recommendedCareers);
+//             calculatePersonalityScores();
+            
+//             console.log(`✅ AI generated ${careers.value.length} careers for ${country}`);
+            
+//         } catch (error) {
+//             console.error("AI error:", error);
+//             error.value = "Failed to get AI recommendations. Please try again.";
+//         }
+//     };
+
     const generateCareerWithAI = async (country) => {
-        const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-        
-        if (!API_KEY) {
-            console.error("No API key found");
-            error.value = "API key not configured. Please contact support.";
-            return;
+    const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+    
+    if (!API_KEY) {
+        console.warn("No API key found, using fallback");
+        generateCareerFallback(country);
+        return;
+    }
+
+    const countryLower = country?.toLowerCase() || 'us';
+    const config = getCountryRequirements(country);
+    
+    // Calculate dominant personality
+    const personalityCounts = {};
+    answers.value.forEach(item => {
+        const type = item.option?.personalityType;
+        if (type) {
+            personalityCounts[type] = (personalityCounts[type] || 0) + 1;
         }
-
-        const countryLower = country?.toLowerCase() || 'us';
-        const config = getCountryRequirements(country);
-        
-        // Calculate dominant personality
-        const personalityCounts = {};
-        answers.value.forEach(item => {
-            const type = item.option?.personalityType;
-            if (type) {
-                personalityCounts[type] = (personalityCounts[type] || 0) + 1;
-            }
-        });
-        
-        let dominantPersonality = "Technical Innovator";
-        let maxCount = 0;
-        for (const [type, count] of Object.entries(personalityCounts)) {
-            if (count > maxCount) {
-                maxCount = count;
-                dominantPersonality = type;
-            }
+    });
+    
+    let dominantPersonality = "Technical Innovator";
+    let maxCount = 0;
+    for (const [type, count] of Object.entries(personalityCounts)) {
+        if (count > maxCount) {
+            maxCount = count;
+            dominantPersonality = type;
         }
+    }
 
-        // Map personality to career categories
-        let personalityCategory = "Technology";
-        if (dominantPersonality === "Creative Communicator") personalityCategory = "Arts, Media, Communication";
-        else if (dominantPersonality === "Healthcare Helper") personalityCategory = "Healthcare, Medicine";
-        else if (dominantPersonality === "Business Leader") personalityCategory = "Business, Finance, Law";
+    const prompt = `You are a career expert for ${country.toUpperCase()}. 
 
-        // COMPLETE AI PROMPT - Asks for ALL data
-        const prompt = `You are a career expert for ${country.toUpperCase()}. 
+Based on the user's personality (${dominantPersonality}), recommend 3 careers.
 
-Based on the user's personality type (${dominantPersonality}), recommend 5 careers in the ${personalityCategory} field.
+For EACH career, provide: title, slug, shortDescription, description, and skills array.
 
-For EACH career, provide COMPLETE information in the following JSON format. Return ONLY valid JSON, no other text.
-
+Return ONLY valid JSON in this format:
 {
   "recommendations": [
     {
       "title": "",
       "slug": "",
-      "icon": "",
       "shortDescription": "",
       "description": "",
-      "skills": [],
-      "traits": [],
-      "interests": [],
-      "personalityType": "${dominantPersonality}",
-      "requirements": {
-        "examSystem": "${config.examSystem}",
-        "examSubjects": [],
-        "jambSubjects": [],
-        "examDescription": "${config.examDescription}",
-        "additionalTests": ${JSON.stringify(config.additionalTests)}
-      },
-      "universities": [
-        {"name": "", "ranking": "", "programName": ""}
-      ],
-      "salary": {
-        "entry": 0,
-        "midMin": 0,
-        "midMax": 0,
-        "senior": 0,
-        "currency": "${config.currency}",
-        "period": "year"
-      },
-      "relatedCareers": [],
-      "pathway": [
-        {"step": 1, "title": "", "duration": "", "description": ""}
-      ],
-      "courses": [
-        {"name": "", "platform": "", "description": "", "url": ""}
-      ],
-      "degrees": []
+      "skills": []
     }
   ]
-}
+}`;
 
-Requirements for ${country.toUpperCase()}:
-- Exam System: ${config.examSystem}
-- Currency: ${config.currency} (${config.currencySymbol})
-- Use REAL university names in ${country.toUpperCase()}
-- Use REAL salary ranges in ${config.currency}
-- For Engineering careers, exam subjects should include Mathematics, Physics, Chemistry
-- For Medical careers, exam subjects should include Biology, Chemistry, Physics
-- For Business careers, exam subjects should include Mathematics, Economics, Accounting
-- For Arts careers, exam subjects should include English, Literature, Government
-
-Make all data REALISTIC and ACCURATE for ${country.toUpperCase()}.`;
-
-        try {
-            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${API_KEY}`,
-                    "HTTP-Referer": "https://career-compass-v906.onrender.com",
-                    "X-Title": "Career AI Platform"
-                },
-                body: JSON.stringify({
-                    model: "deepseek/deepseek-chat",
-                    // Change this line in the API call:
-                    // model: "google/gemini-2.0-flash-lite-preview-02-05",  // Free tier model
-                    messages: [
-                        {
-                            role: "system",
-                            content: `You are a career expert for ${country.toUpperCase()}. Return ONLY valid JSON. Provide COMPLETE, REALISTIC data. Include 5 careers. Use real university names and real salary ranges in ${config.currency}.`
-                        },
-                        { role: "user", content: prompt }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 4000
-                })
-            });
-
-            if (!response.ok) {
-                console.error(`API Error: ${response.status}`);
-                error.value = `API Error: ${response.status}. Please try again.`;
-                return;
-            }
-
-            const data = await response.json();
-            let aiText = data.choices[0].message.content;
-            
-            // Clean JSON
-            aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
-            const jsonMatch = aiText.match(/\{[\s\S]*\}/);
-            if (jsonMatch) aiText = jsonMatch[0];
-            
-            const parsed = JSON.parse(aiText);
-            if (!parsed.recommendations || parsed.recommendations.length === 0) {
-                throw new Error("Invalid response from AI");
-            }
-
-            const recommendedCareers = parsed.recommendations.slice(0, 5).map((aiCareer, index) => {
-                // Ensure salary has all required fields
-                const salary = aiCareer.salary || {};
-                
-                return {
-                    id: Date.now() + index + Math.random(),
-                    slug: aiCareer.slug || aiCareer.title?.toLowerCase().replace(/\s+/g, '-') || `career-${index}`,
-                    title: aiCareer.title || "Career Title",
-                    icon: aiCareer.icon || getIconForCareer(aiCareer.title),
-                    shortDescription: aiCareer.shortDescription || "",
-                    description: aiCareer.description || "No description available",
-                    skills: aiCareer.skills || [],
-                    traits: aiCareer.traits || [],
-                    interests: aiCareer.interests || [],
-                    personalityType: dominantPersonality,
-                    country: countryLower === 'ng' ? 'ng' : countryLower,
-                    requirements: {
-                        examSystem: aiCareer.requirements?.examSystem || config.examSystem,
-                        examSubjects: aiCareer.requirements?.examSubjects || ['English', 'Mathematics', 'Science'],
-                        jambSubjects: aiCareer.requirements?.jambSubjects || [],
-                        examDescription: aiCareer.requirements?.examDescription || config.examDescription,
-                        additionalTests: aiCareer.requirements?.additionalTests || config.additionalTests
+    try {
+        console.log("Calling OpenRouter API with key:", API_KEY.substring(0, 20) + "...");
+        
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${API_KEY}`,
+                "HTTP-Referer": "http://localhost:5173",
+                "X-Title": "Career AI Platform"
+            },
+            body: JSON.stringify({
+                model: "openai/gpt-3.5-turbo",  // Most reliable model
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are a career expert. Return ONLY valid JSON. No markdown, no extra text."
                     },
-                    universities: aiCareer.universities || [],
-                    salary: {
-                        entry: salary.entry || 0,
-                        midMin: salary.midMin || salary.min || 0,
-                        midMax: salary.midMax || salary.max || 0,
-                        senior: salary.senior || 0,
-                        currency: salary.currency || config.currency,
-                        period: salary.period || "year"
-                    },
-                    relatedCareers: aiCareer.relatedCareers || [],
-                    pathway: aiCareer.pathway || [],
-                    courses: aiCareer.courses || [],
-                    degrees: aiCareer.degrees || [],
-                    match: 85,
-                    aiGenerated: true
-                };
-            });
+                    { 
+                        role: "user", 
+                        content: prompt 
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 1000
+            })
+        });
 
-            careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 5);
-            
-            // Save to localStorage and json-server
-            saveCareersToLocalStorage();
-            await saveCareersToJsonServer(recommendedCareers);
-            calculatePersonalityScores();
-            
-            console.log(`✅ AI generated ${careers.value.length} careers for ${country}`);
-            
-        } catch (error) {
-            console.error("AI error:", error);
-            error.value = "Failed to get AI recommendations. Please try again.";
+        console.log("API Response status:", response.status);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API Error Body:", errorText);
+            throw new Error(`API Error: ${response.status}`);
         }
-    };
+
+        const data = await response.json();
+        console.log("API Response:", data);
+        
+        let aiText = data.choices[0].message.content;
+        console.log("Raw AI response:", aiText);
+        
+        aiText = aiText.replace(/```json\s*|\s*```/g, '').trim();
+        const jsonMatch = aiText.match(/\{[\s\S]*\}/);
+        if (jsonMatch) aiText = jsonMatch[0];
+        
+        const parsed = JSON.parse(aiText);
+        if (!parsed.recommendations) throw new Error("Invalid response");
+
+        // Get fallback data for complete fields
+        const fallbackCareers = getFallbackCareers(country, dominantPersonality);
+        
+        const recommendedCareers = parsed.recommendations.slice(0, 3).map((aiCareer, index) => {
+            const fallback = fallbackCareers[index % fallbackCareers.length];
+            
+            return {
+                id: Date.now() + index + Math.random(),
+                slug: aiCareer.slug || fallback.slug,
+                title: aiCareer.title || fallback.title,
+                icon: fallback.icon,
+                shortDescription: aiCareer.shortDescription || fallback.shortDescription,
+                description: aiCareer.description || fallback.description,
+                skills: aiCareer.skills || fallback.skills,
+                traits: fallback.traits || [],
+                interests: fallback.interests || [],
+                personalityType: dominantPersonality,
+                country: countryLower === 'ng' ? 'ng' : 'us',
+                requirements: fallback.requirements || {
+                    examSystem: config.examSystem,
+                    examSubjects: config.examSubjects,
+                    jambSubjects: config.jambSubjects,
+                    examDescription: config.examDescription,
+                    additionalTests: config.additionalTests
+                },
+                universities: fallback.universities || [],
+                salary: fallback.salary || {
+                    entry: 0,
+                    midMin: 0,
+                    midMax: 0,
+                    senior: 0,
+                    currency: config.currency,
+                    period: "year"
+                },
+                relatedCareers: fallback.relatedCareers || [],
+                pathway: fallback.pathway || [],
+                courses: fallback.courses || [],
+                degrees: fallback.degrees || [],
+                match: 85,
+                aiGenerated: true
+            };
+        });
+
+        careers.value = recommendedCareers.sort((a, b) => b.match - a.match).slice(0, 3);
+        
+        saveCareersToLocalStorage();
+        await saveCareersToJsonServer(recommendedCareers);
+        calculatePersonalityScores();
+        
+        console.log(`✅ AI generated ${careers.value.length} careers for ${country}`);
+        
+    } catch (error) {
+        console.error("AI error:", error);
+        generateCareerFallback(country);
+    }
+};
 
     // =========================
     // MATCH CALCULATOR
